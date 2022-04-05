@@ -1,19 +1,24 @@
-from grobid_client.grobid_client import GrobidClient
+import os
+import sys
+import re
+
+import numpy as np
 import pandas as pd
 
-from article import Article
-
-from collections import Counter
+from grobid import grobid_client
 
 host = 'http://localhost'
 port = 8070
 
-client = GrobidClient(host, port)
+path = os.path.dirname(os.getcwd())
+path_input = os.path.join(path,'artifacts','test_article')
+path_output = os.path.join(path,'output','xml')
+path_article = os.path.join(path,'artifacts','test_article','b617684b.pdf')
 
-def process_file(file):
-    rsp = client.serve("processFulltextDocument", file)
-    tei = rsp.text
-    article = Article(rsp.text)
-    return(article)
-
-print(process_file(file="data/TesteArtigo"))
+if __name__ == "__main__":
+    client = grobid_client.GrobidClient(config_path="./grobid/config.json")
+    client.process("processFulltextDocument", # Para pegar todo o texto do documento
+                    path_input, # local onde estará os pdfs dos artigos
+                    output=path_output, # local onde estará a saída em xml
+                    force=True,
+                    n=1)
