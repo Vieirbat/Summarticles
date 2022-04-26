@@ -223,8 +223,7 @@ class GrobidClient(ApiClient):
                         tei_file.write(text)
                 except OSError:
                    print("Writing resulting TEI XML file", filename, "failed")
-
-
+          
     def get_input_files(self,
                         input_path):
         
@@ -255,7 +254,7 @@ class GrobidClient(ApiClient):
         
         """"""
         
-        input_files = self.get_input_files(input_path)
+        input_files = get_input_files(input_path)
         
         if not len(input_files):
             return []
@@ -269,31 +268,26 @@ class GrobidClient(ApiClient):
                 
                 selected_process = self.process_pdf
         
-                r = executor.submit(selected_process,
-                                    service,
-                                    input_file,
-                                    generateIDs,
-                                    consolidate_header,
-                                    consolidate_citations,
-                                    include_raw_citations,
-                                    include_raw_affiliations,
-                                    tei_coordinates,
-                                    segment_sentences)
+                r = executor.submit(
+                    selected_process,
+                    service,
+                    input_file,
+                    generateIDs,
+                    consolidate_header,
+                    consolidate_citations,
+                    include_raw_citations,
+                    include_raw_affiliations,
+                    tei_coordinates,
+                    segment_sentences)
 
                 results.append(r)
-                
-        executor.shutdown(wait=True)
         
         return_results = []
         for r in concurrent.futures.as_completed(results):
-            
             input_file, status, text = r.result()
-            
             if text is None and verbose:
                 print("Processing of", input_file, "failed with error", str(status))
-                
-            return_results.append([input_file, status, text])
-            
+            return_results.append(input_file, status, text)
         return return_results
                 
 
