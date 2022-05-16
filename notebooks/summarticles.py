@@ -27,6 +27,8 @@ import streamlit as st
 path = os.path.dirname(os.getcwd())
 global input_path
 
+gcli = grobid_client.GrobidClient(config_path=os.path.join(path,"grobid/config.json"))
+
 
 def get_path(path_input_path):
     """"""
@@ -36,11 +38,15 @@ def get_path(path_input_path):
     return os.getcwd()
 
 
-def batch_process_path(path_input_path, config_path="./grobid/config.json"):
+def batch_process_path(path_input_path, n_workers=10, check_cache=True, cache_folder_name='summarticles_cache', config_path="./grobid/config.json"):
+    
     """"""
+    
     gcli = grobid_cli(config_path=config_path)
     result_batch = gcli.process_pdfs(input_path=path_input_path,
-                                     n_workers=2,
+                                     check_cache=check_cache,
+                                     cache_folder_name=cache_folder_name,
+                                     n_workers=n_workers,
                                      service="processFulltextDocument",
                                      generateIDs=True,
                                      include_raw_citations=True,
@@ -54,11 +60,13 @@ def batch_process_path(path_input_path, config_path="./grobid/config.json"):
 
 
 def get_dataframes(result_batch):
-    """"""
-    xml_to_df = xmltei_to_dataframe()
-    dict_dfs = xml_to_df.get_dataframe_articles(result_batch)
     
-    return dict_dfs
+    """"""
+    
+    xml_to_df = xmltei_to_dataframe()
+    dict_dfs, dict_errors = xml_to_df.get_dataframe_articles(result_batch)
+    
+    return dict_dfs, dict_errors
 
 
 def files_path(path):
@@ -70,20 +78,7 @@ def files_path(path):
     return files
 
 
-def check_typefile_inpath(files_list,type='pdf'):
-    
-    """check if there is at least one file in the path with a specific type, like PDF for example"""
-    
-    type = str(type).lower().strip()
-    
-    for file in files_list:
-        file = str(file).lower().strip()
-        if file.endswith(''.join(['.',type])):
-            return True
-    return False 
-
-
-def run_batch_process(st, path_input, display_articles_data=True):
+def run_batch_process(st, path_input, n_workers=10,display_articles_data=True, save_xmltei=True):
 
     """"""
 
@@ -98,15 +93,29 @@ def run_batch_process(st, path_input, display_articles_data=True):
         st.error(f"❌ The path doesn't exist! You need to specify a valid folder path! Folder path: {str(input_folder_path)}")
     elif not len(files_path(input_folder_path)):
         st.error(f"❌ There are no files in this folder path! You need to specify a valid folder path! Folder path: {str(input_folder_path)}")
-    elif not check_typefile_inpath(files_path(input_folder_path)):
+    elif not gcli.check_typefile_inpath(files_path(input_folder_path)):
         st.error(f"❌ There are no files in this folder with APP required file type! Please make sure if that path is the correct path!")
     else:
+        
         st.success(f"✔️ **In this folder path we found: {str(len(files_path(input_folder_path)))} files!** Folder path: {str(input_folder_path)}")
         st.warning('⚡ Running batch process!')
-        result_batch = batch_process_path(input_folder_path)
-        dict_dfs = get_dataframes(result_batch)
+        
+        _, cont_center, _ = st.columns([2.25,3,1])
+        
+        with cont_center:
+            with st.spinner('Wait for it...'):
+                
+                result_batch = batch_process_path(input_folder_path, n_workers=n_workers)
+                
+                if not len(result_batch):
+                    st.error(f"⚠️ Something is wrong, I can't get any result! 😕 Please, look if you selected the correct files path!")
+                
+                dict_dfs, dict_errors = get_dataframes(result_batch)
 
-        if display_articles_data:
+                if save_xmltei:
+                    gcli.save_xmltei_files(result_batch, input_folder_path, cache_folder_name='summarticles_cache')
+
+        if display_articles_data and len(result_batch):
             show_articles_data(st, dict_dfs)
     
         print('[Process has been finished!!!]')
@@ -114,6 +123,7 @@ def run_batch_process(st, path_input, display_articles_data=True):
         return dict_dfs
     
     return None
+
 
 def chars_graph(dict_dfs):
     
@@ -149,10 +159,10 @@ def make_sidebar(st):
     """"""
 
     with st.sidebar:
-        st.markdown("""<p style="text-align:center;font-size:40px;">Menu Sidebar</p>""",unsafe_allow_html=True)
+        st.markdown("""<p style="text-align:center;font-size:40px;">Menu Sidebar</p>""",unsafe_allow_html=False)
 
 
-def make_entrance(st):
+def make_head(st):
 
     """"""
 
@@ -172,7 +182,7 @@ def make_entrance(st):
                 unsafe_allow_html=True) # st.write("Application")
     
     st.markdown("""<h6 style="text-align:center;">Do you want to use it? So, you only need to specify a folder path clicking 
-                on '📁 Get folder path!' and let the magic happen!</h6>""",
+                on '📁 Select a folder path!' and let the magic happen!</h6>""",
                 unsafe_allow_html=True)
 
 
@@ -180,21 +190,19 @@ def make_getpath_button(st):
     
     """"""
     
-    _, btn_col1, _ = st.columns([2.25,3,1])
-    
-    input_folder_path = input_path = ""
+    _, btn_col1, _ = st.columns([3,3,1])
     
     with btn_col1:
-        btn_getfolder = st.button('📁 Get folder path!',key='btn_getfolder')
-    st.markdown("""<p style="text-align:center;font-size:12px;">This application works only with PDF files.</p>""", unsafe_allow_html=True)
+        btn_getfolder = st.button('📁 Select a folder path!',key='btn_getfolder')
+        st.markdown("""<p style="text-align:left;font-size:11px;">This application only works with PDF files.</p>""", unsafe_allow_html=True)
     
     return btn_getfolder
 
 
 def show_articles_data(st, dict_dfs):
     
-    st.write("**[Articles Data] df_doc_info:**")
-    st.dataframe(dict_dfs['df_doc_info'], width=None, height=None)
+    st.write("**[Articles Data] df_doc_info (with 5 rows sample):**")
+    st.dataframe(dict_dfs['df_doc_info'].head(5).astype(str), width=None, height=None)
     
     col1, col2, col3 = st.columns(3)
     col1.metric("Read Articles", str(dict_dfs['df_doc_info'].shape[0]), str(dict_dfs['df_doc_info'].shape[0]))
@@ -202,22 +210,35 @@ def show_articles_data(st, dict_dfs):
     col3.metric("Mean Chars",str(dict_dfs['df_doc_info'].raw_data.apply(len).mean()), str(dict_dfs['df_doc_info'].raw_data.apply(len).mean()))
 
     st.plotly_chart(chars_graph(dict_dfs),use_container_width=True)
+    
+    st.write("**[Head Articles Data] df_doc_head (with 5 rows sample):**")
+    st.dataframe(dict_dfs['df_doc_head'].head(5).astype(str), width=None, height=None)
+    
+    st.write("**[Authors Articles Data] df_doc_authors (with 5 rows sample):**")
+    st.dataframe(dict_dfs['df_doc_authors'].head(5).astype(str), width=None, height=None)
+    
+    st.write("**[Citations Articles Data] df_doc_citations (with 5 rows sample):**")
+    st.dataframe(dict_dfs['df_doc_citations'].head(5).astype(str), width=None, height=None)
+    
+    st.write("**[Authors Citations Articles Data] df_doc_authors_citations (with 5 rows sample):**")
+    st.dataframe(dict_dfs['df_doc_authors_citations'].head(5).astype(str), width=None, height=None)
 
-    st.write("**[Head Articles Data] df_doc_head:**")
-    st.dataframe(dict_dfs['df_doc_head'], width=None, height=None)
+
+def btn_clicked_folder(st, n_workers):
+
+    """"""
     
-    st.write("**[Head Articles Data] df_doc_head:**")
-    st.dataframe(dict_dfs['df_doc_head'], width=None, height=None)
+    # Get articles files path
+    st.warning("⚠️ Feature in development!")
+    input_folder_path = input_path = ""
+    input_folder_path = st.text_input('Selected folder:',filedialog.askdirectory(master=tk_root), key='txt_input_path')
     
-    st.write("**[Authors Articles Data] df_doc_authors:**")
-    st.dataframe(dict_dfs['df_doc_authors'], width=None, height=None)
+    # Run and display batch process, return a dictionary of dataframes with all data extract from articles
+    dict_dfs = run_batch_process(st, input_folder_path, n_workers=n_workers, display_articles_data=True, save_xmltei=True)
     
-    st.write("**[Citations Articles Data] df_doc_citations:**")
-    st.dataframe(dict_dfs['df_doc_citations'], width=None, height=None)
+    # Process continues with another things...
     
-    st.write("**[Authors Citations Articles Data] df_doc_authors_citations:**")
-    st.dataframe(dict_dfs['df_doc_authors_citations'], width=None, height=None)
-    
+
 ###############################################################################################
 # ---------------------------------------------------------------------------------------------
 # For process execution and streamlit app
@@ -230,7 +251,7 @@ if __name__ == '__main__':
     
     # ----------------------------------------------------------------------------
     # Entrance of app
-    make_entrance(st) # st.header("")
+    make_head(st) # st.header("")
     
     # ----------------------------------------------------------------------------
     # TKINTER configs for get file path with filebox dialog
@@ -246,15 +267,5 @@ if __name__ == '__main__':
     
     # ----------------------------------------------------------------------------
     # If button clicked, then start APP process with some verifications
-    
     if btn_getfolder:
-        
-        # Get articles files path
-        st.warning("⚠️ Feature in development!")
-        input_folder_path = st.text_input('Selected folder:',filedialog.askdirectory(master=tk_root), key='txt_input_path')
-        
-        # Run and display batch process, return a dictionary of dataframes with all data extract from articles
-        dict_dfs = run_batch_process(st, input_folder_path, display_articles_data=True)
-        
-        # Process continues with another things...
-    
+        btn_clicked_folder(st, n_workers=10)
