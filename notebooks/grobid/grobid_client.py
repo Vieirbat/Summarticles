@@ -226,23 +226,131 @@ class GrobidClient(ApiClient):
 
 
     def get_input_files(self,
-                        input_path):
+                        input_path, type_file='.pdf'):
         
         """"""
         
         input_files = []
-        for (dirpath, dirnames, filenames) in os.walk(input_path):
-            for filename in filenames:
-                if filename.endswith(".pdf") or filename.endswith(".PDF"):
-                    input_files.append(os.sep.join([dirpath, filename]))    
+        for file in os.listdir(input_path):
+            if os.path.isfile(os.path.join(input_path, file)):
+                if file.endswith(type_file) or file.endswith(type_file.upper()):
+                    input_files.append(os.path.join(input_path, file))    
         return input_files
 
 
+    def check_typefile_inpath(self, files_list, type='pdf'):
+        
+        """check if there is at least one file in the path with a specific type, like PDF for example."""
+        
+        type = str(type).lower().strip()
+        
+        for file in files_list:
+            file = str(file).lower().strip()
+            if file.endswith(''.join(['.',type])):
+                return True
+        return False 
+
+
+    def change_filetype(self, file_change, target_type='xml'):
+        
+        """"""
+        
+        file_change = str(file_change).strip()
+        target_type = str(target_type).strip()
+        
+        file_split = file_change.split('.')
+        if len(file_split) > 1:
+            endstr_file = file_split[-1]
+            file_change = ''.join([file_change[:len(file_change)-len(endstr_file)],target_type])
+        else:
+            file_change = '.'.join([file_change,target_type])
+            
+        return file_change
+
+
+    def save_xmltei_files(self, result_batch, input_folder_path, cache_folder_name='summarticles_cache'):
+    
+        """"""
+        
+        # If summarticles path cache doesn't exist than we have to create it
+        path_cache = os.path.join(input_folder_path, cache_folder_name)
+        if not os.path.exists(path_cache):
+            os.mkdir(path_cache)
+        
+        for article_batch in result_batch:
+            
+            file_article = article_batch[0]
+            status_grobid = article_batch[1]
+            text_xml = article_batch[2]
+            file = self.change_filetype(file_article, target_type='xml')
+            file = os.path.split(file)[-1]
+            
+            file_path_xml = os.path.join(input_folder_path, cache_folder_name, file)
+            
+            if not os.path.isfile(file_path_xml):
+                f = open(file_path_xml, "w", encoding="utf-8")
+                f.write(text_xml)
+                f.close()
+
+
+    def get_file_name(self, path):
+        path_split = os.path.split(str(path))
+        path_file = path_split[-1].split('.')
+        path_file.pop()
+        path_file = '.'.join(path_file)
+        return str(path_file)
+
+
+    def read_cache_files(self, input_path, cache_folder_name="summarticles_cache", status_return="status 200"):
+        
+        return_results = []
+        input_files_dif = []
+        end_process = False
+        
+        path_cache = os.path.join(input_path, cache_folder_name)
+        if not os.path.exists(path_cache):
+            os.mkdir(path_cache)
+        
+        input_files = self.get_input_files(input_path, type_file='.pdf')
+        cache_files = self.get_input_files(os.path.join(input_path, cache_folder_name), type_file='.xml')
+        
+        if len(input_files) and len(cache_files):
+            
+            input_files_comp = {self.get_file_name(f_input):f_input for f_input in input_files}
+            print("[Input Files]", len(input_files))
+            
+            cache_files_comp = {self.get_file_name(f_cache):f_cache for f_cache in cache_files}
+            print("[Cache Files]", len(cache_files))
+            
+            input_files_set = set(list(input_files_comp.keys()))
+            cache_files_set = set(list(cache_files_comp.keys()))
+            input_files_dif = input_files_set.difference(cache_files_set)
+            cache_files_int = input_files_set.intersection(cache_files_set)
+            
+            input_files = [input_files_comp[f_input] for f_input in input_files_dif]
+            
+            print("In the end, we have:", len(input_files)," new files to process!")
+            print("And we have :", len(cache_files_int)," files to back from cache!")
+            
+            if len(cache_files_int):
+                for f_cache in cache_files_int:
+                    with open(cache_files_comp[f_cache], "r", encoding="utf-8") as f:
+                        content_file = f.read()
+                    return_results.append([input_files_comp[f_cache], status_return, str(content_file)])
+                    
+            if not len(input_files):
+                end_process = True
+            
+        return return_results, input_files, end_process
+    
+    
     def batch_process(
         self,
         service,
         input_path,
         n_workers,
+        check_cache=True,
+        cache_folder_name='summarticles_cache',
         generateIDs=True,
         consolidate_header=False,
         consolidate_citations=False,
@@ -255,13 +363,25 @@ class GrobidClient(ApiClient):
         
         """"""
         
-        input_files = self.get_input_files(input_path)
         
-        if not len(input_files):
-            return []
+        input_files = self.get_input_files(input_path, type_file='.pdf')
+        return_results = []
         
         if verbose:
             print(len(input_files), "files to process in current batch")
+        
+        # If there are no files, then return a empty list
+        if not len(input_files):
+            return return_results
+        
+        # Load cache files
+        if check_cache:
+            cache_results, input_files_dif, end_process = self.read_cache_files(input_path, cache_folder_name=cache_folder_name)
+            # If all articles already in cache, then we dont need to process any article in grobid
+            if end_process:
+                return cache_results # return files in cache
+            return_results += cache_results
+            input_files = input_files_dif
 
         with concurrent.futures.ProcessPoolExecutor(max_workers=n_workers) as executor:
             results = []
@@ -284,7 +404,7 @@ class GrobidClient(ApiClient):
                 
         executor.shutdown(wait=True)
         
-        return_results = []
+        
         for r in concurrent.futures.as_completed(results):
             
             input_file, status, text = r.result()

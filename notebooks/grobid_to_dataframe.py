@@ -49,7 +49,7 @@ class grobid_cli(object):
         return pdf_file, status, xml
     
     
-    def process_pdfs(self, input_path, n_workers, service="processFulltextDocument", generateIDs=True, include_raw_citations=True,
+    def process_pdfs(self, input_path, n_workers, check_cache=True, cache_folder_name='summarticles_cache', service="processFulltextDocument", generateIDs=True, include_raw_citations=True,
                     include_raw_affiliations=True, consolidate_header=False, consolidate_citations=False, tei_coordinates=False,
                     segment_sentences=True,verbose=True):
         
@@ -220,68 +220,72 @@ class xmltei_to_dataframe(object):
 
     def get_citations(self,doc, suffix='citation'):
         
-        """Get citations informations from the article documment"""
-
-        default_dict = {'_'.join(['index',suffix]):np.nan,
-                        '_'.join(['id',suffix]):np.nan,
-                        '_'.join(['unstructured',suffix]):np.nan,
-                        '_'.join(['date',suffix]):np.nan,
-                        '_'.join(['title',suffix]):np.nan,
-                        '_'.join(['book_title',suffix]):np.nan,
-                        '_'.join(['series_title',suffix]):np.nan,
-                        '_'.join(['journal',suffix]):np.nan,
-                        '_'.join(['journal_abbrev',suffix]):np.nan,
-                        '_'.join(['publisher',suffix]):np.nan,
-                        '_'.join(['institution',suffix]):np.nan,
-                        '_'.join(['issn',suffix]):np.nan,
-                        '_'.join(['eissn',suffix]):np.nan,
-                        '_'.join(['volume',suffix]):np.nan,
-                        '_'.join(['issue',suffix]):np.nan,
-                        '_'.join(['pages',suffix]):np.nan,
-                        '_'.join(['first_page',suffix]):np.nan,
-                        '_'.join(['last_page',suffix]):np.nan,
-                        '_'.join(['note',suffix]):np.nan,
-                        '_'.join(['doi',suffix]):np.nan,
-                        '_'.join(['pmid',suffix]):np.nan,
-                        '_'.join(['pmcid',suffix]):np.nan,
-                        '_'.join(['arxiv_id',suffix]):np.nan,
-                        '_'.join(['ark',suffix]):np.nan,
-                        '_'.join(['istex_id',suffix]):np.nan,
-                        '_'.join(['url',suffix]):np.nan}
+        """Get citation informations from the article documment"""
         
-        citations = doc.get('citations',[])
-        if len(citations):
-            lista_citations = []
-            for citation in citations:
-                dict_cit = {'_'.join(['index',suffix]):citation.get('index',np.nan),
-                            '_'.join(['id',suffix]):citation.get('id',np.nan),
-                            '_'.join(['unstructured',suffix]):citation.get('unstructured',np.nan),
-                            '_'.join(['date',suffix]):citation.get('date',np.nan),
-                            '_'.join(['title',suffix]):citation.get('title',np.nan),
-                            '_'.join(['book_title',suffix]):citation.get('book_title',np.nan),
-                            '_'.join(['series_title',suffix]):citation.get('series_title',np.nan),
-                            '_'.join(['journal',suffix]):citation.get('journal',np.nan),
-                            '_'.join(['journal_abbrev',suffix]):citation.get('journal_abbrev',np.nan),
-                            '_'.join(['publisher',suffix]):citation.get('publisher',np.nan),
-                            '_'.join(['institution',suffix]):citation.get('institution',np.nan),
-                            '_'.join(['issn',suffix]):citation.get('issn',np.nan),
-                            '_'.join(['eissn',suffix]):citation.get('eissn',np.nan),
-                            '_'.join(['volume',suffix]):citation.get('volume',np.nan),
-                            '_'.join(['issue',suffix]):citation.get('issue',np.nan),
-                            '_'.join(['pages',suffix]):citation.get('pages',np.nan),
-                            '_'.join(['first_page',suffix]):citation.get('first_page',np.nan),
-                            '_'.join(['last_page',suffix]):citation.get('last_page',np.nan),
-                            '_'.join(['note',suffix]):citation.get('note',np.nan),
-                            '_'.join(['doi',suffix]):citation.get('doi',np.nan),
-                            '_'.join(['pmid',suffix]):citation.get('pmid',np.nan),
-                            '_'.join(['pmcid',suffix]):citation.get('pmcid',np.nan),
-                            '_'.join(['arxiv_id',suffix]):citation.get('arxiv_id',np.nan),
-                            '_'.join(['ark',suffix]):citation.get('ark',np.nan),
-                            '_'.join(['istex_id',suffix]):citation.get('istex_id',np.nan),
-                            '_'.join(['url',suffix]):citation.get('url',np.nan)}
-                lista_citations.append(dict_cit)
-            return lista_citations
-        return default_dict
+        try:
+
+            default_dict = {'_'.join(['index',suffix]):np.nan,
+                            '_'.join(['id',suffix]):np.nan,
+                            '_'.join(['unstructured',suffix]):np.nan,
+                            '_'.join(['date',suffix]):np.nan,
+                            '_'.join(['title',suffix]):np.nan,
+                            '_'.join(['book_title',suffix]):np.nan,
+                            '_'.join(['series_title',suffix]):np.nan,
+                            '_'.join(['journal',suffix]):np.nan,
+                            '_'.join(['journal_abbrev',suffix]):np.nan,
+                            '_'.join(['publisher',suffix]):np.nan,
+                            '_'.join(['institution',suffix]):np.nan,
+                            '_'.join(['issn',suffix]):np.nan,
+                            '_'.join(['eissn',suffix]):np.nan,
+                            '_'.join(['volume',suffix]):np.nan,
+                            '_'.join(['issue',suffix]):np.nan,
+                            '_'.join(['pages',suffix]):np.nan,
+                            '_'.join(['first_page',suffix]):np.nan,
+                            '_'.join(['last_page',suffix]):np.nan,
+                            '_'.join(['note',suffix]):np.nan,
+                            '_'.join(['doi',suffix]):np.nan,
+                            '_'.join(['pmid',suffix]):np.nan,
+                            '_'.join(['pmcid',suffix]):np.nan,
+                            '_'.join(['arxiv_id',suffix]):np.nan,
+                            '_'.join(['ark',suffix]):np.nan,
+                            '_'.join(['istex_id',suffix]):np.nan,
+                            '_'.join(['url',suffix]):np.nan}
+            
+            citations = doc.get('citations',[])
+            if len(citations):
+                lista_citations = []
+                for citation in citations:
+                    dict_cit = {'_'.join(['index',suffix]):citation.get('index',np.nan),
+                                '_'.join(['id',suffix]):citation.get('id',np.nan),
+                                '_'.join(['unstructured',suffix]):citation.get('unstructured',np.nan),
+                                '_'.join(['date',suffix]):citation.get('date',np.nan),
+                                '_'.join(['title',suffix]):citation.get('title',np.nan),
+                                '_'.join(['book_title',suffix]):citation.get('book_title',np.nan),
+                                '_'.join(['series_title',suffix]):citation.get('series_title',np.nan),
+                                '_'.join(['journal',suffix]):citation.get('journal',np.nan),
+                                '_'.join(['journal_abbrev',suffix]):citation.get('journal_abbrev',np.nan),
+                                '_'.join(['publisher',suffix]):citation.get('publisher',np.nan),
+                                '_'.join(['institution',suffix]):citation.get('institution',np.nan),
+                                '_'.join(['issn',suffix]):citation.get('issn',np.nan),
+                                '_'.join(['eissn',suffix]):citation.get('eissn',np.nan),
+                                '_'.join(['volume',suffix]):citation.get('volume',np.nan),
+                                '_'.join(['issue',suffix]):citation.get('issue',np.nan),
+                                '_'.join(['pages',suffix]):citation.get('pages',np.nan),
+                                '_'.join(['first_page',suffix]):citation.get('first_page',np.nan),
+                                '_'.join(['last_page',suffix]):citation.get('last_page',np.nan),
+                                '_'.join(['note',suffix]):citation.get('note',np.nan),
+                                '_'.join(['doi',suffix]):citation.get('doi',np.nan),
+                                '_'.join(['pmid',suffix]):citation.get('pmid',np.nan),
+                                '_'.join(['pmcid',suffix]):citation.get('pmcid',np.nan),
+                                '_'.join(['arxiv_id',suffix]):citation.get('arxiv_id',np.nan),
+                                '_'.join(['ark',suffix]):citation.get('ark',np.nan),
+                                '_'.join(['istex_id',suffix]):citation.get('istex_id',np.nan),
+                                '_'.join(['url',suffix]):citation.get('url',np.nan)}
+                    lista_citations.append(dict_cit)
+                return lista_citations
+            return default_dict
+        except:
+            print(default_dict)
 
 
     def get_citation_authors(self,citation, suffix='citation'):
@@ -392,59 +396,81 @@ class xmltei_to_dataframe(object):
     def get_dataframe_articles(self,bath_process_result):
         
         """"""
+        try:
+            
+            dict_dataframes = {'df_doc_info':[],
+                            'df_doc_head':[],
+                            'df_doc_authors':[],
+                            'df_doc_citations':[],
+                            'df_doc_authors_citations':[]}
+            dict_erros = {}
+            
+            if bath_process_result and len(bath_process_result):
+                
+                dict_erros['number_article_error'] = 0
+                dict_erros['list_article_error'] = []
+                
+                for result in bath_process_result:
+                    try:
+                        
+                        # Return of batch process for each file in the input path selected by the user
+                        file = result[0]
+                        status = result[1]
+                        xml = result[2]
+                    
+                        doc = self.get_raw_doc(xml)
+                        dict_dfs = self.get_dataframe_article(doc)
+                        
+                        # If there are records in DF, then create new columns
+                        if dict_dfs['df_doc_info'].shape[0]:
+                            
+                            dict_dfs['df_doc_info']['file'] = file
+                            dict_dfs['df_doc_info']['status'] = status
+                            dict_dfs['df_doc_info']['raw_data'] = xml
+                            
+                            dict_dfs['df_doc_head']['pdf_md5'] = dict_dfs['df_doc_info']['pdf_md5'].iat[0]
+                            dict_dfs['df_doc_head'].set_index('pdf_md5', inplace=True)
+                            
+                            dict_dfs['df_doc_authors']['pdf_md5'] = dict_dfs['df_doc_info']['pdf_md5'].iat[0]
+                            dict_dfs['df_doc_authors'].set_index('pdf_md5', inplace=True)
+                            
+                            dict_dfs['df_doc_citations']['pdf_md5'] = dict_dfs['df_doc_info']['pdf_md5'].iat[0]
+                            dict_dfs['df_doc_citations'].set_index('pdf_md5', inplace=True)
+                            
+                            dict_dfs['df_doc_authors_citations']['pdf_md5'] = dict_dfs['df_doc_info']['pdf_md5'].iat[0]
+                            dict_dfs['df_doc_authors_citations'].set_index('pdf_md5', inplace=True)
+                            
+                            dict_dfs['df_doc_info'].set_index('pdf_md5', inplace=True)
+                        
+                        dict_dataframes['df_doc_info'].append(dict_dfs['df_doc_info'])
+                        dict_dataframes['df_doc_head'].append(dict_dfs['df_doc_head'])
+                        dict_dataframes['df_doc_authors'].append(dict_dfs['df_doc_authors'])
+                        dict_dataframes['df_doc_citations'].append(dict_dfs['df_doc_citations'])
+                        dict_dataframes['df_doc_authors_citations'].append(dict_dfs['df_doc_authors_citations'])
+                        
+                    except Exception as e:
+                        dict_erros['number_article_error'] += 1
+                        dict_erros['list_article_error'].append({'file':file,
+                                                                 'error':e.__class__,
+                                                                 'error_text':str(e),
+                                                                 'keys_dict':doc.keys()})
+                        continue
+                    
+                del bath_process_result
+                
+                dict_dataframes['df_doc_info'] = pd.concat(dict_dataframes['df_doc_info'])
+                dict_dataframes['df_doc_head'] = pd.concat(dict_dataframes['df_doc_head'])
+                dict_dataframes['df_doc_authors'] = pd.concat(dict_dataframes['df_doc_authors'])
+                dict_dataframes['df_doc_citations'] = pd.concat(dict_dataframes['df_doc_citations'])
+                dict_dataframes['df_doc_authors_citations'] = pd.concat(dict_dataframes['df_doc_authors_citations'])
+                
+                print("Processed articles:", str(dict_dataframes['df_doc_info'].shape[0]))
+                print("Number articles with errors:", str(dict_erros['number_article_error']))
+                
+            return dict_dataframes, dict_erros
         
-        dict_dataframes = {'df_doc_info':[],
-                           'df_doc_head':[],
-                           'df_doc_authors':[],
-                           'df_doc_citations':[],
-                           'df_doc_authors_citations':[]}
-        
-        if bath_process_result and len(bath_process_result):
-            
-            for result in bath_process_result:
-                
-                # Return of batch process for each file in the input path selected by the user
-                file = result[0]
-                status = result[1]
-                xml = result[2]
-            
-                doc = self.get_raw_doc(xml)
-                dict_dfs = self.get_dataframe_article(doc)
-                
-                # If there are records in DF, then create new columns
-                if dict_dfs['df_doc_info'].shape[0]:
-                    
-                    dict_dfs['df_doc_info']['file'] = file
-                    dict_dfs['df_doc_info']['status'] = status
-                    dict_dfs['df_doc_info']['raw_data'] = xml
-                    
-                    dict_dfs['df_doc_head']['pdf_md5'] = dict_dfs['df_doc_info']['pdf_md5'].iat[0]
-                    dict_dfs['df_doc_head'].set_index('pdf_md5', inplace=True)
-                    
-                    dict_dfs['df_doc_authors']['pdf_md5'] = dict_dfs['df_doc_info']['pdf_md5'].iat[0]
-                    dict_dfs['df_doc_authors'].set_index('pdf_md5', inplace=True)
-                    
-                    dict_dfs['df_doc_citations']['pdf_md5'] = dict_dfs['df_doc_info']['pdf_md5'].iat[0]
-                    dict_dfs['df_doc_citations'].set_index('pdf_md5', inplace=True)
-                    
-                    dict_dfs['df_doc_authors_citations']['pdf_md5'] = dict_dfs['df_doc_info']['pdf_md5'].iat[0]
-                    dict_dfs['df_doc_authors_citations'].set_index('pdf_md5', inplace=True)
-                    
-                    dict_dfs['df_doc_info'].set_index('pdf_md5', inplace=True)
-                
-                dict_dataframes['df_doc_info'].append(dict_dfs['df_doc_info'])
-                dict_dataframes['df_doc_head'].append(dict_dfs['df_doc_head'])
-                dict_dataframes['df_doc_authors'].append(dict_dfs['df_doc_authors'])
-                dict_dataframes['df_doc_citations'].append(dict_dfs['df_doc_citations'])
-                dict_dataframes['df_doc_authors_citations'].append(dict_dfs['df_doc_authors_citations'])
-                
-            del bath_process_result
-            
-            dict_dataframes['df_doc_info'] = pd.concat(dict_dataframes['df_doc_info'])
-            dict_dataframes['df_doc_head'] = pd.concat(dict_dataframes['df_doc_head'])
-            dict_dataframes['df_doc_authors'] = pd.concat(dict_dataframes['df_doc_authors'])
-            dict_dataframes['df_doc_citations'] = pd.concat(dict_dataframes['df_doc_citations'])
-            dict_dataframes['df_doc_authors_citations'] = pd.concat(dict_dataframes['df_doc_authors_citations'])
-            
-        return dict_dataframes
+        except Exception as e:
+            print("Arquivo:",file)
+            print("Oops!", e.__class__, "occurred.")
+            print(str(e))
             
