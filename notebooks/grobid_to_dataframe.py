@@ -393,7 +393,7 @@ class xmltei_to_dataframe(object):
         return dict_dataframes
     
 
-    def get_dataframe_articles(self,bath_process_result):
+    def get_dataframe_articles(self, bath_process_result):
         
         """"""
         try:
@@ -405,7 +405,7 @@ class xmltei_to_dataframe(object):
                             'df_doc_authors_citations':[]}
             dict_erros = {}
             
-            if bath_process_result and len(bath_process_result):
+            if bath_process_result or len(bath_process_result):
                 
                 dict_erros['number_article_error'] = 0
                 dict_erros['list_article_error'] = []
@@ -452,8 +452,7 @@ class xmltei_to_dataframe(object):
                         dict_erros['number_article_error'] += 1
                         dict_erros['list_article_error'].append({'file':file,
                                                                  'error':e.__class__,
-                                                                 'error_text':str(e),
-                                                                 'keys_dict':doc.keys()})
+                                                                 'error_text':str(e)})
                         continue
                     
                 del bath_process_result
