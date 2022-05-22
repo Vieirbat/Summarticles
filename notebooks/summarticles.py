@@ -31,6 +31,8 @@ import networkx as nx
 import matplotlib.pyplot as plt
 from graph.pyvis.network import Network
 
+from st_aggrid import GridOptionsBuilder, AgGrid, GridUpdateMode, DataReturnMode
+
 # docker run -t --rm --init -p 8080:8070 -p 8081:8071 --memory="9g" lfoppiano/grobid:0.7.0
 # docker run -t --rm --init -p 8080:8070 -p 8081:8071 lfoppiano/grobid:0.6.2
 
@@ -247,19 +249,55 @@ def make_getpath_button(st):
     return btn_getfolder
 
 
+def show_macro_numbers(st, dict_dfs):
+    
+    st.markdown("""<h3 style="text-align:left;"><b>Articles Macro Numbers</b></h3>""", unsafe_allow_html=True)
+    col1, col2, col3, col4 = st.columns(4)
+    col1.metric("🧾 Read Articles", str(dict_dfs['df_doc_info'].shape[0]))
+    col2.metric("👥 Total Authors", str(dict_dfs['df_doc_authors'].shape[0]))
+    col3.metric("📄➞📄 Total Citations",str(dict_dfs['df_doc_citations'].shape[0]))
+    col4.metric("👥➞👥 Total Authors from Citations",str(dict_dfs['df_doc_authors_citations'].shape[0]))
+
+    # st.plotly_chart(chars_graph(dict_dfs),use_container_width=True)
+    
+    
+def show_text_numbers(st, dict_dfs):
+    
+    
+    with st.container():
+        
+        _ , col1, col2, col3, col4, _ = st.columns([1,2,2,2,3,1])
+        
+        with col1:
+            col1.metric("🧾 Read Articles", str(dict_dfs['df_doc_info'].shape[0]))
+            col1.metric("🧾 Read Articles", str(dict_dfs['df_doc_info'].shape[0]))
+            col1.metric("🧾 Read Articles", str(dict_dfs['df_doc_info'].shape[0]))
+        with col2:
+            col2.metric("👥 Total Authors", str(dict_dfs['df_doc_authors'].shape[0]))
+            col2.metric("👥 Total Authors", str(dict_dfs['df_doc_authors'].shape[0]))
+            col2.metric("👥 Total Authors", str(dict_dfs['df_doc_authors'].shape[0]))
+        with col3:
+            col3.metric("📄➞📄 Total Citations",str(dict_dfs['df_doc_citations'].shape[0]))
+            col3.metric("📄➞📄 Total Citations",str(dict_dfs['df_doc_citations'].shape[0]))
+            col3.metric("📄➞📄 Total Citations",str(dict_dfs['df_doc_citations'].shape[0]))
+        with col4:
+            AgGrid(dict_dfs['df_doc_authors_citations'].iloc[0:20,0:2],
+                   data_return_mode='AS_INPUT', 
+                   # update_mode='MODEL_CHANGED', 
+                   fit_columns_on_grid_load=False,
+                   theme='fresh',
+                   enable_enterprise_modules=False,
+                   height=250, 
+                   width='100%',
+                   reload_data=True)
+
+
 def show_articles_data(st, dict_dfs):
     
     """"""
     
     st.write("**[Articles Data] df_doc_info (with 5 rows sample):**")
     st.dataframe(dict_dfs['df_doc_info'].head(5).astype(str), width=None, height=None)
-    
-    col1, col2, col3 = st.columns(3)
-    col1.metric("Read Articles", str(dict_dfs['df_doc_info'].shape[0]), str(dict_dfs['df_doc_info'].shape[0]))
-    col2.metric("Count Chars", str(dict_dfs['df_doc_info'].raw_data.apply(len).sum()), str(-dict_dfs['df_doc_info'].raw_data.apply(len).sum()))
-    col3.metric("Mean Chars",str(dict_dfs['df_doc_info'].raw_data.apply(len).mean()), str(dict_dfs['df_doc_info'].raw_data.apply(len).mean()))
-
-    st.plotly_chart(chars_graph(dict_dfs),use_container_width=True)
     
     st.write("**[Head Articles Data] df_doc_head (with 5 rows sample):**")
     st.dataframe(dict_dfs['df_doc_head'].head(5).astype(str), width=None, height=None)
@@ -297,7 +335,6 @@ def show_word_cloud(st, dict_dfs, input_path, folder_images='app_images', wc_ima
                                   height=500, 
                                   collocations=True, 
                                   background_color='white')
-    st.markdown("""<h3 style="text-align:left;"><b>WordCloud:</b></h3>""",unsafe_allow_html=True)
     # st.markdown("""<h5 style="text-align:left;"><b>WordCloud:</b></h5>""",unsafe_allow_html=True)
     st.pyplot(fig)
 
@@ -389,8 +426,27 @@ def similarity_graph(st, dict_dfs, input_folder_path, folder_graph='graphs', nam
                                                    path_graph=path_write_graph, folder_graph=folder_graph, buttons=buttons,
                                                    name_file=name_file)
     with st.container():
+        st.markdown("""<h3 style="text-align:left;"><b>Similarity Graph: this graph shows you similarity across articles.</b></h3>""", unsafe_allow_html=True)
+        
+        # path_comp_sim = os.path.join(path,'components','collapse_similarity.html')
+        # print(path_comp_sim)
+        # components.html(get_component_from_file(path_comp_sim),height=None, width=None, scrolling=False)
+        
+        with st.expander("How it works?"):
+            st.write("This is MAGIC!")
         show_graph_graph(sim_graph, path_graph, path_folder_graph)
 
+
+def get_component_from_file(path_html):
+    
+    """"""
+
+    GraphHtmlFile = open(path_html, 'r', encoding='utf-8')
+    GraphHtml = GraphHtmlFile.read()
+    GraphHtmlFile.close()
+    
+    return GraphHtml
+    
 
 def show_graph_graph(sim_graph, path_graph, path_folder_graph):
     
@@ -413,6 +469,7 @@ def show_graph_graph(sim_graph, path_graph, path_folder_graph):
         
         GraphHtmlFile = open(path_graph, 'r', encoding='utf-8')
         GraphHtml = GraphHtmlFile.read()
+        GraphHtmlFile.close()
         
         css_inject = open(os.path.join(path_graph_depend,'vis-network.css'), 'r', encoding='utf-8')
         css_inject_str = css_inject.read()
@@ -430,7 +487,6 @@ def show_graph_graph(sim_graph, path_graph, path_folder_graph):
         GraphHtml = GraphHtml.replace(str_replace_css, css_inject_str)
         GraphHtml = GraphHtml.replace(str_replace_script, script_inject_str)
         components.html(GraphHtml, height=600, width=None, scrolling=True)
-        GraphHtmlFile.close()
 
 
 def text_preparation(st, dict_dfs, input_folder_path):
@@ -448,7 +504,7 @@ def text_preparation(st, dict_dfs, input_folder_path):
     
 
 def btn_clicked_folder(st, input_folder_path, n_workers, show_wordcloud=True, show_similaritygraph=True,
-                       cache_folder_name='summarticles_cache'):
+                       cache_folder_name='summarticles_cache', show_text_macro=True):
 
     """"""
     
@@ -465,19 +521,33 @@ def btn_clicked_folder(st, input_folder_path, n_workers, show_wordcloud=True, sh
     if not len(dict_dfs.keys()) or not dict_dfs['df_doc_info'].shape[0]:
         st.error("❓ There is no information to extract from articles in the specified path! Please, choose another fila path.")
     
+    with st.container():
+        with st.spinner('🔢📊 Generating articles macro numbers...'):
+            st.markdown("""<hr style="height:10px;border:none;color:#333;background-color:#333;" /> """, unsafe_allow_html=True)
+            show_macro_numbers(st, dict_dfs)
+    
     with st.spinner('🛠️📄 Text prepatation...'):
         dict_dfs = text_preparation(st, dict_dfs, input_folder_path)
     
-    # Process continues with another things...
-    if show_wordcloud:
-        with st.spinner('📄➞☁️ Making WordCloud...'):
-            show_word_cloud(st, dict_dfs, input_folder_path, cache_folder_name=cache_folder_name,
-                            folder_images='images', wc_image_name='wc_image.png')
+    # Container for wordcloud and text macro numbers
+    with st.container():
+        st.markdown("""<hr style="height:1px;border:none;color:#F1F1F1;background-color:#F1F1F1;" /> """, unsafe_allow_html=True)
+        st.markdown("""<h3 style="text-align:left;"><b>Text Macro Numbers</b></h3>""",unsafe_allow_html=True)
+    
+        if show_wordcloud:
+            with st.spinner('📄➞☁️ Making WordCloud...'):
+                show_word_cloud(st, dict_dfs, input_folder_path, cache_folder_name=cache_folder_name,
+                                folder_images='images', wc_image_name='wc_image.png')
+        if show_text_macro:
+            with st.spinner('🔢📊 Generating articles text numbers...'):
+                st.markdown("""<hr style="height:0.1px;border:none;color:#F1F1F1;background-color:#F1F1F1;" /> """, unsafe_allow_html=True)
+                show_text_numbers(st, dict_dfs)
 
     if show_similaritygraph:
         with st.spinner('📄➞📄  Making Similarity Graph...'):
-            similarity_graph(st, dict_dfs, input_folder_path, percentil="75%", n_sim=100, 
-                             cache_folder_name=cache_folder_name,)
+            st.markdown("""<hr style="height:1px;border:none;color:#F1F1F1;background-color:#F1F1F1;" /> """, unsafe_allow_html=True)
+            similarity_graph(st, dict_dfs, input_folder_path, percentil="75%", 
+                             n_sim=100, cache_folder_name=cache_folder_name)
 
 
 def choose_filepath(st):
