@@ -1,5 +1,7 @@
 import os
 import sys
+import shutil
+from distutils.dir_util import copy_tree
 import re
 
 sys.path.insert(0,os.path.dirname(os.getcwd()))
@@ -27,7 +29,7 @@ import streamlit.components.v1 as components
 
 import networkx as nx
 import matplotlib.pyplot as plt
-from pyvis.network import Network
+from graph.pyvis.network import Network
 
 # docker run -t --rm --init -p 8080:8070 -p 8081:8071 --memory="9g" lfoppiano/grobid:0.7.0
 # docker run -t --rm --init -p 8080:8070 -p 8081:8071 lfoppiano/grobid:0.6.2
@@ -99,7 +101,7 @@ def clean_error_results(result_batch):
     return new_result
 
 
-def run_batch_process(st, path_input, n_workers=10,display_articles_data=True, save_xmltei=True):
+def run_batch_process(st, path_input, cache_folder_name='summarticles_cache', n_workers=10, display_articles_data=True, save_xmltei=True):
 
     """"""
 
@@ -128,7 +130,7 @@ def run_batch_process(st, path_input, n_workers=10,display_articles_data=True, s
         
         with st.spinner('⚡ Running batch process...'):
             
-            result_batch = batch_process_path(input_folder_path, n_workers=n_workers)
+            result_batch = batch_process_path(input_folder_path, n_workers= n_workers)
             result_batch = clean_error_results(result_batch)
             
             if not len(result_batch):
@@ -138,7 +140,7 @@ def run_batch_process(st, path_input, n_workers=10,display_articles_data=True, s
             dict_dfs, dict_errors = get_dataframes(result_batch)
 
             if save_xmltei:
-                gcli.save_xmltei_files(result_batch, input_folder_path, cache_folder_name='summarticles_cache')
+                gcli.save_xmltei_files(result_batch, input_folder_path, cache_folder_name=cache_folder_name)
 
             if display_articles_data and len(result_batch):
                 with st.spinner('🧾 Showing articles information...'):
@@ -272,7 +274,8 @@ def show_articles_data(st, dict_dfs):
     st.dataframe(dict_dfs['df_doc_authors_citations'].head(5).astype(str), width=None, height=None)
 
 
-def show_word_cloud(st, dict_dfs, input_path, folder_images='app_images', wc_image_name='wc_image.png'):
+def show_word_cloud(st, dict_dfs, input_path, folder_images='app_images', wc_image_name='wc_image.png',
+                    cache_folder_name='summarticles_cache'):
     
     """"""
     
@@ -283,17 +286,17 @@ def show_word_cloud(st, dict_dfs, input_path, folder_images='app_images', wc_ima
     dict_dfs['df_doc_info']['abstract_prep'] = tprep.text_preparation_column(dict_dfs['df_doc_info']['abstract'])
     documents = dict_dfs['df_doc_info']['abstract_prep'].fillna(' ').tolist()
     
-    path_images = os.path.join(input_path, folder_images)
+    path_images = os.path.join(input_path, cache_folder_name, folder_images)
     if not os.path.exists(path_images):
         os.mkdir(path_images)
 
     wc, ax, fig = tviz.word_cloud(documents, 
-                            path_image=os.path.join(path_images, wc_image_name), 
-                            show_wc=False, 
-                            width=1000, 
-                            height=500, 
-                            collocations=True, 
-                            background_color='white')
+                                  path_image=os.path.join(path_images, wc_image_name), 
+                                  show_wc=False, 
+                                  width=1000, 
+                                  height=500, 
+                                  collocations=True, 
+                                  background_color='white')
     st.markdown("""<h3 style="text-align:left;"><b>WordCloud:</b></h3>""",unsafe_allow_html=True)
     # st.markdown("""<h5 style="text-align:left;"><b>WordCloud:</b></h5>""",unsafe_allow_html=True)
     st.pyplot(fig)
@@ -364,38 +367,68 @@ def nodes_data(st, dict_dfs, df_cos_sim_filter):
     return df_nodes
 
 
-def similarity_graph(st, dict_dfs, input_folder_path, column='abstract',n_sim=200,
-                     percentil="99%", sim_value_min=0, sim_value_max=0.99):
+def similarity_graph(st, dict_dfs, input_folder_path, folder_graph='graphs', name_file="graph.html", cache_folder_name='summarticles_cache', 
+                     column='abstract', n_sim=200, percentil="99%", sim_value_min=0, sim_value_max=0.99, buttons=False):
     
     """"""
     
     tmining = text_mining()
-    
-    # print(st.screen.width)
     
     df_cos_tfidf_sim_filter = cossine_similarity_data(st, dict_dfs, column, n_sim, percentil,
                                                       sim_value_min, sim_value_max)
     
     df_nodes = nodes_data(st, dict_dfs, df_cos_tfidf_sim_filter)
     
-    sim_graph, path_graph = tmining.make_sim_graph(matrix=df_cos_tfidf_sim_filter, node_data=df_nodes,
+    path_write_graph = os.path.join(input_folder_path, cache_folder_name)
+
+    sim_graph, path_graph, path_folder_graph = tmining.make_sim_graph(matrix=df_cos_tfidf_sim_filter, node_data=df_nodes,
                                                    source_column="doc_a", to_column="doc_b", value_column="value",
                                                    height="500px", width="100%", directed=False, notebook=False,
                                                    bgcolor="#ffffff", font_color=False, layout=None, 
                                                    heading="Similarity Graph: this graph shows you similarity across articles.",
-                                                   path_graph=input_folder_path, folder_graph='graphs', buttons=False,
-                                                   name_file="graph.html")
+                                                   path_graph=path_write_graph, folder_graph=folder_graph, buttons=buttons,
+                                                   name_file=name_file)
     with st.container():
-        show_graph_graph(sim_graph, path_graph)
+        show_graph_graph(sim_graph, path_graph, path_folder_graph)
 
 
-def show_graph_graph(sim_graph, path_graph):
+def show_graph_graph(sim_graph, path_graph, path_folder_graph):
     
     """"""
+    
+    path = os.path.dirname(os.getcwd())
+    path_graph_depend = os.path.join(path,'notebooks','graph','pyvis','templates','dependencies')
+    path_depend_dst = os.path.join(path_folder_graph,'dependencies')
+    
+    if not os.path.exists(path_depend_dst):
+        os.mkdir(path_depend_dst)
+    
+    list_files = os.listdir(path_graph_depend)
+    for file in list_files:
+        f_source = os.path.join(path_graph_depend, file)
+        f_destiny = os.path.join(path_depend_dst, file)
+        shutil.copy(f_source, f_destiny)
+        
     with st.spinner('👁‍🗨 Similarity Graph: drawing...'):
+        
         GraphHtmlFile = open(path_graph, 'r', encoding='utf-8')
         GraphHtml = GraphHtmlFile.read()
-        # st.markdown(GraphHtml, unsafe_allow_html=True)
+        
+        css_inject = open(os.path.join(path_graph_depend,'vis-network.css'), 'r', encoding='utf-8')
+        css_inject_str = css_inject.read()
+        css_inject.close()
+        css_inject_str = f"""<style type="text/css">{css_inject_str}</style>"""
+        
+        script_inject = open(os.path.join(path_graph_depend,'vis-network.min.js'), 'r', encoding='utf-8')
+        script_inject_str = script_inject.read()
+        script_inject.close()
+        script_inject_str = f"""<script type="text/javascript">{script_inject_str}</script>"""
+        
+        str_replace_css = """<link rel="stylesheet" href="./dependencies/vis.min.css" type="text/css" />"""
+        str_replace_script = """<script type="text/javascript" src="./dependencies/vis-network.min.js"> </script>"""
+        
+        GraphHtml = GraphHtml.replace(str_replace_css, css_inject_str)
+        GraphHtml = GraphHtml.replace(str_replace_script, script_inject_str)
         components.html(GraphHtml, height=600, width=None, scrolling=True)
         GraphHtmlFile.close()
 
@@ -414,12 +447,17 @@ def text_preparation(st, dict_dfs, input_folder_path):
     
     
 
-def btn_clicked_folder(st, input_folder_path, n_workers, show_wordcloud=True, show_similaritygraph=True):
+def btn_clicked_folder(st, input_folder_path, n_workers, show_wordcloud=True, show_similaritygraph=True,
+                       cache_folder_name='summarticles_cache'):
 
     """"""
     
+    # cache path files
+    
+    
     # Run and display batch process, return a dictionary of dataframes with all data extract from articles
-    dict_dfs = run_batch_process(st, input_folder_path, n_workers=n_workers, display_articles_data=False, save_xmltei=True)
+    dict_dfs = run_batch_process(st, input_folder_path, n_workers=n_workers, cache_folder_name=cache_folder_name,
+                                 display_articles_data=False, save_xmltei=True)
     
     if not dict_dfs:
         return None
@@ -433,11 +471,13 @@ def btn_clicked_folder(st, input_folder_path, n_workers, show_wordcloud=True, sh
     # Process continues with another things...
     if show_wordcloud:
         with st.spinner('📄➞☁️ Making WordCloud...'):
-            show_word_cloud(st, dict_dfs, input_folder_path, folder_images='app_images', wc_image_name='wc_image.png')
+            show_word_cloud(st, dict_dfs, input_folder_path, cache_folder_name=cache_folder_name,
+                            folder_images='images', wc_image_name='wc_image.png')
 
     if show_similaritygraph:
         with st.spinner('📄➞📄  Making Similarity Graph...'):
-            similarity_graph(st, dict_dfs, input_folder_path, percentil="75%", n_sim=100)
+            similarity_graph(st, dict_dfs, input_folder_path, percentil="75%", n_sim=100, 
+                             cache_folder_name=cache_folder_name,)
 
 
 def choose_filepath(st):

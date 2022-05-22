@@ -1,6 +1,7 @@
 import nltk
 import re
 import os
+import sys
 import pandas as pd
 import numpy as np
 #import spacy
@@ -15,7 +16,11 @@ from matplotlib import pyplot as plt
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
-from pyvis.network import Network
+from graph.pyvis.network import Network
+
+sys.path.insert(0,os.path.dirname(os.getcwd()))
+sys.path.insert(0,os.path.join(os.getcwd(),'grobid'))
+sys.path.insert(0,os.getcwd())
 
 # nltk.download('punkt')
 # nltk.download('stopwords')
@@ -262,23 +267,23 @@ class text_mining(object):
                             FILE NAME:{article_file_name}"""
             
             graph.add_node(n_id=article_id, 
-                        label=f"Node ID: {str(article_id)[0:4]}", 
-                        borderWidth=1, 
-                        borderWidthSelected=2, 
-                        #brokenImage="url", 
-                        #group="a", 
-                        #hidden=False, 
-                        #image="url", 
-                        #labelHighlightBold=True, 
-                        #level=1, 
-                        #mass=1, 
-                        #physics=True,
-                        shape="dot", # image, circularImage, diamond, dot, star, triangle, triangleDown, square and icon
-                        size=1, 
-                        title=title_html,  
-                        #x=0.5, 
-                        #y=1.0)
-                        value=1)
+                           label=f"Node ID: {str(article_id)[0:4]}", 
+                           borderWidth=1, 
+                           borderWidthSelected=2, 
+                           #brokenImage="url", 
+                           #group="a", 
+                           #hidden=False, 
+                           #image="url", 
+                           #labelHighlightBold=True, 
+                           #level=1, 
+                           #mass=1, 
+                           #physics=True,
+                           shape="dot", # image, circularImage, diamond, dot, star, triangle, triangleDown, square and icon
+                           size=1, 
+                           title=title_html,  
+                           #x=0.5, 
+                           #y=1.0)
+                           value=1)
             
         for i,row in matrix.iterrows():
             graph.add_edge(source=row[source_column],
@@ -307,9 +312,10 @@ class text_mining(object):
         graph.save_graph(path_graph_final)
         # graph.show(name_file)
         
-        return graph, path_graph_final
+        return graph, path_graph_final, os.path.join(path_graph, folder_graph)
     
-    
+
+
 class text_viz(object):
     
     """"""
