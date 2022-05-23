@@ -215,8 +215,11 @@ class text_mining(object):
         filter_matrix = sim_describe[percentil]
         
         list_filter = []
-        for i,row in matrix.iterrows():
-            for j in row.index:
+        for num_line, irow in enumerate(matrix.iterrows()):
+            i, row = irow
+            for num_col, j in enumerate(row.index):
+                if num_line >= num_col:
+                    continue
                 value = matrix.loc[i,j]
                 logic_filter = value>=value_min and value<=value_max and value>=filter_matrix
                 if not pd.isna(value) and logic_filter:
