@@ -32,6 +32,8 @@ import matplotlib.pyplot as plt
 from graph.pyvis.network import Network
 import nltk
 
+from keybert import KeyBERT
+
 from st_aggrid import GridOptionsBuilder, AgGrid, GridUpdateMode, DataReturnMode
 
 # docker run -t --rm --init -p 8080:8070 -p 8081:8071 --memory="9g" lfoppiano/grobid:0.7.0
@@ -629,10 +631,89 @@ def text_preparation(st, dict_dfs, input_folder_path):
     dict_dfs['df_doc_info']['body_prep'] = tprep.text_preparation_column(dict_dfs['df_doc_info']['body'])
     
     return dict_dfs
+
+
+def show_keywords(st, dict_dfs):
     
+    """"""
+    
+    kw_model = KeyBERT()
+    
+    dict_keywords = {}
+    col_select = ['pdf_md5','abstract']
+    docs = dict_dfs['df_doc_info'].reset_index().loc[:, col_select]
+
+    list_keywordsdf = []
+    for i, row in docs.iterrows():
+        
+        doc = str(row['abstract'])
+        id = row['pdf_md5']
+        
+        keywords_unigram = kw_model.extract_keywords(doc, keyphrase_ngram_range=(1, 1), stop_words='english', highlight=False, top_n=10)
+        if len(keywords_unigram):
+            df_unigram = pd.DataFrame([{'keyword':v[0],'value':v[1]} for v in keywords_unigram])
+        else:
+            df_unigram = pd.DataFrame([], columns=['keyword','value'])
+
+        keywords_bigram = kw_model.extract_keywords(doc, keyphrase_ngram_range=(2, 2), stop_words='english', highlight=False, top_n=10)
+        if len(keywords_bigram):
+            df_bigram = pd.DataFrame([{'keyword':v[0],'value':v[1]} for v in keywords_bigram])
+        else:
+            df_bigram = pd.DataFrame([], columns=['keyword','value'])
+
+        keywords_trigam = kw_model.extract_keywords(doc, keyphrase_ngram_range=(3, 3), stop_words='english', highlight=False, top_n=10)
+        if len(keywords_bigram):
+            df_trigram = pd.DataFrame([{'keyword':v[0],'value':v[1]} for v in keywords_trigam])
+        else:
+            df_trigram = pd.DataFrame([], columns=['keyword','value'])
+        
+        dict_keywords[id] = {'unigram':df_unigram, 'bigram':df_bigram, 'trigram':df_trigram}
+        
+        df_unigram.rename(columns={'keyword':'keyword_unigram','value':'value_unigram'}, inplace=True)
+        df_bigram.rename(columns={'keyword':'keyword_bigram','value':'value_bigram'}, inplace=True)
+        df_trigram.rename(columns={'keyword':'keyword_trigram','value':'value_trigram'}, inplace=True)
+        
+        df_keywords_article = pd.concat([df_unigram, df_bigram, df_trigram], axis=1)
+        dict_keywords[id]['df_keywords'] = df_keywords_article
+        
+        list_keywordsdf.append(df_keywords_article)
+        
+    df_keywords_all = pd.concat(list_keywordsdf)
+    df_keywords_all.dropna(inplace=True)
+
+    df_keywords_unigram = df_keywords_all.groupby(by=['keyword_unigram'], as_index=False)['value_unigram'].sum()
+    df_keywords_unigram.sort_values(by='value_unigram', ascending=False, inplace=True)
+
+    df_keywords_bigram = df_keywords_all.groupby(by=['keyword_bigram'], as_index=False)['value_bigram'].sum()
+    df_keywords_bigram.sort_values(by='value_bigram', ascending=False, inplace=True)
+
+    df_keywords_trigram = df_keywords_all.groupby(by=['keyword_trigram'], as_index=False)['value_trigram'].sum()
+    df_keywords_trigram.sort_values(by='value_trigram', ascending=False, inplace=True)
+
+    df_keywords_all = pd.concat([df_keywords_unigram, df_keywords_bigram, df_keywords_trigram], axis=1)
+    df_keywords_all = df_keywords_all.head(200)
+    
+    f = lambda e: round(e,2) if not pd.isna(e) else e
+    df_keywords_all['value_unigram'] = df_keywords_all['value_unigram'].apply(f)
+    df_keywords_all['value_bigram'] = df_keywords_all['value_bigram'].apply(f)
+    df_keywords_all['value_trigram'] = df_keywords_all['value_trigram'].apply(f)
+    
+    with st.container():
+        _, col, _ = st.columns([0.1,8,0.1])
+        with col:
+            AgGrid(df_keywords_all.head(50),
+                data_return_mode='AS_INPUT', 
+                # update_mode='MODEL_CHANGED', 
+                fit_columns_on_grid_load=False,
+                # theme='fresh',
+                enable_enterprise_modules=False,
+                height=510, 
+                width='100%',
+                reload_data=True)
+   
 
 def btn_clicked_folder(st, input_folder_path, n_workers, show_wordcloud=True, show_similaritygraph=True,
-                       cache_folder_name='summarticles_cache', show_text_macro=True):
+                       cache_folder_name='summarticles_cache', show_text_macro=True, show_keywords_table=True):
 
     """"""
     
@@ -671,6 +752,12 @@ def btn_clicked_folder(st, input_folder_path, n_workers, show_wordcloud=True, sh
                 st.markdown("""<hr style="height:0.1px;border:none;color:#F1F1F1;background-color:#F1F1F1;" /> """, unsafe_allow_html=True)
                 show_text_numbers(st, dict_dfs)
 
+    if show_keywords_table:
+        st.markdown("""<hr style="height:1px;border:none;color:#F1F1F1;background-color:#F1F1F1;" /> """, unsafe_allow_html=True)
+        st.markdown("""<h3 style="text-align:left;"><b>KeyWords</b></h3>""",unsafe_allow_html=True)
+        with st.spinner('📄➞🔤  Extracting KeyWords...'):
+            show_keywords(st, dict_dfs)
+    
     if show_similaritygraph:
         with st.spinner('📄➞📄  Making Similarity Graph...'):
             st.markdown("""<hr style="height:1px;border:none;color:#F1F1F1;background-color:#F1F1F1;" /> """, unsafe_allow_html=True)
