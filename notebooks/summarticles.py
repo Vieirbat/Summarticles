@@ -377,30 +377,28 @@ def show_text_numbers(st, dict_dfs):
         with col1:
             col1.metric("🔠 Total Words", str(dict_agg_stats['num_total_words']))
             col1.metric("🔢 Mean Words per Article", str(round(dict_agg_stats['num_mean_words'],1)))
-            # col1.metric("🔣 Total Characters", str(dict_agg_stats['num_total_chars']))
         with col2:
             col2.metric("🆕 Total Unique Words", str(dict_agg_stats['num_total_words_unique']))
             col2.metric("🔢 Mean Unique Words per Article", str(round(dict_agg_stats['num_mean_words_unique'],1)))
-            # col2.metric("🔤 Mean Lenght Words", str(round(dict_agg_stats['mean_length_words'],1)))
         with col3:
             col3.metric("🔣 Total Characters", str(dict_agg_stats['num_total_chars']))
             col3.metric("🔤 Mean Lenght Words", str(round(dict_agg_stats['mean_length_words'],1)))
-            # col3.metric("*️⃣ Mean Lexical Density (words/unique words)",str(round(dict_agg_stats['lexical_density'],1)))
-            # col3.metric("#️⃣ Twitter Articles", str(dict_agg_stats['twitter_articles']))
-            # col3.metric("💬 Articles words lower 1000", str(dict_agg_stats['articles_lower']))
         with st.container():
             fig = px.scatter(df_articles_stats, 
                             x="num_words_unique", 
                             y="num_words", 
                             size="mean_lenght_word", 
                             color="num_chars",
-                            custom_data=['file_name'],
-                            labels={"num_words_unique": "Number Unique Words",
-                                    "num_words": "Number Words",
-                                    "mean_lenght_word": "Mean Leangth of Words",
-                                    "num_chars":"Total Number of Characters",
-                                    "file_name":"Article File Name"})
-            fig.update_traces(hovertemplate="<br>".join(["Article File Name: %{customdata[0]}"]))
+                            custom_data=['file_name','num_chars','mean_lenght_word'])
+            
+            labels = ["Article File Name: %{customdata[0]}",
+                      "Number Words: %{y}",
+                      "Number Unique Words: %{x}",
+                      "Total Number of Characters: %{customdata[1]}",
+                      "Mean Leangth of Words: %{customdata[2]}"]
+                        
+            fig.update_traces(hovertemplate="<br>".join(labels))
+            
             st.plotly_chart(fig, use_container_width=True)
             
     with st.container():
