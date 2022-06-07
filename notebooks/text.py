@@ -13,6 +13,8 @@ import numpy as np
 from wordcloud import WordCloud
 from matplotlib import pyplot as plt
 
+import random
+
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
@@ -231,6 +233,16 @@ class text_mining(object):
         df_maxtrix_filter = df_maxtrix_filter.nlargest(n_sim, colum_value)
         
         return df_maxtrix_filter
+    
+    def get_aleatory_color(self):
+        
+        '''Returns color in hex format'''
+    
+        red_int = random.randint(0,255)
+        green_int = random.randint(0,255)
+        blue_int = random.randint(0,255)
+    
+        return '#{:02X}{:02X}{:02X}'.format(red_int, green_int, blue_int)
 
 
     def make_sim_graph(self, matrix, node_data, source_column="doc_a", to_column="doc_b",
@@ -304,6 +316,125 @@ class text_mining(object):
                                  spring_strength=0.08,
                                  damping=0.4,
                                  overlap=0)
+        
+        if buttons:
+            graph.show_buttons(filter_=['physics'])
+            
+        path_graph_final = os.path.join(path_graph, folder_graph)
+        if not os.path.exists(path_graph_final):
+            os.mkdir(path_graph_final)
+        path_graph_final = os.path.join(path_graph_final, name_file)
+        graph.save_graph(path_graph_final)
+        # graph.show(name_file)
+        
+        return graph, path_graph_final, os.path.join(path_graph, folder_graph)
+    
+    
+    def make_keywords_graph(self, edges_key_articles, node_data, node_keywords_data,
+                            source_column="keyword",to_column="pdf_md5", value_column="value",
+                            height="1000px",width="1000px", directed=False, notebook=False,
+                            bgcolor="#ffffff", font_color=False, layout=None, heading="", buttons=True,
+                            path_graph="./", folder_graph="graphs", name_file="graph_keyword.html"):
+        
+        """"""
+        
+        graph = Network(height=height,
+                        width=width,
+                        directed=directed,
+                        notebook=notebook,
+                        bgcolor=bgcolor,
+                        font_color=font_color,
+                        layout=layout,
+                        heading=heading)
+
+        for i, row in node_data.iterrows():
+            
+            article_id = str(row['pdf_md5'])
+            article_title = str(row['title_head'])
+            article_abstract_short = str(row['abstract_short'])
+            article_date = str(row['date_head'])
+            article_number_authors = str(row['author_count'])
+            article_number_citations = str(row['citation_count'])
+            article_doi = str(row['doi_head'])
+            article_file_name = str(row['file_name'])
+            article_file_path = str(row['file'])
+            
+            title_html = f"""Article Title:{article_title}
+                            Article Date:{article_date}
+                            Article Number Authors:{article_number_authors}
+                            Article Number Citations:{article_number_citations}
+                            Article DOI:{article_doi}
+                            Article File Name:{article_file_name}"""
+            
+            graph.add_node(n_id=article_id, 
+                        label=f"Node ID: {str(article_id)[0:4]}", 
+                        borderWidth=1, 
+                        borderWidthSelected=2, 
+                        #brokenImage="url", 
+                        #group="a", 
+                        #hidden=False, 
+                        #image="url", 
+                        #labelHighlightBold=True, 
+                        #level=1, 
+                        #mass=1, 
+                        #physics=True,
+                        shape="dot", # image, circularImage, diamond, dot, star, triangle, triangleDown, square and icon
+                        size=1, 
+                        title=title_html,  
+                        #x=0.5, 
+                        #y=1.0)
+                        value=1)
+            
+        for i, row in node_keywords_data.iterrows():
+            
+            keyword_id = str(row['keyword'])
+            article_count = row['article_count']
+            value_sum = row['value_sum']
+            value_mean = row['value_mean']
+            
+            title_html = f"""KeyWord: {keyword_id}
+                            Article Count: {article_count}
+                            Value Sum: {value_sum}
+                            Value Mean: {value_mean}
+                        """
+            
+            graph.add_node(n_id=keyword_id, 
+                        label=keyword_id, 
+                        borderWidth=2, 
+                        borderWidthSelected=4,
+                        color=self.get_aleatory_color(),
+                        #brokenImage="url", 
+                        #group="a", 
+                        #hidden=False, 
+                        #image="url", 
+                        #labelHighlightBold=True, 
+                        #level=1, 
+                        #mass=1, 
+                        #physics=True,
+                        shape="box", # image, circularImage, diamond, dot, star, triangle, triangleDown, square and icon, box, text
+                        size=article_count, 
+                        title=title_html,  
+                        #x=0.5, 
+                        #y=1.0)
+                        value=article_count*1000)
+        
+        for i, row in edges_key_articles.iterrows():
+            
+            graph.add_edge(source=row[source_column],
+                        to=row[to_column],
+                        value=round(row[value_column],1),
+                        title=row[value_column])
+                        #width=row['value'],
+                        #arrowStrikethrough=False,
+                        #physics=False,
+                        #hidden=False)
+        
+        graph.force_atlas_2based(gravity=-50,
+                                central_gravity=0.01,
+                                spring_length=360,
+                                spring_strength=0.08,
+                                damping=0.4,
+                                overlap=0)
         
         if buttons:
             graph.show_buttons(filter_=['physics'])
