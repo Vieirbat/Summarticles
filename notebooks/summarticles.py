@@ -32,6 +32,8 @@ import matplotlib.pyplot as plt
 from graph.pyvis.network import Network
 import nltk
 
+import random
+
 from keybert import KeyBERT
 
 from st_aggrid import GridOptionsBuilder, AgGrid, GridUpdateMode, DataReturnMode
@@ -566,7 +568,8 @@ def similarity_graph(st, dict_dfs, input_folder_path, folder_graph='graphs', nam
                    width='100%',
                    reload_data=True)
         with col2:
-            show_graph_graph(sim_graph, path_graph, path_folder_graph)
+            show_graph(sim_graph, path_graph, path_folder_graph, text_spinner='👁‍🗨 Similarity Graph: drawing...')
+
 
 def get_component_from_file(path_html):
     
@@ -577,9 +580,175 @@ def get_component_from_file(path_html):
     GraphHtmlFile.close()
     
     return GraphHtml
-    
 
-def show_graph_graph(sim_graph, path_graph, path_folder_graph):
+
+def text_preparation(st, dict_dfs, input_folder_path):
+    
+    """"""
+    
+    tprep = text_prep()
+    
+    # dict_dfs['df_doc_info']['acknowledgement_prep'] = tprep.text_prep_column(dict_dfs['df_doc_info']['acknowledgement'])
+    dict_dfs['df_doc_info']['abstract_prep'] = tprep.text_preparation_column(dict_dfs['df_doc_info']['abstract'])
+    dict_dfs['df_doc_info']['body_prep'] = tprep.text_preparation_column(dict_dfs['df_doc_info']['body'])
+    
+    return dict_dfs
+
+
+def generate_keywords(dict_dfs):
+    
+    kw_model = KeyBERT()
+    
+    dict_keywords = {}
+    id_column = 'pdf_md5'
+    text_column = 'abstract'
+    col_select = [id_column,text_column]
+    docs = dict_dfs['df_doc_info'].reset_index().loc[:, col_select]
+
+    list_keywordsdf = []
+    list_keywordsdf_article = []
+    for i, row in docs.head(20).iterrows():
+        
+        doc = str(row[text_column])
+        id = row[id_column]
+        
+        keywords_unigram = kw_model.extract_keywords(doc, keyphrase_ngram_range=(1, 1), stop_words='english', highlight=False, top_n=10)
+        if len(keywords_unigram):
+            df_unigram = pd.DataFrame([{'keyword':v[0],'value':v[1]} for v in keywords_unigram])
+        else:
+            df_unigram = pd.DataFrame([], columns=['keyword','value'])
+
+        keywords_bigram = kw_model.extract_keywords(doc, keyphrase_ngram_range=(2, 2), stop_words='english', highlight=False, top_n=10)
+        if len(keywords_bigram):
+            df_bigram = pd.DataFrame([{'keyword':v[0],'value':v[1]} for v in keywords_bigram])
+        else:
+            df_bigram = pd.DataFrame([], columns=['keyword','value'])
+
+        keywords_trigam = kw_model.extract_keywords(doc, keyphrase_ngram_range=(3, 3), stop_words='english', highlight=False, top_n=10)
+        if len(keywords_bigram):
+            df_trigram = pd.DataFrame([{'keyword':v[0],'value':v[1]} for v in keywords_trigam])
+        else:
+            df_trigram = pd.DataFrame([], columns=['keyword','value'])
+        
+        dict_keywords[id] = {'unigram':df_unigram, 'bigram':df_bigram, 'trigram':df_trigram}
+        
+        df_article_keywords = pd.concat([df_unigram, df_bigram, df_trigram])
+        df_article_keywords[id_column] = id
+        df_article_keywords = df_article_keywords.loc[:,[id_column,'keyword', 'value']].copy()
+        list_keywordsdf_article.append(df_article_keywords)
+        
+        df_unigram.rename(columns={'keyword':'keyword_unigram','value':'value_unigram'}, inplace=True)
+        df_bigram.rename(columns={'keyword':'keyword_bigram','value':'value_bigram'}, inplace=True)
+        df_trigram.rename(columns={'keyword':'keyword_trigram','value':'value_trigram'}, inplace=True)
+        
+        df_keywords_article = pd.concat([df_unigram, df_bigram, df_trigram], axis=1)
+        dict_keywords[id]['df_keywords'] = df_keywords_article
+        
+        list_keywordsdf.append(df_keywords_article)
+        
+    df_keywords_all = pd.concat(list_keywordsdf)
+    df_keywords_all.dropna(inplace=True)
+
+    df_article_keywords_all = pd.concat(list_keywordsdf_article)
+    df_article_keywords_all.dropna(inplace=True)
+
+    df_keywords_unigram = df_keywords_all.groupby(by=['keyword_unigram'], as_index=False)['value_unigram'].sum()
+    df_keywords_unigram.sort_values(by='value_unigram', ascending=False, inplace=True)
+
+    df_keywords_bigram = df_keywords_all.groupby(by=['keyword_bigram'], as_index=False)['value_bigram'].sum()
+    df_keywords_bigram.sort_values(by='value_bigram', ascending=False, inplace=True)
+
+    df_keywords_trigram = df_keywords_all.groupby(by=['keyword_trigram'], as_index=False)['value_trigram'].sum()
+    df_keywords_trigram.sort_values(by='value_trigram', ascending=False, inplace=True)
+
+    df_keywords_all = pd.concat([df_keywords_unigram, df_keywords_bigram, df_keywords_trigram], axis=1)
+    df_keywords_all = df_keywords_all.head(200)
+    
+    f = lambda e: round(e,2) if not pd.isna(e) else e
+    df_keywords_all['value_unigram'] = df_keywords_all['value_unigram'].apply(f)
+    df_keywords_all['value_bigram'] = df_keywords_all['value_bigram'].apply(f)
+    df_keywords_all['value_trigram'] = df_keywords_all['value_trigram'].apply(f)
+    
+    return df_keywords_all, df_article_keywords_all, dict_keywords
+
+
+def show_keywords(st, df_keywords_all):
+    
+    """"""
+    
+    with st.container():
+        _, col, _ = st.columns([0.1,8,0.1])
+        with col:
+            AgGrid(df_keywords_all.head(50),
+                data_return_mode='AS_INPUT', 
+                # update_mode='MODEL_CHANGED', 
+                fit_columns_on_grid_load=False,
+                # theme='fresh',
+                enable_enterprise_modules=False,
+                height=510, 
+                width='100%',
+                reload_data=True)
+
+
+def agg_keys_node_data(grupo):
+    """"""
+    dictAgg = {}
+    dictAgg['keyword'] = grupo['keyword'].iat[0]
+    dictAgg['article_count'] = grupo['pdf_md5'].shape[0]
+    dictAgg['value_sum'] = grupo['value'].sum()
+    dictAgg['value_mean'] = grupo['value'].mean()
+    
+    return pd.Series(dictAgg)
+
+
+def show_keywords_graph(st, dict_dfs, df_article_keywords_all, input_folder_path, folder_graph='graphs', 
+                        name_file="graph.html", cache_folder_name='summarticles_cache', top_keywords=5, buttons=False):
+    
+    """"""
+    
+    tmining = text_mining()
+
+    df_keyword_data = df_article_keywords_all.groupby(by=['keyword'], as_index=False).apply(agg_keys_node_data)
+    df_keyword_data = df_keyword_data.sort_values(by=['article_count'], ascending=False).head(top_keywords)
+    
+    # Selecting edges that contains top keywords
+    filtro = (df_article_keywords_all.keyword.isin(df_keyword_data.keyword.tolist()))
+    df_art_key_all = df_article_keywords_all.loc[(filtro)].copy()
+
+    # Selecting nodes in the list of selected edges
+    df_nodes = get_node_data(dict_dfs)
+
+    filtro = (df_nodes['pdf_md5'].isin(df_art_key_all['pdf_md5'].tolist()))
+    df_nodes = df_nodes.loc[(filtro)].copy()
+    
+    path_write_graph = os.path.join(input_folder_path, cache_folder_name)
+        
+    keywords_graph, path_graph, path_folder_graph = tmining.make_keywords_graph(edges_key_articles=df_art_key_all, node_data=df_nodes,
+                                                    node_keywords_data=df_keyword_data, source_column="keyword", to_column="pdf_md5", 
+                                                    value_column="value", height="500px", width="100%", directed=False, notebook=False,
+                                                    bgcolor="#ffffff", font_color=False, layout=None, heading="", path_graph=path_write_graph,
+                                                    folder_graph=folder_graph, buttons=buttons, name_file=name_file)
+    with st.expander("How it works?"):
+        st.write("This is MAGIC!")
+        
+    col1, col2 = st.columns([2,1])
+    with col1:
+        show_graph(keywords_graph, path_graph, path_folder_graph, text_spinner='👁‍🗨 Similarity Graph: drawing...')
+    with col2:
+        df_keyword_data['value_sum'] = df_keyword_data['value_sum'].apply(lambda e: round(e,2))
+        df_keyword_data['value_mean'] = df_keyword_data['value_mean'].apply(lambda e: round(e,2))
+        AgGrid(df_keyword_data.head(50),
+                data_return_mode='AS_INPUT', 
+                # update_mode='MODEL_CHANGED', 
+                fit_columns_on_grid_load=False,
+                # theme='fresh',
+                enable_enterprise_modules=False,
+                height=510, 
+                width='100%',
+                reload_data=True)
+        
+    
+def show_graph(graph, path_graph, path_folder_graph, text_spinner='👁‍🗨 Keyword Graph: drawing...'):
     
     """"""
     
@@ -596,7 +765,7 @@ def show_graph_graph(sim_graph, path_graph, path_folder_graph):
         f_destiny = os.path.join(path_depend_dst, file)
         shutil.copy(f_source, f_destiny)
         
-    with st.spinner('👁‍🗨 Similarity Graph: drawing...'):
+    with st.spinner(text_spinner):
         
         GraphHtmlFile = open(path_graph, 'r', encoding='utf-8')
         GraphHtml = GraphHtmlFile.read()
@@ -620,100 +789,58 @@ def show_graph_graph(sim_graph, path_graph, path_folder_graph):
         components.html(GraphHtml, height=600, width=None, scrolling=True)
 
 
-def text_preparation(st, dict_dfs, input_folder_path):
+def get_node_data(dict_dfs):
     
     """"""
     
-    tprep = text_prep()
+    # Selecting head article data
+    cols_head = ['title_head', 'doi_head', 'date_head',]
+    head_data = dict_dfs['df_doc_head'].loc[:,cols_head].reset_index().copy()
+    head_data['title_head'] = head_data['title_head'].apply(lambda e: str(e)[0:50] + "..." if len(str(e)) > 50 else str(e))
+
+    # Selecting head article data
+    cols_info = ['abstract','file']
+    doc_info_data = dict_dfs['df_doc_info'].loc[:,cols_info].reset_index().copy()
+    doc_info_data['file_name'] = doc_info_data['file'].apply(lambda e: os.path.split(e)[-1])
+    doc_info_data['abstract_short'] = doc_info_data['abstract'].apply(lambda e: str(e)[0:20] + "..." if len(str(e)) > 20 else str(e))
+    doc_info_data.drop(labels=['abstract'], axis=1, inplace=True)
+
+    # Selecting authors information
+    authors_data = dict_dfs['df_doc_authors'].reset_index()
+    authors_data = authors_data.groupby(by=['pdf_md5'], as_index=False)['full_name_author'].count()
+    authors_data.rename(columns={'full_name_author':'author_count'}, inplace=True)
+
+    # Selecting citations information
+    citations_data = dict_dfs['df_doc_citations'].reset_index()
+    citations_data = citations_data.groupby(by=['pdf_md5'], as_index=False)['index_citation'].count()
+    citations_data.rename(columns={'index_citation':'citation_count'}, inplace=True)
+
+    nodes = dict_dfs['df_doc_info'].reset_index()['pdf_md5'].tolist()
+    df_nodes = pd.DataFrame(nodes, columns=['pdf_md5'])
+
+    df_nodes = df_nodes.merge(head_data, how='left', on='pdf_md5')
+    df_nodes = df_nodes.merge(doc_info_data, how='left', on='pdf_md5')
+    df_nodes = df_nodes.merge(authors_data, how='left', on='pdf_md5')
+    df_nodes = df_nodes.merge(citations_data, how='left', on='pdf_md5')
     
-    # dict_dfs['df_doc_info']['acknowledgement_prep'] = tprep.text_prep_column(dict_dfs['df_doc_info']['acknowledgement'])
-    dict_dfs['df_doc_info']['abstract_prep'] = tprep.text_preparation_column(dict_dfs['df_doc_info']['abstract'])
-    dict_dfs['df_doc_info']['body_prep'] = tprep.text_preparation_column(dict_dfs['df_doc_info']['body'])
-    
-    return dict_dfs
+    return df_nodes
 
 
-def show_keywords(st, dict_dfs):
+def choose_filepath(st):
     
     """"""
     
-    kw_model = KeyBERT()
-    
-    dict_keywords = {}
-    col_select = ['pdf_md5','abstract']
-    docs = dict_dfs['df_doc_info'].reset_index().loc[:, col_select]
-
-    list_keywordsdf = []
-    for i, row in docs.iterrows():
-        
-        doc = str(row['abstract'])
-        id = row['pdf_md5']
-        
-        keywords_unigram = kw_model.extract_keywords(doc, keyphrase_ngram_range=(1, 1), stop_words='english', highlight=False, top_n=10)
-        if len(keywords_unigram):
-            df_unigram = pd.DataFrame([{'keyword':v[0],'value':v[1]} for v in keywords_unigram])
-        else:
-            df_unigram = pd.DataFrame([], columns=['keyword','value'])
-
-        keywords_bigram = kw_model.extract_keywords(doc, keyphrase_ngram_range=(2, 2), stop_words='english', highlight=False, top_n=10)
-        if len(keywords_bigram):
-            df_bigram = pd.DataFrame([{'keyword':v[0],'value':v[1]} for v in keywords_bigram])
-        else:
-            df_bigram = pd.DataFrame([], columns=['keyword','value'])
-
-        keywords_trigam = kw_model.extract_keywords(doc, keyphrase_ngram_range=(3, 3), stop_words='english', highlight=False, top_n=10)
-        if len(keywords_bigram):
-            df_trigram = pd.DataFrame([{'keyword':v[0],'value':v[1]} for v in keywords_trigam])
-        else:
-            df_trigram = pd.DataFrame([], columns=['keyword','value'])
-        
-        dict_keywords[id] = {'unigram':df_unigram, 'bigram':df_bigram, 'trigram':df_trigram}
-        
-        df_unigram.rename(columns={'keyword':'keyword_unigram','value':'value_unigram'}, inplace=True)
-        df_bigram.rename(columns={'keyword':'keyword_bigram','value':'value_bigram'}, inplace=True)
-        df_trigram.rename(columns={'keyword':'keyword_trigram','value':'value_trigram'}, inplace=True)
-        
-        df_keywords_article = pd.concat([df_unigram, df_bigram, df_trigram], axis=1)
-        dict_keywords[id]['df_keywords'] = df_keywords_article
-        
-        list_keywordsdf.append(df_keywords_article)
-        
-    df_keywords_all = pd.concat(list_keywordsdf)
-    df_keywords_all.dropna(inplace=True)
-
-    df_keywords_unigram = df_keywords_all.groupby(by=['keyword_unigram'], as_index=False)['value_unigram'].sum()
-    df_keywords_unigram.sort_values(by='value_unigram', ascending=False, inplace=True)
-
-    df_keywords_bigram = df_keywords_all.groupby(by=['keyword_bigram'], as_index=False)['value_bigram'].sum()
-    df_keywords_bigram.sort_values(by='value_bigram', ascending=False, inplace=True)
-
-    df_keywords_trigram = df_keywords_all.groupby(by=['keyword_trigram'], as_index=False)['value_trigram'].sum()
-    df_keywords_trigram.sort_values(by='value_trigram', ascending=False, inplace=True)
-
-    df_keywords_all = pd.concat([df_keywords_unigram, df_keywords_bigram, df_keywords_trigram], axis=1)
-    df_keywords_all = df_keywords_all.head(200)
-    
-    f = lambda e: round(e,2) if not pd.isna(e) else e
-    df_keywords_all['value_unigram'] = df_keywords_all['value_unigram'].apply(f)
-    df_keywords_all['value_bigram'] = df_keywords_all['value_bigram'].apply(f)
-    df_keywords_all['value_trigram'] = df_keywords_all['value_trigram'].apply(f)
-    
-    with st.container():
-        _, col, _ = st.columns([0.1,8,0.1])
-        with col:
-            AgGrid(df_keywords_all.head(50),
-                data_return_mode='AS_INPUT', 
-                # update_mode='MODEL_CHANGED', 
-                fit_columns_on_grid_load=False,
-                # theme='fresh',
-                enable_enterprise_modules=False,
-                height=510, 
-                width='100%',
-                reload_data=True)
+    with st.spinner(' 📁 Choosing a file path...'):
+        # Get articles files path
+        st.warning("⚠️ Feature in development!")
+        input_folder_path = input_path = ""
+        input_folder_path = st.text_input('Selected folder:',filedialog.askdirectory(master=tk_root), key='txt_input_path')
+    return input_folder_path
    
 
 def btn_clicked_folder(st, input_folder_path, n_workers, show_wordcloud=True, show_similaritygraph=True,
-                       cache_folder_name='summarticles_cache', show_text_macro=True, show_keywords_table=True):
+                       cache_folder_name='summarticles_cache', show_text_macro=True, show_keywords_table=True, 
+                       show_keywords_graph_cond=True):
 
     """"""
     
@@ -740,6 +867,7 @@ def btn_clicked_folder(st, input_folder_path, n_workers, show_wordcloud=True, sh
     
     # Container for wordcloud and text macro numbers
     with st.container():
+        
         st.markdown("""<hr style="height:1px;border:none;color:#F1F1F1;background-color:#F1F1F1;" /> """, unsafe_allow_html=True)
         st.markdown("""<h3 style="text-align:left;"><b>Text Macro Numbers</b></h3>""",unsafe_allow_html=True)
     
@@ -752,31 +880,29 @@ def btn_clicked_folder(st, input_folder_path, n_workers, show_wordcloud=True, sh
                 st.markdown("""<hr style="height:0.1px;border:none;color:#F1F1F1;background-color:#F1F1F1;" /> """, unsafe_allow_html=True)
                 show_text_numbers(st, dict_dfs)
 
-    if show_keywords_table:
-        st.markdown("""<hr style="height:1px;border:none;color:#F1F1F1;background-color:#F1F1F1;" /> """, unsafe_allow_html=True)
-        st.markdown("""<h3 style="text-align:left;"><b>KeyWords</b></h3>""",unsafe_allow_html=True)
-        with st.spinner('📄➞🔤  Extracting KeyWords...'):
-            show_keywords(st, dict_dfs)
-    
-    if show_similaritygraph:
-        with st.spinner('📄➞📄  Making Similarity Graph...'):
+    with st.container():
+        if show_keywords_table:
             st.markdown("""<hr style="height:1px;border:none;color:#F1F1F1;background-color:#F1F1F1;" /> """, unsafe_allow_html=True)
-            similarity_graph(st, dict_dfs, input_folder_path, percentil="75%", 
-                             n_sim=100, cache_folder_name=cache_folder_name)
+            st.markdown("""<h3 style="text-align:left;"><b>KeyWords</b></h3>""",unsafe_allow_html=True)
+            
+            with st.spinner('📄➞🔤  Extracting KeyWords...'):
+                df_keywords_all, df_article_keywords_all, dict_keywords = generate_keywords(dict_dfs)
+                
+            with st.spinner('📄➞🔤  Showing KeyWords...'):
+                show_keywords(st, df_keywords_all)
+                
+            if show_keywords_graph_cond:
+                with st.spinner('📄➞📄  Making KeyWord Graph...'):
+                    show_keywords_graph(st, dict_dfs, df_article_keywords_all, input_folder_path)
+            
+    with st.container():
+        if show_similaritygraph:
+            with st.spinner('📄➞📄  Making Similarity Graph...'):
+                st.markdown("""<hr style="height:1px;border:none;color:#F1F1F1;background-color:#F1F1F1;" /> """, unsafe_allow_html=True)
+                similarity_graph(st, dict_dfs, input_folder_path, percentil="75%", 
+                                n_sim=100, cache_folder_name=cache_folder_name)
 
-
-def choose_filepath(st):
     
-    """"""
-    
-    with st.spinner(' 📁 Choosing a file path...'):
-        # Get articles files path
-        st.warning("⚠️ Feature in development!")
-        input_folder_path = input_path = ""
-        input_folder_path = st.text_input('Selected folder:',filedialog.askdirectory(master=tk_root), key='txt_input_path')
-    return input_folder_path
-    
-
 ###############################################################################################
 # ---------------------------------------------------------------------------------------------
 # For process execution and streamlit app
