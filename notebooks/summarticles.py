@@ -303,6 +303,7 @@ def show_text_numbers(st, dict_dfs):
     # Making stats
     
     df_articles_stats = pd.DataFrame(list(map(lambda e: text_statistics(e), documents_all_text)))
+    df_articles_stats['file_name'] = [os.path.split(e)[-1] for e in dict_dfs['df_doc_info']['file'].tolist()]
     dict_agg_stats = {}
 
     # Chars
@@ -318,10 +319,10 @@ def show_text_numbers(st, dict_dfs):
     dict_agg_stats['num_max_words'] = df_articles_stats['num_words'].max()
 
     # num_words_unique
-    dict_agg_stats['num_total_words_unique'] = df_articles_stats['num_words'].sum()
-    dict_agg_stats['num_mean_words_unique'] = df_articles_stats['num_words'].mean()
-    dict_agg_stats['num_min_words_unique'] = df_articles_stats['num_words'].min()
-    dict_agg_stats['num_max_chars_unique'] = df_articles_stats['num_words'].max()
+    dict_agg_stats['num_total_words_unique'] = df_articles_stats['num_words_unique'].sum()
+    dict_agg_stats['num_mean_words_unique'] = df_articles_stats['num_words_unique'].mean()
+    dict_agg_stats['num_min_words_unique'] = df_articles_stats['num_words_unique'].min()
+    dict_agg_stats['num_max_chars_unique'] = df_articles_stats['num_words_unique'].max()
 
     # mean_lenght_word
     dict_agg_stats['mean_length_words'] = df_articles_stats['mean_lenght_word'].mean()
@@ -340,12 +341,20 @@ def show_text_numbers(st, dict_dfs):
     # token all text
     token_text = tprep.text_tokenize(' '.join(documents_all_text))
     
+    # regex
+    def f_reg(t):
+        texto = re.sub(r'\W+',' ',str(t))
+        texto = re.sub(r'\s+', ' ', texto)
+        texto = texto.strip()
+        return texto
+    
     # Unigram
     words_freq = pd.value_counts(token_text)
     words_freq = pd.DataFrame(words_freq,columns=['frequency'])
     words_freq.index.name = 'unigram'
     words_freq = words_freq.reset_index()
     dict_agg_stats['num_total_words_unique'] = len(list(set(words_freq.unigram.tolist())))
+    words_freq.unigram = words_freq.unigram.apply(f_reg)
     
     # Bigram - this code can be in the prep/mining class on the text.py
     list_bigrams = list(nltk.bigrams(token_text))
@@ -353,6 +362,7 @@ def show_text_numbers(st, dict_dfs):
     df_bigram = pd.DataFrame(bigram_freq, columns=['frequency'])
     df_bigram.index.name = 'bigram'
     df_bigram = df_bigram.reset_index()
+    df_bigram.bigram = df_bigram.bigram.apply(f_reg)
     
     # Trigram - this code can be in the prep/mining class on the text.py
     list_trigam = list(nltk.trigrams(token_text))
@@ -360,22 +370,42 @@ def show_text_numbers(st, dict_dfs):
     df_trigram = pd.DataFrame(trigam_freq, columns=['frequency'])
     df_trigram.index.name = 'trigram'
     df_trigram = df_trigram.reset_index()
+    df_trigram.trigram = df_trigram.trigram.apply(f_reg)
     
     with st.container():
-        _ , col1, col2, col3, col4, _ = st.columns([0.5,2,2,2,3,0.5])
+        _ , col1, col2, col3, _ = st.columns([1.5, 3, 3, 3, 0.25])
         with col1:
             col1.metric("🔠 Total Words", str(dict_agg_stats['num_total_words']))
             col1.metric("🔢 Mean Words per Article", str(round(dict_agg_stats['num_mean_words'],1)))
-            col1.metric("🔣 Total Characters", str(dict_agg_stats['num_total_chars']))
+            # col1.metric("🔣 Total Characters", str(dict_agg_stats['num_total_chars']))
         with col2:
             col2.metric("🆕 Total Unique Words", str(dict_agg_stats['num_total_words_unique']))
             col2.metric("🔢 Mean Unique Words per Article", str(round(dict_agg_stats['num_mean_words_unique'],1)))
-            col2.metric("🔤 Mean Lenght Words", str(round(dict_agg_stats['mean_length_words'],1)))
+            # col2.metric("🔤 Mean Lenght Words", str(round(dict_agg_stats['mean_length_words'],1)))
         with col3:
-            col3.metric("*️⃣ Mean Lexical Density (words/unique words)",str(round(dict_agg_stats['lexical_density'],1)))
-            col3.metric("#️⃣ Twitter Articles", str(dict_agg_stats['twitter_articles']))
-            col3.metric("💬 Articles words lower 1000", str(dict_agg_stats['articles_lower']))
-        with col4:
+            col3.metric("🔣 Total Characters", str(dict_agg_stats['num_total_chars']))
+            col3.metric("🔤 Mean Lenght Words", str(round(dict_agg_stats['mean_length_words'],1)))
+            # col3.metric("*️⃣ Mean Lexical Density (words/unique words)",str(round(dict_agg_stats['lexical_density'],1)))
+            # col3.metric("#️⃣ Twitter Articles", str(dict_agg_stats['twitter_articles']))
+            # col3.metric("💬 Articles words lower 1000", str(dict_agg_stats['articles_lower']))
+        with st.container():
+            fig = px.scatter(df_articles_stats, 
+                            x="num_words_unique", 
+                            y="num_words", 
+                            size="mean_lenght_word", 
+                            color="num_chars",
+                            custom_data=['file_name'],
+                            labels={"num_words_unique": "Number Unique Words",
+                                    "num_words": "Number Words",
+                                    "mean_lenght_word": "Mean Leangth of Words",
+                                    "num_chars":"Total Number of Characters",
+                                    "file_name":"Article File Name"})
+            fig.update_traces(hovertemplate="<br>".join(["Article File Name: %{customdata[0]}"]))
+            st.plotly_chart(fig, use_container_width=True)
+            
+    with st.container():
+        _ , col1, col2, col3, _ = st.columns([0.15,2.25,2.5,2.75,0.15])
+        with col1:
             AgGrid(words_freq.head(100),
                    data_return_mode='AS_INPUT', 
                    # update_mode='MODEL_CHANGED', 
@@ -385,10 +415,7 @@ def show_text_numbers(st, dict_dfs):
                    height=250, 
                    width='100%',
                    reload_data=True)
-            
-    with st.container():
-        _ , col1, col2, _ = st.columns([0.75,2.75,2.75,1])
-        with col1:
+        with col2:
             AgGrid(df_bigram.head(50),
                    data_return_mode='AS_INPUT', 
                    # update_mode='MODEL_CHANGED', 
@@ -398,7 +425,7 @@ def show_text_numbers(st, dict_dfs):
                    height=250, 
                    width='100%',
                    reload_data=True)
-        with col2:
+        with col3:
             AgGrid(df_trigram.head(50),
                    data_return_mode='AS_INPUT', 
                    # update_mode='MODEL_CHANGED', 
@@ -856,12 +883,12 @@ def btn_clicked_folder(st, input_folder_path, n_workers, show_wordcloud=True, sh
     
     if not len(dict_dfs.keys()) or not dict_dfs['df_doc_info'].shape[0]:
         st.error("❓ There is no information to extract from articles in the specified path! Please, choose another fila path.")
-    
+        
     with st.container():
         with st.spinner('🔢📊 Generating articles macro numbers...'):
             st.markdown("""<hr style="height:10px;border:none;color:#333;background-color:#333;" /> """, unsafe_allow_html=True)
             show_macro_numbers(st, dict_dfs)
-    
+        
     with st.spinner('🛠️📄 Text prepatation...'):
         dict_dfs = text_preparation(st, dict_dfs, input_folder_path)
     
