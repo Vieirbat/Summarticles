@@ -410,7 +410,7 @@ class xmltei_to_dataframe(object):
                 dict_erros['number_article_error'] = 0
                 dict_erros['list_article_error'] = []
                 
-                for result in bath_process_result:
+                for i,result in enumerate(bath_process_result, start=1):
                     try:
                         
                         # Return of batch process for each file in the input path selected by the user
@@ -428,25 +428,13 @@ class xmltei_to_dataframe(object):
                             dict_dfs['df_doc_info']['status'] = status
                             dict_dfs['df_doc_info']['raw_data'] = xml
                             
-                            dict_dfs['df_doc_head']['pdf_md5'] = dict_dfs['df_doc_info']['pdf_md5'].iat[0]
-                            dict_dfs['df_doc_head'].set_index('pdf_md5', inplace=True)
-                            
-                            dict_dfs['df_doc_authors']['pdf_md5'] = dict_dfs['df_doc_info']['pdf_md5'].iat[0]
-                            dict_dfs['df_doc_authors'].set_index('pdf_md5', inplace=True)
-                            
-                            dict_dfs['df_doc_citations']['pdf_md5'] = dict_dfs['df_doc_info']['pdf_md5'].iat[0]
-                            dict_dfs['df_doc_citations'].set_index('pdf_md5', inplace=True)
-                            
-                            dict_dfs['df_doc_authors_citations']['pdf_md5'] = dict_dfs['df_doc_info']['pdf_md5'].iat[0]
-                            dict_dfs['df_doc_authors_citations'].set_index('pdf_md5', inplace=True)
-                            
-                            dict_dfs['df_doc_info'].set_index('pdf_md5', inplace=True)
-                        
-                        dict_dataframes['df_doc_info'].append(dict_dfs['df_doc_info'])
-                        dict_dataframes['df_doc_head'].append(dict_dfs['df_doc_head'])
-                        dict_dataframes['df_doc_authors'].append(dict_dfs['df_doc_authors'])
-                        dict_dataframes['df_doc_citations'].append(dict_dfs['df_doc_citations'])
-                        dict_dataframes['df_doc_authors_citations'].append(dict_dfs['df_doc_authors_citations'])
+                            # Set article id
+                            list_dframes = ['df_doc_info','df_doc_head','df_doc_authors',
+                                            'df_doc_citations','df_doc_authors_citations']
+                            for df_name in list_dframes:
+                                dict_dfs[df_name]['article_id'] = str(i)
+                                dict_dfs[df_name].set_index('article_id', inplace=True)
+                                dict_dataframes[df_name].append(dict_dfs[df_name])
                         
                     except Exception as e:
                         dict_erros['number_article_error'] += 1

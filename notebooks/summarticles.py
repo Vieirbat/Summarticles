@@ -4,6 +4,8 @@ import shutil
 from distutils.dir_util import copy_tree
 import re
 
+from regex import F
+
 sys.path.insert(0,os.path.dirname(os.getcwd()))
 sys.path.insert(0,os.path.join(os.getcwd(),'grobid'))
 sys.path.insert(0,os.getcwd())
@@ -295,51 +297,79 @@ def show_text_numbers(st, dict_dfs):
     
     tprep = text_prep()
     
-    documents_abs = dict_dfs['df_doc_info']['abstract_prep'].fillna(' ').tolist()
-    documents_body = dict_dfs['df_doc_info']['body_prep'].fillna(' ').tolist()
-    documents_all_text = [' '.join([abst, body]) for abst, body in zip(documents_abs, documents_body)]
+    dict_dfs['show_text_numbers'] = {}
+    
+    if not checkey(dict_dfs['show_text_numbers'],'documents_abs'):
+        documents_abs = dict_dfs['df_doc_info']['abstract_prep'].fillna(' ').tolist()
+        dict_dfs['show_text_numbers']['documents_abs'] = documents_abs
+    else:
+        documents_abs = dict_dfs['show_text_numbers']['documents_abs']
+    
+    if not checkey(dict_dfs['show_text_numbers'],'documents_body'):
+        documents_body = dict_dfs['df_doc_info']['body_prep'].fillna(' ').tolist()
+        dict_dfs['show_text_numbers']['documents_body'] = documents_body
+    else:
+        documents_body = dict_dfs['show_text_numbers']['documents_body']
+    
+    if not checkey(dict_dfs['show_text_numbers'],'documents_all_text'):
+        documents_all_text = [' '.join([abst, body]) for abst, body in zip(documents_abs, documents_body)]
+        dict_dfs['show_text_numbers']['documents_all_text'] = documents_all_text
+    else:
+        documents_body = dict_dfs['show_text_numbers']['documents_body']
     
     # ------------------------------------------------------------------------
     # Making stats
     
-    df_articles_stats = pd.DataFrame(list(map(lambda e: text_statistics(e), documents_all_text)))
-    df_articles_stats['file_name'] = [os.path.split(e)[-1] for e in dict_dfs['df_doc_info']['file'].tolist()]
-    dict_agg_stats = {}
-
-    # Chars
-    dict_agg_stats['num_total_chars'] = df_articles_stats['num_chars'].sum()
-    dict_agg_stats['num_mean_chars'] = df_articles_stats['num_chars'].mean()
-    dict_agg_stats['num_min_chars'] = df_articles_stats['num_chars'].min()
-    dict_agg_stats['num_max_chars'] = df_articles_stats['num_chars'].max()
-
-    # num_words
-    dict_agg_stats['num_total_words'] = df_articles_stats['num_words'].sum()
-    dict_agg_stats['num_mean_words'] = df_articles_stats['num_words'].mean()
-    dict_agg_stats['num_min_words'] = df_articles_stats['num_words'].min()
-    dict_agg_stats['num_max_words'] = df_articles_stats['num_words'].max()
-
-    # num_words_unique
-    dict_agg_stats['num_total_words_unique'] = df_articles_stats['num_words_unique'].sum()
-    dict_agg_stats['num_mean_words_unique'] = df_articles_stats['num_words_unique'].mean()
-    dict_agg_stats['num_min_words_unique'] = df_articles_stats['num_words_unique'].min()
-    dict_agg_stats['num_max_chars_unique'] = df_articles_stats['num_words_unique'].max()
-
-    # mean_lenght_word
-    dict_agg_stats['mean_length_words'] = df_articles_stats['mean_lenght_word'].mean()
-
-    # mean_lenght_word
-    dict_agg_stats['lexical_density'] = dict_agg_stats['num_mean_words']/dict_agg_stats['num_mean_words_unique']
+    if not checkey(dict_dfs['show_text_numbers'],'dict_agg_stats'):
     
-    # Number articles at least 280 characters
-    filtro = (df_articles_stats.num_chars <= 280)
-    dict_agg_stats['twitter_articles'] = df_articles_stats.loc[(filtro)].shape[0]
+        df_articles_stats = pd.DataFrame(list(map(lambda e: text_statistics(e), documents_all_text)))
+        df_articles_stats['file_name'] = [os.path.split(e)[-1] for e in dict_dfs['df_doc_info']['file'].tolist()]
+        dict_agg_stats = {}
+
+        # Chars
+        dict_agg_stats['num_total_chars'] = df_articles_stats['num_chars'].sum()
+        dict_agg_stats['num_mean_chars'] = df_articles_stats['num_chars'].mean()
+        dict_agg_stats['num_min_chars'] = df_articles_stats['num_chars'].min()
+        dict_agg_stats['num_max_chars'] = df_articles_stats['num_chars'].max()
+
+        # num_words
+        dict_agg_stats['num_total_words'] = df_articles_stats['num_words'].sum()
+        dict_agg_stats['num_mean_words'] = df_articles_stats['num_words'].mean()
+        dict_agg_stats['num_min_words'] = df_articles_stats['num_words'].min()
+        dict_agg_stats['num_max_words'] = df_articles_stats['num_words'].max()
+
+        # num_words_unique
+        dict_agg_stats['num_total_words_unique'] = df_articles_stats['num_words_unique'].sum()
+        dict_agg_stats['num_mean_words_unique'] = df_articles_stats['num_words_unique'].mean()
+        dict_agg_stats['num_min_words_unique'] = df_articles_stats['num_words_unique'].min()
+        dict_agg_stats['num_max_chars_unique'] = df_articles_stats['num_words_unique'].max()
+
+        # mean_lenght_word
+        dict_agg_stats['mean_length_words'] = df_articles_stats['mean_lenght_word'].mean()
+
+        # mean_lenght_word
+        dict_agg_stats['lexical_density'] = dict_agg_stats['num_mean_words']/dict_agg_stats['num_mean_words_unique']
+        
+        # Number articles at least 280 characters
+        filtro = (df_articles_stats.num_chars <= 280)
+        dict_agg_stats['twitter_articles'] = df_articles_stats.loc[(filtro)].shape[0]
+        
+        # Number articles at least 280 characters
+        filtro = (df_articles_stats.num_words < 100)
+        dict_agg_stats['articles_lower'] = df_articles_stats.loc[(filtro)].shape[0]
+        
+        dict_dfs['show_text_numbers']['dict_agg_stats'] = dict_agg_stats
+        
+    else:
+        dict_agg_stats = dict_dfs['show_text_numbers']['dict_agg_stats']
     
-    # Number articles at least 280 characters
-    filtro = (df_articles_stats.num_words < 100)
-    dict_agg_stats['articles_lower'] = df_articles_stats.loc[(filtro)].shape[0]
     
     # token all text
-    token_text = tprep.text_tokenize(' '.join(documents_all_text))
+    if not checkey(dict_dfs['show_text_numbers'],'token_text'):
+        token_text = tprep.text_tokenize(' '.join(documents_all_text))
+        dict_dfs['show_text_numbers']['token_text'] = token_text
+    else:
+        token_text = dict_dfs['show_text_numbers']['token_text']
     
     # regex
     def f_reg(t):
@@ -349,28 +379,40 @@ def show_text_numbers(st, dict_dfs):
         return texto
     
     # Unigram
-    words_freq = pd.value_counts(token_text)
-    words_freq = pd.DataFrame(words_freq,columns=['frequency'])
-    words_freq.index.name = 'unigram'
-    words_freq = words_freq.reset_index()
-    dict_agg_stats['num_total_words_unique'] = len(list(set(words_freq.unigram.tolist())))
-    words_freq.unigram = words_freq.unigram.apply(f_reg)
+    if not checkey(dict_dfs['show_text_numbers'],'words_freq'):
+        words_freq = pd.value_counts(token_text)
+        words_freq = pd.DataFrame(words_freq,columns=['frequency'])
+        words_freq.index.name = 'unigram'
+        words_freq = words_freq.reset_index()
+        dict_agg_stats['num_total_words_unique'] = len(list(set(words_freq.unigram.tolist())))
+        words_freq.unigram = words_freq.unigram.apply(f_reg)
+        dict_dfs['show_text_numbers']['words_freq'] = words_freq
+    else:
+        words_freq = dict_dfs['show_text_numbers']['words_freq']
     
     # Bigram - this code can be in the prep/mining class on the text.py
-    list_bigrams = list(nltk.bigrams(token_text))
-    bigram_freq = pd.value_counts(list_bigrams)
-    df_bigram = pd.DataFrame(bigram_freq, columns=['frequency'])
-    df_bigram.index.name = 'bigram'
-    df_bigram = df_bigram.reset_index()
-    df_bigram.bigram = df_bigram.bigram.apply(f_reg)
+    if not checkey(dict_dfs['show_text_numbers'],'df_bigram'):
+        list_bigrams = list(nltk.bigrams(token_text))
+        bigram_freq = pd.value_counts(list_bigrams)
+        df_bigram = pd.DataFrame(bigram_freq, columns=['frequency'])
+        df_bigram.index.name = 'bigram'
+        df_bigram = df_bigram.reset_index()
+        df_bigram.bigram = df_bigram.bigram.apply(f_reg)
+        dict_dfs['show_text_numbers']['df_bigram'] = df_bigram
+    else:
+        df_bigram = dict_dfs['show_text_numbers']['df_bigram']
     
     # Trigram - this code can be in the prep/mining class on the text.py
-    list_trigam = list(nltk.trigrams(token_text))
-    trigam_freq = pd.value_counts(list_trigam)
-    df_trigram = pd.DataFrame(trigam_freq, columns=['frequency'])
-    df_trigram.index.name = 'trigram'
-    df_trigram = df_trigram.reset_index()
-    df_trigram.trigram = df_trigram.trigram.apply(f_reg)
+    if not checkey(dict_dfs['show_text_numbers'],'df_trigram'):
+        list_trigam = list(nltk.trigrams(token_text))
+        trigam_freq = pd.value_counts(list_trigam)
+        df_trigram = pd.DataFrame(trigam_freq, columns=['frequency'])
+        df_trigram.index.name = 'trigram'
+        df_trigram = df_trigram.reset_index()
+        df_trigram.trigram = df_trigram.trigram.apply(f_reg)
+        dict_dfs['show_text_numbers']['df_trigram'] = df_trigram
+    else:
+        df_trigram = dict_dfs['show_text_numbers']['df_trigram']
     
     with st.container():
         _ , col1, col2, col3, _ = st.columns([1.5, 3, 3, 3, 0.25])
@@ -433,6 +475,8 @@ def show_text_numbers(st, dict_dfs):
                    height=250, 
                    width='100%',
                    reload_data=True)
+            
+    return dict_dfs
 
 
 def show_articles_data(st, dict_dfs):
@@ -453,6 +497,8 @@ def show_articles_data(st, dict_dfs):
     
     st.write("**[Authors Citations Articles Data] df_doc_authors_citations (with 5 rows sample):**")
     st.dataframe(dict_dfs['df_doc_authors_citations'].head(5).astype(str), width=None, height=None)
+    
+    return dict_dfs
 
 
 def show_word_cloud(st, dict_dfs, input_path, folder_images='app_images', wc_image_name='wc_image.png',
@@ -462,27 +508,36 @@ def show_word_cloud(st, dict_dfs, input_path, folder_images='app_images', wc_ima
     
     tviz = text_viz()
     tprep = text_prep()
-
-    # st.warning("🛠🧾 Text in preparation for WordCloud!")
-    dict_dfs['df_doc_info']['abstract_prep'] = tprep.text_preparation_column(dict_dfs['df_doc_info']['abstract'])
-    documents = dict_dfs['df_doc_info']['abstract_prep'].fillna(' ').tolist()
     
-    path_images = os.path.join(input_path, cache_folder_name, folder_images)
-    if not os.path.exists(path_images):
-        os.mkdir(path_images)
+    # st.warning("🛠🧾 Text in preparation for WordCloud!")
+    if not checkey(dict_dfs,'show_word_cloud'):
+        
+        dict_dfs['show_word_cloud'] = {}
+        
+        dict_dfs['df_doc_info']['abstract_prep'] = tprep.text_preparation_column(dict_dfs['df_doc_info']['abstract'])
+        documents = dict_dfs['df_doc_info']['abstract_prep'].fillna(' ').tolist()
+        
+        path_images = os.path.join(input_path, cache_folder_name, folder_images)
+        if not os.path.exists(path_images):
+            os.mkdir(path_images)
 
-    wc, ax, fig = tviz.word_cloud(documents, 
-                                  path_image=os.path.join(path_images, wc_image_name), 
-                                  show_wc=False, 
-                                  width=1000, 
-                                  height=500, 
-                                  collocations=True, 
-                                  background_color='white')
-    # st.markdown("""<h5 style="text-align:left;"><b>WordCloud:</b></h5>""",unsafe_allow_html=True)
-    st.pyplot(fig)
+        wc, ax, fig = tviz.word_cloud(documents, 
+                                    path_image=os.path.join(path_images, wc_image_name), 
+                                    show_wc=False, 
+                                    width=1000, 
+                                    height=500, 
+                                    collocations=True, 
+                                    background_color='white')
+        
+        # st.markdown("""<h5 style="text-align:left;"><b>WordCloud:</b></h5>""",unsafe_allow_html=True)
+        dict_dfs['show_word_cloud']['word_cloud_fig'] = fig
+    
+    st.pyplot(dict_dfs['show_word_cloud']['word_cloud_fig'])
+    
+    return dict_dfs
 
 
-def cossine_similarity_data(st, dict_dfs, column='abstract',n_sim=200,
+def cossine_similarity_data(st, dict_dfs, column='abstract', n_sim=200,
                             percentil="99%", sim_value_min=0, sim_value_max=0.99):
     
     """"""
@@ -495,7 +550,7 @@ def cossine_similarity_data(st, dict_dfs, column='abstract',n_sim=200,
         df_tfidf_abstract = tmining.get_df_tfidf(documents)
         
         df_cos_tfidf_sim = tmining.get_cossine_similarity_matrix(df_tfidf_abstract,
-                                                                dict_dfs['df_doc_info'].index.tolist())
+                                                                 dict_dfs['df_doc_info'].index.tolist())
         
     with st.spinner('📑🔍 Filtering best similarities relations...'):
         
@@ -528,21 +583,21 @@ def nodes_data(st, dict_dfs, df_cos_sim_filter):
 
         # Selecting authors information
         authors_data = dict_dfs['df_doc_authors'].reset_index()
-        authors_data = authors_data.groupby(by=['pdf_md5'], as_index=False)['full_name_author'].count()
+        authors_data = authors_data.groupby(by=['article_id'], as_index=False)['full_name_author'].count()
         authors_data.rename(columns={'full_name_author':'author_count'}, inplace=True)
 
         # Selecting citations information
         citations_data = dict_dfs['df_doc_citations'].reset_index()
-        citations_data = citations_data.groupby(by=['pdf_md5'], as_index=False)['index_citation'].count()
+        citations_data = citations_data.groupby(by=['article_id'], as_index=False)['index_citation'].count()
         citations_data.rename(columns={'index_citation':'citation_count'}, inplace=True)
 
         nodes = list(set(df_cos_sim_filter.doc_a.tolist() + df_cos_sim_filter.doc_b.tolist()))
-        df_nodes = pd.DataFrame(nodes, columns=['pdf_md5'])
+        df_nodes = pd.DataFrame(nodes, columns=['article_id'])
 
-        df_nodes = df_nodes.merge(head_data, how='left', on='pdf_md5')
-        df_nodes = df_nodes.merge(doc_info_data, how='left', on='pdf_md5')
-        df_nodes = df_nodes.merge(authors_data, how='left', on='pdf_md5')
-        df_nodes = df_nodes.merge(citations_data, how='left', on='pdf_md5')
+        df_nodes = df_nodes.merge(head_data, how='left', on='article_id')
+        df_nodes = df_nodes.merge(doc_info_data, how='left', on='article_id')
+        df_nodes = df_nodes.merge(authors_data, how='left', on='article_id')
+        df_nodes = df_nodes.merge(citations_data, how='left', on='article_id')
 
     return df_nodes
 
@@ -613,10 +668,22 @@ def text_preparation(st, dict_dfs, input_folder_path):
     
     tprep = text_prep()
     
-    # dict_dfs['df_doc_info']['acknowledgement_prep'] = tprep.text_prep_column(dict_dfs['df_doc_info']['acknowledgement'])
-    dict_dfs['df_doc_info']['abstract_prep'] = tprep.text_preparation_column(dict_dfs['df_doc_info']['abstract'])
-    dict_dfs['df_doc_info']['body_prep'] = tprep.text_preparation_column(dict_dfs['df_doc_info']['body'])
-    
+    if not checkey(dict_dfs,'text_preparation'):
+        
+        dict_dfs['text_preparation'] = {}
+        
+        dict_dfs['df_doc_info']['abstract_prep'] = tprep.text_preparation_column(dict_dfs['df_doc_info']['abstract'])
+        dict_dfs['text_preparation']['abstract_prep'] = dict_dfs['df_doc_info']['abstract_prep']
+        
+        # dict_dfs['df_doc_info']['acknowledgement_prep'] = tprep.text_prep_column(dict_dfs['df_doc_info']['acknowledgement'])
+        
+        dict_dfs['df_doc_info']['body_prep'] = tprep.text_preparation_column(dict_dfs['df_doc_info']['body'])
+        dict_dfs['text_preparation']['body_prep'] = dict_dfs['df_doc_info']['body_prep']
+        
+    else:
+        dict_dfs['df_doc_info']['abstract_prep'] = dict_dfs['text_preparation']['abstract_prep']
+        dict_dfs['df_doc_info']['body_prep'] = dict_dfs['text_preparation']['body_prep']
+        
     return dict_dfs
 
 
@@ -625,7 +692,7 @@ def generate_keywords(dict_dfs):
     kw_model = KeyBERT()
     
     dict_keywords = {}
-    id_column = 'pdf_md5'
+    id_column = 'article_id'
     text_column = 'abstract'
     col_select = [id_column,text_column]
     docs = dict_dfs['df_doc_info'].reset_index().loc[:, col_select]
@@ -719,7 +786,7 @@ def agg_keys_node_data(grupo):
     """"""
     dictAgg = {}
     dictAgg['keyword'] = grupo['keyword'].iat[0]
-    dictAgg['article_count'] = grupo['pdf_md5'].shape[0]
+    dictAgg['article_count'] = grupo['article_id'].shape[0]
     dictAgg['value_sum'] = grupo['value'].sum()
     dictAgg['value_mean'] = grupo['value'].mean()
     
@@ -743,13 +810,13 @@ def show_keywords_graph(st, dict_dfs, df_article_keywords_all, input_folder_path
     # Selecting nodes in the list of selected edges
     df_nodes = get_node_data(dict_dfs)
 
-    filtro = (df_nodes['pdf_md5'].isin(df_art_key_all['pdf_md5'].tolist()))
+    filtro = (df_nodes['article_id'].isin(df_art_key_all['article_id'].tolist()))
     df_nodes = df_nodes.loc[(filtro)].copy()
     
     path_write_graph = os.path.join(input_folder_path, cache_folder_name)
         
     keywords_graph, path_graph, path_folder_graph = tmining.make_keywords_graph(edges_key_articles=df_art_key_all, node_data=df_nodes,
-                                                    node_keywords_data=df_keyword_data, source_column="keyword", to_column="pdf_md5", 
+                                                    node_keywords_data=df_keyword_data, source_column="keyword", to_column="article_id", 
                                                     value_column="value", height="500px", width="100%", directed=False, notebook=False,
                                                     bgcolor="#ffffff", font_color=False, layout=None, heading="", path_graph=path_write_graph,
                                                     folder_graph=folder_graph, buttons=buttons, name_file=name_file)
@@ -832,21 +899,21 @@ def get_node_data(dict_dfs):
 
     # Selecting authors information
     authors_data = dict_dfs['df_doc_authors'].reset_index()
-    authors_data = authors_data.groupby(by=['pdf_md5'], as_index=False)['full_name_author'].count()
+    authors_data = authors_data.groupby(by=['article_id'], as_index=False)['full_name_author'].count()
     authors_data.rename(columns={'full_name_author':'author_count'}, inplace=True)
 
     # Selecting citations information
     citations_data = dict_dfs['df_doc_citations'].reset_index()
-    citations_data = citations_data.groupby(by=['pdf_md5'], as_index=False)['index_citation'].count()
+    citations_data = citations_data.groupby(by=['article_id'], as_index=False)['index_citation'].count()
     citations_data.rename(columns={'index_citation':'citation_count'}, inplace=True)
 
-    nodes = dict_dfs['df_doc_info'].reset_index()['pdf_md5'].tolist()
-    df_nodes = pd.DataFrame(nodes, columns=['pdf_md5'])
+    nodes = dict_dfs['df_doc_info'].reset_index()['article_id'].tolist()
+    df_nodes = pd.DataFrame(nodes, columns=['article_id'])
 
-    df_nodes = df_nodes.merge(head_data, how='left', on='pdf_md5')
-    df_nodes = df_nodes.merge(doc_info_data, how='left', on='pdf_md5')
-    df_nodes = df_nodes.merge(authors_data, how='left', on='pdf_md5')
-    df_nodes = df_nodes.merge(citations_data, how='left', on='pdf_md5')
+    df_nodes = df_nodes.merge(head_data, how='left', on='article_id')
+    df_nodes = df_nodes.merge(doc_info_data, how='left', on='article_id')
+    df_nodes = df_nodes.merge(authors_data, how='left', on='article_id')
+    df_nodes = df_nodes.merge(citations_data, how='left', on='article_id')
     
     return df_nodes
 
@@ -861,7 +928,50 @@ def choose_filepath(st):
         input_folder_path = input_path = ""
         input_folder_path = st.text_input('Selected folder:',filedialog.askdirectory(master=tk_root), key='txt_input_path')
     return input_folder_path
+
+
+def get_last_executions(input_folder_path, cache_folder_name='summarticles_cache', folder_execs='summa_files', ext_file='summa'):
+    
+    path_execs = os.path.join(input_folder_path, cache_folder_name, folder_execs)
+    list_files_execs = ['Test']
+    if os.path.exists(path_execs):
+        for f in os.listdir(path_execs):
+            if str(f).endswith(ext_file):
+                list_files_execs.append(f)
+                
+    return list_files_execs
+
    
+def show_last_executions(st, input_folder_path, cache_folder_name='summarticles_cache', folder_execs='summa_files', ext_file='summa'):
+    
+    list_files_execs = get_last_executions(input_folder_path, cache_folder_name, folder_execs, ext_file)
+    
+    choice_exec = None
+    dict_dfs = {}
+    
+    if len(list_files_execs):
+        
+        st.markdown("""<hr style="height:5px;border:none;color:#333;background-color:#333;" /> """, unsafe_allow_html=True)
+        st.info("❕ We found previously executions, do you want to recovery it?")
+    
+        _, col1, col2, _ = st.columns([2.5,1.25,1,2])
+        
+        with col1:
+            btn_recovery = st.button("New execution!")
+        
+        with col2:
+            btn_execute = st.button("Recovery!")
+        
+        if btn_execute=="New execution!":
+            return dict_dfs, choice_exec
+        elif btn_recovery=="Recovery!":
+            # Here we need to recovery previously executions, maybe we can use joblib
+            choice_exec = st.selectbox('Please, choose one: ', tuple(list_files_execs))
+            
+            btn_recovery_select = st.button("Recovery this one!")
+            if btn_recovery_select:
+                return dict_dfs, choice_exec
+
 
 def btn_clicked_folder(st, input_folder_path, n_workers, show_wordcloud=True, show_similaritygraph=True,
                        cache_folder_name='summarticles_cache', show_text_macro=True, show_keywords_table=True, 
@@ -871,10 +981,10 @@ def btn_clicked_folder(st, input_folder_path, n_workers, show_wordcloud=True, sh
     
     # cache path files
     
-    
     # Run and display batch process, return a dictionary of dataframes with all data extract from articles
-    dict_dfs = run_batch_process(st, input_folder_path, n_workers=n_workers, cache_folder_name=cache_folder_name,
-                                 display_articles_data=False, save_xmltei=True)
+    if not option and not checkey(dict_dfs, 'df_doc_info'):
+        dict_dfs = run_batch_process(st, input_folder_path, n_workers=n_workers, cache_folder_name=cache_folder_name,
+                                    display_articles_data=False, save_xmltei=True)
     
     if not dict_dfs:
         return None
@@ -898,12 +1008,12 @@ def btn_clicked_folder(st, input_folder_path, n_workers, show_wordcloud=True, sh
     
         if show_wordcloud:
             with st.spinner('📄➞☁️ Making WordCloud...'):
-                show_word_cloud(st, dict_dfs, input_folder_path, cache_folder_name=cache_folder_name,
-                                folder_images='images', wc_image_name='wc_image.png')
+                dict_dfs = show_word_cloud(st, dict_dfs, input_folder_path, cache_folder_name=cache_folder_name,
+                                           folder_images='images', wc_image_name='wc_image.png')
         if show_text_macro:
             with st.spinner('🔢📊 Generating articles text numbers/stats...'):
                 st.markdown("""<hr style="height:0.1px;border:none;color:#F1F1F1;background-color:#F1F1F1;" /> """, unsafe_allow_html=True)
-                show_text_numbers(st, dict_dfs)
+                dict_dfs = show_text_numbers(st, dict_dfs)
 
     with st.container():
         if show_keywords_table:
@@ -927,7 +1037,10 @@ def btn_clicked_folder(st, input_folder_path, n_workers, show_wordcloud=True, sh
                 similarity_graph(st, dict_dfs, input_folder_path, percentil="75%", 
                                 n_sim=100, cache_folder_name=cache_folder_name)
 
-    
+def checkey(dic,key):
+    return True if key in dic else False 
+
+
 ###############################################################################################
 # ---------------------------------------------------------------------------------------------
 # For process execution and streamlit app
@@ -957,7 +1070,14 @@ if __name__ == '__main__':
     # ----------------------------------------------------------------------------
     # If button clicked, then start APP process with some verifications
     if btn_getfolder:
+        
         input_folder_path = choose_filepath(st)
+        
+        if get_last_executions()
+        dict_dfs, option = show_last_executions(st, input_folder_path,
+                                                cache_folder_name='summarticles_cache',
+                                                folder_execs='summa_files', ext_file='summa')
+        
         with st.spinner('💻⚙️ Process running... Leave the rest to us! In the meantime maybe you can have some coffee. ☕'):
             btn_clicked_folder(st, input_folder_path, n_workers=10)
             
