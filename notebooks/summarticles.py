@@ -110,9 +110,7 @@ def clean_error_results(result_batch):
     return new_result
 
 
-def run_batch_process(st, path_input, cache_folder_name='summarticles_cache', n_workers=10, display_articles_data=True, save_xmltei=True):
-
-    """"""
+def check_input_path(st, path_input):
 
     # path_input = os.path.join(path,'artifacts','test_article')
     input_folder_path = get_path(path_input)
@@ -121,47 +119,57 @@ def run_batch_process(st, path_input, cache_folder_name='summarticles_cache', n_
     
     if not len(input_folder_path) or pd.isna(input_folder_path) or input_folder_path == "":
         st.error(f"❌ You need to specify a valid folder path, click on **'📁 Get folder path!'** Folder path: {str(input_folder_path)}!")
+        return False
     elif not os.path.exists(input_folder_path):
         st.error(f"❌ The path doesn't exist! You need to specify a valid folder path! Folder path: {str(input_folder_path)}")
+        return False
     elif not len(files_path(input_folder_path)):
         st.error(f"❌ There are no files in this folder path! You need to specify a valid folder path! Folder path: {str(input_folder_path)}")
+        return False
     elif not gcli.check_typefile_inpath(files_path(input_folder_path)):
         st.error(f"❌ There are no files in this folder with APP required file type! Please make sure if that path is the correct path!")
+        return False
     else:
-        
         st.success(f"✔️ **In this folder path we found: {str(len(files_path(input_folder_path)))} files!** Folder path: {str(input_folder_path)}")
         # msg = customMsg('⚡ Running batch process!','warning')
         # st.warning('⚡ Running batch process!')
+    return True
+
+
+def run_batch_process(st, path_input, cache_folder_name='summarticles_cache', n_workers=10, display_articles_data=True, save_xmltei=True):
+
+    """"""
+
+    # path_input = os.path.join(path,'artifacts','test_article')
+    input_folder_path = get_path(path_input)
         
-        if len(files_path(input_folder_path)) < 2:
-            st.error(f"❌ You need to specify a path with at least two pdf files!")
+    if len(files_path(input_folder_path)) < 2:
+        st.error(f"❌ You need to specify a path with at least two pdf files!")
+        return None
+    
+    with st.spinner('⚡ Running batch process...'):
+        
+        result_batch = batch_process_path(input_folder_path, n_workers= n_workers)
+        result_batch = clean_error_results(result_batch)
+        
+        if not len(result_batch):
+            st.error(f"⚠️ Something is wrong, I can't get any result! 😕 Please, look if you selected the correct file path or if files in the selected path have information to extract!")
             return None
         
-        with st.spinner('⚡ Running batch process...'):
-            
-            result_batch = batch_process_path(input_folder_path, n_workers= n_workers)
-            result_batch = clean_error_results(result_batch)
-            
-            if not len(result_batch):
-                st.error(f"⚠️ Something is wrong, I can't get any result! 😕 Please, look if you selected the correct file path or if files in the selected path have information to extract!")
-                return None
-            
-            dict_dfs, dict_errors = get_dataframes(result_batch)
+        dict_dfs, dict_errors = get_dataframes(result_batch)
 
-            if save_xmltei:
-                gcli.save_xmltei_files(result_batch, input_folder_path, cache_folder_name=cache_folder_name)
+        if save_xmltei:
+            gcli.save_xmltei_files(result_batch, input_folder_path, cache_folder_name=cache_folder_name)
 
-            if display_articles_data and len(result_batch):
-                with st.spinner('🧾 Showing articles information...'):
-                    show_articles_data(st, dict_dfs)
+        if display_articles_data and len(result_batch):
+            with st.spinner('🧾 Showing articles information...'):
+                show_articles_data(st, dict_dfs)
+
+    print('[Process has been finished!!!]')
+    #msg.empty()
+    #msg = customMsg('⚡ Finish process!','warning')
     
-        print('[Process has been finished!!!]')
-        #msg.empty()
-        #msg = customMsg('⚡ Finish process!','warning')
-        
-        return dict_dfs
-    
-    return None
+    return dict_dfs
 
 
 def chars_graph(dict_dfs):
@@ -252,6 +260,19 @@ def make_getpath_button(st):
     with btn_col1:
         btn_getfolder = st.button('📁 Select a folder path!',key='btn_getfolder')
         st.markdown("""<p style="text-align:left;font-size:11px;">This application only works with PDF files.</p>""", unsafe_allow_html=True)
+    
+    return btn_getfolder
+
+
+def make_run_button(st):
+    
+    """"""
+    
+    _, btn_col1, _ = st.columns([3,3,1])
+    
+    with btn_col1:
+        btn_getfolder = st.button('⚡ Run process!', key='btn_run_app')
+        st.markdown("""<p style="text-align:left;font-size:11px;">Only enabled if input path is correctly!</p>""", unsafe_allow_html=True)
     
     return btn_getfolder
 
@@ -971,71 +992,7 @@ def show_last_executions(st, input_folder_path, cache_folder_name='summarticles_
             btn_recovery_select = st.button("Recovery this one!")
             if btn_recovery_select:
                 return dict_dfs, choice_exec
-
-
-def btn_clicked_folder(st, input_folder_path, n_workers, show_wordcloud=True, show_similaritygraph=True,
-                       cache_folder_name='summarticles_cache', show_text_macro=True, show_keywords_table=True, 
-                       show_keywords_graph_cond=True):
-
-    """"""
-    
-    # cache path files
-    
-    # Run and display batch process, return a dictionary of dataframes with all data extract from articles
-    if not option and not checkey(dict_dfs, 'df_doc_info'):
-        dict_dfs = run_batch_process(st, input_folder_path, n_workers=n_workers, cache_folder_name=cache_folder_name,
-                                    display_articles_data=False, save_xmltei=True)
-    
-    if not dict_dfs:
-        return None
-    
-    if not len(dict_dfs.keys()) or not dict_dfs['df_doc_info'].shape[0]:
-        st.error("❓ There is no information to extract from articles in the specified path! Please, choose another fila path.")
-        
-    with st.container():
-        with st.spinner('🔢📊 Generating articles macro numbers...'):
-            st.markdown("""<hr style="height:10px;border:none;color:#333;background-color:#333;" /> """, unsafe_allow_html=True)
-            show_macro_numbers(st, dict_dfs)
-        
-    with st.spinner('🛠️📄 Text prepatation...'):
-        dict_dfs = text_preparation(st, dict_dfs, input_folder_path)
-    
-    # Container for wordcloud and text macro numbers
-    with st.container():
-        
-        st.markdown("""<hr style="height:1px;border:none;color:#F1F1F1;background-color:#F1F1F1;" /> """, unsafe_allow_html=True)
-        st.markdown("""<h3 style="text-align:left;"><b>Text Macro Numbers</b></h3>""",unsafe_allow_html=True)
-    
-        if show_wordcloud:
-            with st.spinner('📄➞☁️ Making WordCloud...'):
-                dict_dfs = show_word_cloud(st, dict_dfs, input_folder_path, cache_folder_name=cache_folder_name,
-                                           folder_images='images', wc_image_name='wc_image.png')
-        if show_text_macro:
-            with st.spinner('🔢📊 Generating articles text numbers/stats...'):
-                st.markdown("""<hr style="height:0.1px;border:none;color:#F1F1F1;background-color:#F1F1F1;" /> """, unsafe_allow_html=True)
-                dict_dfs = show_text_numbers(st, dict_dfs)
-
-    with st.container():
-        if show_keywords_table:
-            st.markdown("""<hr style="height:1px;border:none;color:#F1F1F1;background-color:#F1F1F1;" /> """, unsafe_allow_html=True)
-            st.markdown("""<h3 style="text-align:left;"><b>KeyWords</b></h3>""",unsafe_allow_html=True)
             
-            with st.spinner('📄➞🔤  Extracting KeyWords...'):
-                df_keywords_all, df_article_keywords_all, dict_keywords = generate_keywords(dict_dfs)
-                
-            with st.spinner('📄➞🔤  Showing KeyWords...'):
-                show_keywords(st, df_keywords_all)
-                
-            if show_keywords_graph_cond:
-                with st.spinner('📄➞📄  Making KeyWord Graph...'):
-                    show_keywords_graph(st, dict_dfs, df_article_keywords_all, input_folder_path)
-            
-    with st.container():
-        if show_similaritygraph:
-            with st.spinner('📄➞📄  Making Similarity Graph...'):
-                st.markdown("""<hr style="height:1px;border:none;color:#F1F1F1;background-color:#F1F1F1;" /> """, unsafe_allow_html=True)
-                similarity_graph(st, dict_dfs, input_folder_path, percentil="75%", 
-                                n_sim=100, cache_folder_name=cache_folder_name)
 
 def checkey(dic,key):
     return True if key in dic else False 
@@ -1050,6 +1007,20 @@ if __name__ == '__main__':
     # ----------------------------------------------------------------------------
     # ATTENTION THIS CODE NEED SOME MODULARIZATION AND ORGANIZATION
     # BUT AT THIS TIME WE ONLY START APP DEVELOP
+    
+    # ----------------------------------------------------------------------------
+    # State variables
+    if 'input_path' not in st.session_state:
+        st.session_state['input_path'] = ""
+    if 'path_check' not in st.session_state:
+        st.session_state['path_check'] = False
+    
+    # This variables shall convert to checkbox 
+    show_text_macro = True
+    show_wordcloud = True
+    show_keywords_table = True
+    show_keywords_graph_cond = True
+    show_similaritygraph = True
     
     # ----------------------------------------------------------------------------
     # Entrance of app
@@ -1073,11 +1044,81 @@ if __name__ == '__main__':
         
         input_folder_path = choose_filepath(st)
         
-        if get_last_executions()
-        dict_dfs, option = show_last_executions(st, input_folder_path,
-                                                cache_folder_name='summarticles_cache',
-                                                folder_execs='summa_files', ext_file='summa')
+        if check_input_path(st, input_folder_path):
+            st.session_state['input_path'] = input_folder_path
+            st.session_state['path_check'] = True
+        else:
+            st.session_state['path_check'] = False
+                
+        # if get_last_executions()
+        # dict_dfs, option = show_last_executions(st, input_folder_path,
+        #                                         cache_folder_name='summarticles_cache',
+        #                                         folder_execs='summa_files', ext_file='summa')
+    
+    # ----------------------------------------------------------------------------
+    # button getpath containers
+    
+    if st.session_state['path_check']:
         
-        with st.spinner('💻⚙️ Process running... Leave the rest to us! In the meantime maybe you can have some coffee. ☕'):
-            btn_clicked_folder(st, input_folder_path, n_workers=10)
+        btn_run = make_run_button(st)
+        if btn_run:
+        
+            input_folder_path = st.session_state['input_path']
+            with st.spinner('💻⚙️ Process running... Leave the rest to us! In the meantime maybe you can have some coffee. ☕'):
+
+                # Run and display batch process, return a dictionary of dataframes with all data extract from articles
+                # if not option and not checkey(dict_dfs, 'df_doc_info'):
+                dict_dfs = run_batch_process(st, input_folder_path, n_workers=10, cache_folder_name='summarticles_cache',
+                                            display_articles_data=False, save_xmltei=True)
+                
+                if not dict_dfs:
+                    st.error("❓ There is no information to extract from articles in the specified path! Please, choose another file path.")
+                else:
+                    if not len(dict_dfs.keys()) or not dict_dfs['df_doc_info'].shape[0]:
+                        st.error("❓ There is no information to extract from articles in the specified path! Please, choose another file path.")
+                    else:
+                        with st.container():
+                            with st.spinner('🔢📊 Generating articles macro numbers...'):
+                                st.markdown("""<hr style="height:10px;border:none;color:#333;background-color:#333;" /> """, unsafe_allow_html=True)
+                                show_macro_numbers(st, dict_dfs)
+                            
+                        with st.spinner('🛠️📄 Text prepatation...'):
+                            dict_dfs = text_preparation(st, dict_dfs, input_folder_path)
+                        
+                        # Container for wordcloud and text macro numbers
+                        with st.container():
+                            
+                            st.markdown("""<hr style="height:1px;border:none;color:#F1F1F1;background-color:#F1F1F1;" /> """, unsafe_allow_html=True)
+                            st.markdown("""<h3 style="text-align:left;"><b>Text Macro Numbers</b></h3>""",unsafe_allow_html=True)
+                        
+                            if show_wordcloud:
+                                with st.spinner('📄➞☁️ Making WordCloud...'):
+                                    dict_dfs = show_word_cloud(st, dict_dfs, input_folder_path, cache_folder_name='summarticles_cache',
+                                                            folder_images='images', wc_image_name='wc_image.png')
+                            if show_text_macro:
+                                with st.spinner('🔢📊 Generating articles text numbers/stats...'):
+                                    st.markdown("""<hr style="height:0.1px;border:none;color:#F1F1F1;background-color:#F1F1F1;" /> """, unsafe_allow_html=True)
+                                    dict_dfs = show_text_numbers(st, dict_dfs)
+
+                        with st.container():
+                            if show_keywords_table:
+                                st.markdown("""<hr style="height:1px;border:none;color:#F1F1F1;background-color:#F1F1F1;" /> """, unsafe_allow_html=True)
+                                st.markdown("""<h3 style="text-align:left;"><b>KeyWords</b></h3>""",unsafe_allow_html=True)
+                                
+                                with st.spinner('📄➞🔤  Extracting KeyWords...'):
+                                    df_keywords_all, df_article_keywords_all, dict_keywords = generate_keywords(dict_dfs)
+                                    
+                                with st.spinner('📄➞🔤  Showing KeyWords...'):
+                                    show_keywords(st, df_keywords_all)
+                                    
+                                if show_keywords_graph_cond:
+                                    with st.spinner('📄➞📄  Making KeyWord Graph...'):
+                                        show_keywords_graph(st, dict_dfs, df_article_keywords_all, input_folder_path)
+                                
+                        with st.container():
+                            if show_similaritygraph:
+                                with st.spinner('📄➞📄  Making Similarity Graph...'):
+                                    st.markdown("""<hr style="height:1px;border:none;color:#F1F1F1;background-color:#F1F1F1;" /> """, unsafe_allow_html=True)
+                                    similarity_graph(st, dict_dfs, input_folder_path, percentil="75%", 
+                                                    n_sim=100, cache_folder_name='summarticles_cache')
             
