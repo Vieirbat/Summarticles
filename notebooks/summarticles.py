@@ -129,11 +129,11 @@ def check_input_path(st, path_input):
     elif not gcli.check_typefile_inpath(files_path(input_folder_path)):
         st.error(f"❌ There are no files in this folder with APP required file type! Please make sure if that path is the correct path!")
         return False
-    else:
-        st.success(f"✔️ **In this folder path we found: {str(len(files_path(input_folder_path)))} files!** Folder path: {str(input_folder_path)}")
-        # msg = customMsg('⚡ Running batch process!','warning')
-        # st.warning('⚡ Running batch process!')
     return True
+
+
+def input_path_sucess_message(st, input_folder_path):
+    st.success(f"✔️ **In this folder path we found: {str(len(files_path(input_folder_path)))} files!** Folder path: {str(input_folder_path)}")
 
 
 def run_batch_process(st, path_input, cache_folder_name='summarticles_cache', n_workers=10, display_articles_data=True, save_xmltei=True):
@@ -222,9 +222,15 @@ def make_sidebar(st):
     """"""
 
     with st.sidebar:
-        st.markdown("""<p style="text-align:center;font-size:40px;">Menu Sidebar</p>""", unsafe_allow_html=False)
-
-
+        st.markdown("""Menu Sidebar""", unsafe_allow_html=False)
+        
+        clear_all = st.button("🛑 Clear all memory and execution!", key="clear_all")
+        if clear_all:
+            st.session_state = {}
+            st.experimental_memo.clear()
+            st.experimental_singleton.clear()
+            st.experimental_rerun()
+            
 def make_head(st):
 
     """"""
@@ -962,40 +968,73 @@ def get_last_executions(input_folder_path, cache_folder_name='summarticles_cache
                 
     return list_files_execs
 
-   
-def show_last_executions(st, input_folder_path, cache_folder_name='summarticles_cache', folder_execs='summa_files', ext_file='summa'):
+
+def load_previous_execution(file):
+    """"""
+    return None
+
+
+def make_select_box(list_files_execs, label, id):
     
-    list_files_execs = get_last_executions(input_folder_path, cache_folder_name, folder_execs, ext_file)
+    values = """"""
+    for valor in list_files_execs:
+        values += f"""<option value="{valor}">{valor}</option>"""
+    
+    html = f"""<label for="cars">{label}</label>
+               <select name="{id}" id="{id}">
+                   {values}
+               </select>"""
+
+
+def show_last_executions(st, list_files_execs, cache_folder_name='summarticles_cache', folder_execs='summa_files', ext_file='summa'):
+    """"""
     
     choice_exec = None
-    dict_dfs = {}
+    dict_dfs = None
+    st.session_state['previous_exec_check'] = False
+    
+    opt_default = "Select one option"
+    opt_new_run = "No I don't want to use previously execution, continue with new execution"
+    list_files_execs = [opt_default, opt_new_run] + list_files_execs
     
     if len(list_files_execs):
         
         st.markdown("""<hr style="height:5px;border:none;color:#333;background-color:#333;" /> """, unsafe_allow_html=True)
         st.info("❕ We found previously executions, do you want to recovery it?")
-    
-        _, col1, col2, _ = st.columns([2.5,1.25,1,2])
         
-        with col1:
-            btn_recovery = st.button("New execution!")
+        choice_exec = st.selectbox("Please, choose one: ", list_files_execs, key="select_box_execs")
+        st.write('You selected:', choice_exec)
+        if (choice_exec != opt_new_run) and (choice_exec != opt_default):
+            dict_dfs = load_previous_execution(choice_exec)
+            print("Catch cache execution!")
+            st.session_state['previous_exec_check'] = True
+        elif choice_exec == opt_new_run:
+            st.session_state['previous_exec_check'] = True
+            print("New execution!")
+        else:
+            st.session_state['previous_exec_check'] = False
         
-        with col2:
-            btn_execute = st.button("Recovery!")
+    else:
+        st.session_state['previous_exec_check'] = True
         
-        if btn_execute=="New execution!":
-            return dict_dfs, choice_exec
-        elif btn_recovery=="Recovery!":
-            # Here we need to recovery previously executions, maybe we can use joblib
-            choice_exec = st.selectbox('Please, choose one: ', tuple(list_files_execs))
-            
-            btn_recovery_select = st.button("Recovery this one!")
-            if btn_recovery_select:
-                return dict_dfs, choice_exec
+    return dict_dfs
             
 
 def checkey(dic,key):
-    return True if key in dic else False 
+    """"""
+    return True if key in dic else False
+
+
+def make_reset_button(st):
+    """"""
+    _, btn_reset, _ = st.columns([3,3,1])
+    with btn_reset:
+        clear_all = st.button("🔄 Reset execution!", key="reset_exec")
+        if clear_all:
+            st.session_state = {}
+            st.experimental_memo.clear()
+            st.experimental_singleton.clear()
+            st.experimental_rerun()
 
 
 ###############################################################################################
@@ -1014,18 +1053,17 @@ if __name__ == '__main__':
         st.session_state['input_path'] = ""
     if 'path_check' not in st.session_state:
         st.session_state['path_check'] = False
-    
-    # This variables shall convert to checkbox 
-    show_text_macro = True
-    show_wordcloud = True
-    show_keywords_table = True
-    show_keywords_graph_cond = True
-    show_similaritygraph = True
+    if 'previous_exec_check' not in st.session_state:
+        st.session_state['previous_exec_check'] = False
+    if 'choice_exec' not in st.session_state:
+        st.session_state['choice_exec'] = "Select one option"
+    if 'dict_dfs' not in st.session_state:
+        st.session_state['dict_dfs'] = None
     
     # ----------------------------------------------------------------------------
     # Entrance of app
     make_head(st) # st.header("")
-    
+
     # ----------------------------------------------------------------------------
     # TKINTER configs for get file path with filebox dialog
     tk_root = tk_configs()
@@ -1035,90 +1073,127 @@ if __name__ == '__main__':
     make_sidebar(st)
     
     # ----------------------------------------------------------------------------
-    # button getpath containers
-    btn_getfolder = make_getpath_button(st)
-    
-    # ----------------------------------------------------------------------------
-    # If button clicked, then start APP process with some verifications
-    if btn_getfolder:
+    # Reset execution
+    if st.session_state['path_check']:
+        make_reset_button(st)
         
-        input_folder_path = choose_filepath(st)
-        
-        if check_input_path(st, input_folder_path):
-            st.session_state['input_path'] = input_folder_path
-            st.session_state['path_check'] = True
-        else:
-            st.session_state['path_check'] = False
-                
-        # if get_last_executions()
-        # dict_dfs, option = show_last_executions(st, input_folder_path,
-        #                                         cache_folder_name='summarticles_cache',
-        #                                         folder_execs='summa_files', ext_file='summa')
     
     # ----------------------------------------------------------------------------
     # button getpath containers
     
+    if not st.session_state['path_check']:
+    
+        btn_getfolder = make_getpath_button(st)
+        
+        # ----------------------------------------------------------------------------
+        # Settings
+        # This variables shall convert to checkbox 
+        
+        with st.expander("Settings and parameters"):
+            st.write("This is in development!")
+            c1, c2, c3 = st.columns([1,1,1])
+            with c1:
+                st.session_state['show_text_macro'] = show_text_macro = st.checkbox("Show Macro Text Information", True, key="chk_show_text_macro")
+                st.session_state['show_wordcloud'] = show_wordcloud = st.checkbox("Show WordCloud Chart", True, key="chk_show_wordcloud")
+            with c2:
+                st.session_state['show_keywords_table'] = show_keywords_table = st.checkbox("Show KeyWords Information", True, key="chk_show_keywords_table")
+                st.session_state['show_keywords_graph_cond'] = show_keywords_graph_cond = st.checkbox("Show KeyWords Chart", True, key="chk_show_keywords_graph_cond")
+            with c3:
+                st.session_state['show_similaritygraph'] = show_similaritygraph = st.checkbox("Show Similarity Graph", True, key="chk_show_similaritygraph")
+                st.session_state['show_clustering'] = show_clustering = st.checkbox("Show Clustering Graph", True, key="chk_show_clustering")
+
+        if btn_getfolder:
+            
+            input_folder_path = choose_filepath(st)
+            
+            if check_input_path(st, input_folder_path):
+                st.session_state['input_path'] = input_folder_path
+                st.session_state['path_check'] = True
+            else:
+                st.session_state['path_check'] = False
+    
+    # ----------------------------------------------------------------------------
+    # Check if there are another executions in the cache
     if st.session_state['path_check']:
         
-        btn_run = make_run_button(st)
-        if btn_run:
+        input_path_sucess_message(st, st.session_state['input_path'])
+    
+        with st.spinner('⚙️ Check if there are another executions in the cache!'):
+            
+            list_last_executions = get_last_executions(st.session_state['input_path'],
+                                                       cache_folder_name='summarticles_cache',
+                                                       folder_execs='summa_files',
+                                                       ext_file='summa')
+            if list_last_executions:
+                dict_dfs = show_last_executions(st, list_last_executions,
+                                                cache_folder_name='summarticles_cache',
+                                                folder_execs='summa_files', ext_file='summa')
+                st.session_state['dict_dfs'] = dict_dfs
         
-            input_folder_path = st.session_state['input_path']
-            with st.spinner('💻⚙️ Process running... Leave the rest to us! In the meantime maybe you can have some coffee. ☕'):
+    # ----------------------------------------------------------------------------
+    # button getpath containers
+    
+    if st.session_state['previous_exec_check']:
+        
+        input_folder_path = st.session_state['input_path']
+        with st.spinner('💻⚙️ Process running... Leave the rest to us! Meanwhile maybe you can have some coffee. ☕'):
 
-                # Run and display batch process, return a dictionary of dataframes with all data extract from articles
-                # if not option and not checkey(dict_dfs, 'df_doc_info'):
+            # Run and display batch process, return a dictionary of dataframes with all data extract from articles
+            # if not option and not checkey(dict_dfs, 'df_doc_info'):
+            dict_dfs = st.session_state['dict_dfs']
+            
+            if not dict_dfs:
                 dict_dfs = run_batch_process(st, input_folder_path, n_workers=10, cache_folder_name='summarticles_cache',
-                                            display_articles_data=False, save_xmltei=True)
-                
-                if not dict_dfs:
+                                                display_articles_data=False, save_xmltei=True)
+            
+            if not dict_dfs:
+                st.error("❓ There is no information to extract from articles in the specified path! Please, choose another file path.")
+            else:
+                if not len(dict_dfs.keys()) or not dict_dfs['df_doc_info'].shape[0]:
                     st.error("❓ There is no information to extract from articles in the specified path! Please, choose another file path.")
                 else:
-                    if not len(dict_dfs.keys()) or not dict_dfs['df_doc_info'].shape[0]:
-                        st.error("❓ There is no information to extract from articles in the specified path! Please, choose another file path.")
-                    else:
-                        with st.container():
-                            with st.spinner('🔢📊 Generating articles macro numbers...'):
-                                st.markdown("""<hr style="height:10px;border:none;color:#333;background-color:#333;" /> """, unsafe_allow_html=True)
-                                show_macro_numbers(st, dict_dfs)
-                            
-                        with st.spinner('🛠️📄 Text prepatation...'):
-                            dict_dfs = text_preparation(st, dict_dfs, input_folder_path)
+                    with st.container():
+                        with st.spinner('🔢📊 Generating articles macro numbers...'):
+                            st.markdown("""<hr style="height:10px;border:none;color:#333;background-color:#333;" /> """, unsafe_allow_html=True)
+                            show_macro_numbers(st, dict_dfs)
                         
-                        # Container for wordcloud and text macro numbers
-                        with st.container():
-                            
-                            st.markdown("""<hr style="height:1px;border:none;color:#F1F1F1;background-color:#F1F1F1;" /> """, unsafe_allow_html=True)
-                            st.markdown("""<h3 style="text-align:left;"><b>Text Macro Numbers</b></h3>""",unsafe_allow_html=True)
+                    with st.spinner('🛠️📄 Text prepatation...'):
+                        dict_dfs = text_preparation(st, dict_dfs, input_folder_path)
+                    
+                    # Container for wordcloud and text macro numbers
+                    with st.container():
                         
-                            if show_wordcloud:
-                                with st.spinner('📄➞☁️ Making WordCloud...'):
-                                    dict_dfs = show_word_cloud(st, dict_dfs, input_folder_path, cache_folder_name='summarticles_cache',
-                                                            folder_images='images', wc_image_name='wc_image.png')
-                            if show_text_macro:
-                                with st.spinner('🔢📊 Generating articles text numbers/stats...'):
-                                    st.markdown("""<hr style="height:0.1px;border:none;color:#F1F1F1;background-color:#F1F1F1;" /> """, unsafe_allow_html=True)
-                                    dict_dfs = show_text_numbers(st, dict_dfs)
+                        st.markdown("""<hr style="height:1px;border:none;color:#F1F1F1;background-color:#F1F1F1;" /> """, unsafe_allow_html=True)
+                        st.markdown("""<h3 style="text-align:left;"><b>Text Macro Numbers</b></h3>""",unsafe_allow_html=True)
+                    
+                        if st.session_state['show_wordcloud']:
+                            with st.spinner('📄➞☁️ Making WordCloud...'):
+                                dict_dfs = show_word_cloud(st, dict_dfs, input_folder_path, cache_folder_name='summarticles_cache',
+                                                        folder_images='images', wc_image_name='wc_image.png')
+                        if st.session_state['show_text_macro']:
+                            with st.spinner('🔢📊 Generating articles text numbers/stats...'):
+                                st.markdown("""<hr style="height:0.1px;border:none;color:#F1F1F1;background-color:#F1F1F1;" /> """, unsafe_allow_html=True)
+                                dict_dfs = show_text_numbers(st, dict_dfs)
 
-                        with st.container():
-                            if show_keywords_table:
+                    with st.container():
+                        if  st.session_state['show_keywords_table']:
+                            st.markdown("""<hr style="height:1px;border:none;color:#F1F1F1;background-color:#F1F1F1;" /> """, unsafe_allow_html=True)
+                            st.markdown("""<h3 style="text-align:left;"><b>KeyWords</b></h3>""",unsafe_allow_html=True)
+                            
+                            with st.spinner('📄➞🔤  Extracting KeyWords...'):
+                                df_keywords_all, df_article_keywords_all, dict_keywords = generate_keywords(dict_dfs)
+                                
+                            with st.spinner('📄➞🔤  Showing KeyWords...'):
+                                show_keywords(st, df_keywords_all)
+                                
+                            if st.session_state['show_keywords_graph_cond']:
+                                with st.spinner('📄➞📄  Making KeyWord Graph...'):
+                                    show_keywords_graph(st, dict_dfs, df_article_keywords_all, input_folder_path)
+                            
+                    with st.container():
+                        if st.session_state['show_similaritygraph']:
+                            with st.spinner('📄➞📄  Making Similarity Graph...'):
                                 st.markdown("""<hr style="height:1px;border:none;color:#F1F1F1;background-color:#F1F1F1;" /> """, unsafe_allow_html=True)
-                                st.markdown("""<h3 style="text-align:left;"><b>KeyWords</b></h3>""",unsafe_allow_html=True)
-                                
-                                with st.spinner('📄➞🔤  Extracting KeyWords...'):
-                                    df_keywords_all, df_article_keywords_all, dict_keywords = generate_keywords(dict_dfs)
-                                    
-                                with st.spinner('📄➞🔤  Showing KeyWords...'):
-                                    show_keywords(st, df_keywords_all)
-                                    
-                                if show_keywords_graph_cond:
-                                    with st.spinner('📄➞📄  Making KeyWord Graph...'):
-                                        show_keywords_graph(st, dict_dfs, df_article_keywords_all, input_folder_path)
-                                
-                        with st.container():
-                            if show_similaritygraph:
-                                with st.spinner('📄➞📄  Making Similarity Graph...'):
-                                    st.markdown("""<hr style="height:1px;border:none;color:#F1F1F1;background-color:#F1F1F1;" /> """, unsafe_allow_html=True)
-                                    similarity_graph(st, dict_dfs, input_folder_path, percentil="75%", 
-                                                    n_sim=100, cache_folder_name='summarticles_cache')
-            
+                                similarity_graph(st, dict_dfs, input_folder_path, percentil="75%", 
+                                                n_sim=100, cache_folder_name='summarticles_cache')
+        
