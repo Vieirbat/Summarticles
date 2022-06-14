@@ -25,6 +25,9 @@ from tkinter import filedialog
 from customMsg import customMsg
 
 import time
+from datetime import datetime as dt
+
+from joblib import dump, load
 
 import streamlit as st
 import streamlit.components.v1 as components
@@ -132,7 +135,7 @@ def check_input_path(st, path_input):
     return True
 
 
-def input_path_sucess_message(st, input_folder_path):
+def input_path_success_message(st, input_folder_path):
     st.success(f"✔️ **In this folder path we found: {str(len(files_path(input_folder_path)))} files!** Folder path: {str(input_folder_path)}")
 
 
@@ -324,25 +327,27 @@ def show_text_numbers(st, dict_dfs):
     
     tprep = text_prep()
     
-    dict_dfs['show_text_numbers'] = {}
+    if not checkey(dict_dfs,'show_text_numbers'):
     
-    if not checkey(dict_dfs['show_text_numbers'],'documents_abs'):
-        documents_abs = dict_dfs['df_doc_info']['abstract_prep'].fillna(' ').tolist()
-        dict_dfs['show_text_numbers']['documents_abs'] = documents_abs
-    else:
-        documents_abs = dict_dfs['show_text_numbers']['documents_abs']
-    
-    if not checkey(dict_dfs['show_text_numbers'],'documents_body'):
-        documents_body = dict_dfs['df_doc_info']['body_prep'].fillna(' ').tolist()
-        dict_dfs['show_text_numbers']['documents_body'] = documents_body
-    else:
-        documents_body = dict_dfs['show_text_numbers']['documents_body']
-    
-    if not checkey(dict_dfs['show_text_numbers'],'documents_all_text'):
-        documents_all_text = [' '.join([abst, body]) for abst, body in zip(documents_abs, documents_body)]
-        dict_dfs['show_text_numbers']['documents_all_text'] = documents_all_text
-    else:
-        documents_body = dict_dfs['show_text_numbers']['documents_body']
+        dict_dfs['show_text_numbers'] = {}
+        
+        if not checkey(dict_dfs['show_text_numbers'],'documents_abs'):
+            documents_abs = dict_dfs['df_doc_info']['abstract_prep'].fillna(' ').tolist()
+            dict_dfs['show_text_numbers']['documents_abs'] = documents_abs
+        else:
+            documents_abs = dict_dfs['show_text_numbers']['documents_abs']
+        
+        if not checkey(dict_dfs['show_text_numbers'],'documents_body'):
+            documents_body = dict_dfs['df_doc_info']['body_prep'].fillna(' ').tolist()
+            dict_dfs['show_text_numbers']['documents_body'] = documents_body
+        else:
+            documents_body = dict_dfs['show_text_numbers']['documents_body']
+        
+        if not checkey(dict_dfs['show_text_numbers'],'documents_all_text'):
+            documents_all_text = [' '.join([abst, body]) for abst, body in zip(documents_abs, documents_body)]
+            dict_dfs['show_text_numbers']['documents_all_text'] = documents_all_text
+        else:
+            documents_body = dict_dfs['show_text_numbers']['documents_body']
     
     # ------------------------------------------------------------------------
     # Making stats
@@ -386,9 +391,11 @@ def show_text_numbers(st, dict_dfs):
         dict_agg_stats['articles_lower'] = df_articles_stats.loc[(filtro)].shape[0]
         
         dict_dfs['show_text_numbers']['dict_agg_stats'] = dict_agg_stats
+        dict_dfs['show_text_numbers']['df_articles_stats'] = df_articles_stats
         
     else:
         dict_agg_stats = dict_dfs['show_text_numbers']['dict_agg_stats']
+        df_articles_stats = dict_dfs['show_text_numbers']['df_articles_stats']
     
     
     # token all text
@@ -541,7 +548,8 @@ def show_word_cloud(st, dict_dfs, input_path, folder_images='app_images', wc_ima
         
         dict_dfs['show_word_cloud'] = {}
         
-        dict_dfs['df_doc_info']['abstract_prep'] = tprep.text_preparation_column(dict_dfs['df_doc_info']['abstract'])
+        # if "abstract_prep" not in dict_dfs['df_doc_info']:
+        #     dict_dfs['df_doc_info']['abstract_prep'] = tprep.text_preparation_column(dict_dfs['df_doc_info']['abstract'])
         documents = dict_dfs['df_doc_info']['abstract_prep'].fillna(' ').tolist()
         
         path_images = os.path.join(input_path, cache_folder_name, folder_images)
@@ -549,12 +557,12 @@ def show_word_cloud(st, dict_dfs, input_path, folder_images='app_images', wc_ima
             os.mkdir(path_images)
 
         wc, ax, fig = tviz.word_cloud(documents, 
-                                    path_image=os.path.join(path_images, wc_image_name), 
-                                    show_wc=False, 
-                                    width=1000, 
-                                    height=500, 
-                                    collocations=True, 
-                                    background_color='white')
+                                      path_image=os.path.join(path_images, wc_image_name), 
+                                      show_wc=False, 
+                                      width=1000, 
+                                      height=500, 
+                                      collocations=True, 
+                                      background_color='white')
         
         # st.markdown("""<h5 style="text-align:left;"><b>WordCloud:</b></h5>""",unsafe_allow_html=True)
         dict_dfs['show_word_cloud']['word_cloud_fig'] = fig
@@ -634,22 +642,33 @@ def similarity_graph(st, dict_dfs, input_folder_path, folder_graph='graphs', nam
     
     """"""
     
-    tmining = text_mining()
+    if  not checkey(dict_dfs,'similarity_graph'):
+        
+        dict_dfs['similarity_graph'] = {}
     
-    df_cos_tfidf_sim_filter = cossine_similarity_data(st, dict_dfs, column, n_sim, percentil,
-                                                      sim_value_min, sim_value_max)
+        tmining = text_mining()
+        
+        df_cos_tfidf_sim_filter = cossine_similarity_data(st, dict_dfs, column, n_sim, percentil,
+                                                          sim_value_min, sim_value_max)
+        dict_dfs['similarity_graph']['df_cos_tfidf_sim_filter'] = df_cos_tfidf_sim_filter
     
-    df_nodes = nodes_data(st, dict_dfs, df_cos_tfidf_sim_filter)
-    
-    path_write_graph = os.path.join(input_folder_path, cache_folder_name)
+        df_nodes = nodes_data(st, dict_dfs, df_cos_tfidf_sim_filter)
+        dict_dfs['similarity_graph']['df_nodes'] = df_nodes
+        
+        path_write_graph = os.path.join(input_folder_path, cache_folder_name)
+        dict_dfs['similarity_graph']['path_write_graph'] = path_write_graph
 
-    sim_graph, path_graph, path_folder_graph = tmining.make_sim_graph(matrix=df_cos_tfidf_sim_filter, node_data=df_nodes,
-                                                   source_column="doc_a", to_column="doc_b", value_column="value",
-                                                   height="500px", width="100%", directed=False, notebook=False,
-                                                   bgcolor="#ffffff", font_color=False, layout=None, 
-                                                   heading="Similarity Graph: this graph shows you similarity across articles.",
-                                                   path_graph=path_write_graph, folder_graph=folder_graph, buttons=buttons,
-                                                   name_file=name_file)
+        sim_graph, path_graph, path_folder_graph = tmining.make_sim_graph(matrix=df_cos_tfidf_sim_filter, node_data=df_nodes,
+                                                    source_column="doc_a", to_column="doc_b", value_column="value",
+                                                    height="500px", width="100%", directed=False, notebook=False,
+                                                    bgcolor="#ffffff", font_color=False, layout=None, 
+                                                    heading="Similarity Graph: this graph shows you similarity across articles.",
+                                                    path_graph=path_write_graph, folder_graph=folder_graph, buttons=buttons,
+                                                    name_file=name_file)
+        dict_dfs['similarity_graph']['sim_graph'] = sim_graph
+        dict_dfs['similarity_graph']['path_graph'] = path_graph
+        dict_dfs['similarity_graph']['path_folder_graph'] = path_folder_graph
+        
     with st.container():
         st.markdown("""<h3 style="text-align:left;"><b>Similarity Graph: this graph shows you similarity across articles.</b></h3>""", unsafe_allow_html=True)
         
@@ -662,10 +681,11 @@ def similarity_graph(st, dict_dfs, input_folder_path, folder_graph='graphs', nam
             
         col1, col2 = st.columns([1,2])
         with col1:
-            df_cos_tfidf_sim_filter['value'] = df_cos_tfidf_sim_filter['value'].apply(lambda e: round(100*e,2))
-            df_cos_tfidf_sim_filter['doc_a'] = df_cos_tfidf_sim_filter['doc_a'].apply(lambda e: e[0:4])
-            df_cos_tfidf_sim_filter['doc_b'] = df_cos_tfidf_sim_filter['doc_b'].apply(lambda e: e[0:4])
-            AgGrid(df_cos_tfidf_sim_filter.head(50),
+            df_sim = dict_dfs['similarity_graph']['df_cos_tfidf_sim_filter']
+            df_sim['value'] = df_sim['value'].apply(lambda e: round(100*e,2))
+            df_sim['doc_a'] = df_sim['doc_a'].apply(lambda e: e[0:4])
+            df_sim['doc_b'] = df_sim['doc_b'].apply(lambda e: e[0:4])
+            AgGrid(df_sim.head(50),
                    data_return_mode='AS_INPUT', 
                    # update_mode='MODEL_CHANGED', 
                    fit_columns_on_grid_load=False,
@@ -675,7 +695,12 @@ def similarity_graph(st, dict_dfs, input_folder_path, folder_graph='graphs', nam
                    width='100%',
                    reload_data=True)
         with col2:
-            show_graph(sim_graph, path_graph, path_folder_graph, text_spinner='👁‍🗨 Similarity Graph: drawing...')
+            show_graph(dict_dfs['similarity_graph']['sim_graph'],
+                       dict_dfs['similarity_graph']['path_graph'],
+                       dict_dfs['similarity_graph']['path_folder_graph'],
+                       text_spinner='👁‍🗨 Similarity Graph: drawing...')
+        
+        return dict_dfs
 
 
 def get_component_from_file(path_html):
@@ -706,7 +731,6 @@ def text_preparation(st, dict_dfs, input_folder_path):
         
         dict_dfs['df_doc_info']['body_prep'] = tprep.text_preparation_column(dict_dfs['df_doc_info']['body'])
         dict_dfs['text_preparation']['body_prep'] = dict_dfs['df_doc_info']['body_prep']
-        
     else:
         dict_dfs['df_doc_info']['abstract_prep'] = dict_dfs['text_preparation']['abstract_prep']
         dict_dfs['df_doc_info']['body_prep'] = dict_dfs['text_preparation']['body_prep']
@@ -714,62 +738,71 @@ def text_preparation(st, dict_dfs, input_folder_path):
     return dict_dfs
 
 
-def generate_keywords(dict_dfs):
+def generate_keywords(st, dict_dfs):
     
-    kw_model = KeyBERT()
     
-    dict_keywords = {}
-    id_column = 'article_id'
-    text_column = 'abstract'
-    col_select = [id_column,text_column]
-    docs = dict_dfs['df_doc_info'].reset_index().loc[:, col_select]
+    if not checkey(dict_dfs,'keywords'):
+        
+        dict_dfs['keywords'] = {}
+        
+        kw_model = KeyBERT()
+        
+        dict_keywords = {}
+        id_column = 'article_id'
+        text_column = 'abstract'
+        col_select = [id_column,text_column]
+        docs = dict_dfs['df_doc_info'].reset_index().loc[:, col_select]
 
-    list_keywordsdf = []
-    list_keywordsdf_article = []
-    for i, row in docs.head(20).iterrows():
-        
-        doc = str(row[text_column])
-        id = row[id_column]
-        
-        keywords_unigram = kw_model.extract_keywords(doc, keyphrase_ngram_range=(1, 1), stop_words='english', highlight=False, top_n=10)
-        if len(keywords_unigram):
-            df_unigram = pd.DataFrame([{'keyword':v[0],'value':v[1]} for v in keywords_unigram])
-        else:
-            df_unigram = pd.DataFrame([], columns=['keyword','value'])
+        list_keywordsdf = []
+        list_keywordsdf_article = []
+        for i, row in docs.head(20).iterrows():
+            
+            doc = str(row[text_column])
+            id = row[id_column]
+            
+            keywords_unigram = kw_model.extract_keywords(doc, keyphrase_ngram_range=(1, 1), stop_words='english', highlight=False, top_n=10)
+            if len(keywords_unigram):
+                df_unigram = pd.DataFrame([{'keyword':v[0],'value':v[1]} for v in keywords_unigram])
+            else:
+                df_unigram = pd.DataFrame([], columns=['keyword','value'])
 
-        keywords_bigram = kw_model.extract_keywords(doc, keyphrase_ngram_range=(2, 2), stop_words='english', highlight=False, top_n=10)
-        if len(keywords_bigram):
-            df_bigram = pd.DataFrame([{'keyword':v[0],'value':v[1]} for v in keywords_bigram])
-        else:
-            df_bigram = pd.DataFrame([], columns=['keyword','value'])
+            keywords_bigram = kw_model.extract_keywords(doc, keyphrase_ngram_range=(2, 2), stop_words='english', highlight=False, top_n=10)
+            if len(keywords_bigram):
+                df_bigram = pd.DataFrame([{'keyword':v[0],'value':v[1]} for v in keywords_bigram])
+            else:
+                df_bigram = pd.DataFrame([], columns=['keyword','value'])
 
-        keywords_trigam = kw_model.extract_keywords(doc, keyphrase_ngram_range=(3, 3), stop_words='english', highlight=False, top_n=10)
-        if len(keywords_bigram):
-            df_trigram = pd.DataFrame([{'keyword':v[0],'value':v[1]} for v in keywords_trigam])
-        else:
-            df_trigram = pd.DataFrame([], columns=['keyword','value'])
+            keywords_trigam = kw_model.extract_keywords(doc, keyphrase_ngram_range=(3, 3), stop_words='english', highlight=False, top_n=10)
+            if len(keywords_bigram):
+                df_trigram = pd.DataFrame([{'keyword':v[0],'value':v[1]} for v in keywords_trigam])
+            else:
+                df_trigram = pd.DataFrame([], columns=['keyword','value'])
+            
+            dict_keywords[id] = {'unigram':df_unigram, 'bigram':df_bigram, 'trigram':df_trigram}
+            
+            df_article_keywords = pd.concat([df_unigram, df_bigram, df_trigram])
+            df_article_keywords[id_column] = id
+            df_article_keywords = df_article_keywords.loc[:,[id_column,'keyword', 'value']].copy()
+            list_keywordsdf_article.append(df_article_keywords)
+            
+            df_unigram.rename(columns={'keyword':'keyword_unigram','value':'value_unigram'}, inplace=True)
+            df_bigram.rename(columns={'keyword':'keyword_bigram','value':'value_bigram'}, inplace=True)
+            df_trigram.rename(columns={'keyword':'keyword_trigram','value':'value_trigram'}, inplace=True)
+            
+            df_keywords_article = pd.concat([df_unigram, df_bigram, df_trigram], axis=1)
+            dict_keywords[id]['df_keywords'] = df_keywords_article
+            
+            list_keywordsdf.append(df_keywords_article)
         
-        dict_keywords[id] = {'unigram':df_unigram, 'bigram':df_bigram, 'trigram':df_trigram}
+        dict_dfs['keywords']['list_keywordsdf'] = list_keywordsdf
+        dict_dfs['keywords']['list_keywordsdf_article'] = list_keywordsdf_article
         
-        df_article_keywords = pd.concat([df_unigram, df_bigram, df_trigram])
-        df_article_keywords[id_column] = id
-        df_article_keywords = df_article_keywords.loc[:,[id_column,'keyword', 'value']].copy()
-        list_keywordsdf_article.append(df_article_keywords)
-        
-        df_unigram.rename(columns={'keyword':'keyword_unigram','value':'value_unigram'}, inplace=True)
-        df_bigram.rename(columns={'keyword':'keyword_bigram','value':'value_bigram'}, inplace=True)
-        df_trigram.rename(columns={'keyword':'keyword_trigram','value':'value_trigram'}, inplace=True)
-        
-        df_keywords_article = pd.concat([df_unigram, df_bigram, df_trigram], axis=1)
-        dict_keywords[id]['df_keywords'] = df_keywords_article
-        
-        list_keywordsdf.append(df_keywords_article)
-        
-    df_keywords_all = pd.concat(list_keywordsdf)
+    df_keywords_all = pd.concat(dict_dfs['keywords']['list_keywordsdf'])
     df_keywords_all.dropna(inplace=True)
 
-    df_article_keywords_all = pd.concat(list_keywordsdf_article)
+    df_article_keywords_all = pd.concat(dict_dfs['keywords']['list_keywordsdf_article'])
     df_article_keywords_all.dropna(inplace=True)
+    dict_dfs['keywords']['df_article_keywords_all'] = df_article_keywords_all
 
     df_keywords_unigram = df_keywords_all.groupby(by=['keyword_unigram'], as_index=False)['value_unigram'].sum()
     df_keywords_unigram.sort_values(by='value_unigram', ascending=False, inplace=True)
@@ -787,8 +820,9 @@ def generate_keywords(dict_dfs):
     df_keywords_all['value_unigram'] = df_keywords_all['value_unigram'].apply(f)
     df_keywords_all['value_bigram'] = df_keywords_all['value_bigram'].apply(f)
     df_keywords_all['value_trigram'] = df_keywords_all['value_trigram'].apply(f)
+    dict_dfs['keywords']['df_keywords_all'] = df_keywords_all
     
-    return df_keywords_all, df_article_keywords_all, dict_keywords
+    return dict_dfs
 
 
 def show_keywords(st, df_keywords_all):
@@ -821,50 +855,65 @@ def agg_keys_node_data(grupo):
 
 
 def show_keywords_graph(st, dict_dfs, df_article_keywords_all, input_folder_path, folder_graph='graphs', 
-                        name_file="graph.html", cache_folder_name='summarticles_cache', top_keywords=5, buttons=False):
+                        name_file="graph_keywords.html", cache_folder_name='summarticles_cache', top_keywords=5, buttons=False):
     
     """"""
     
-    tmining = text_mining()
-
-    df_keyword_data = df_article_keywords_all.groupby(by=['keyword'], as_index=False).apply(agg_keys_node_data)
-    df_keyword_data = df_keyword_data.sort_values(by=['article_count'], ascending=False).head(top_keywords)
+    if 'graph' not in dict_dfs['keywords']:
     
-    # Selecting edges that contains top keywords
-    filtro = (df_article_keywords_all.keyword.isin(df_keyword_data.keyword.tolist()))
-    df_art_key_all = df_article_keywords_all.loc[(filtro)].copy()
-
-    # Selecting nodes in the list of selected edges
-    df_nodes = get_node_data(dict_dfs)
-
-    filtro = (df_nodes['article_id'].isin(df_art_key_all['article_id'].tolist()))
-    df_nodes = df_nodes.loc[(filtro)].copy()
+        dict_dfs['keywords']['graph'] = {}
     
-    path_write_graph = os.path.join(input_folder_path, cache_folder_name)
+        tmining = text_mining()
+
+        df_keyword_data = df_article_keywords_all.groupby(by=['keyword'], as_index=False).apply(agg_keys_node_data)
+        df_keyword_data = df_keyword_data.sort_values(by=['article_count'], ascending=False).head(top_keywords)
         
-    keywords_graph, path_graph, path_folder_graph = tmining.make_keywords_graph(edges_key_articles=df_art_key_all, node_data=df_nodes,
-                                                    node_keywords_data=df_keyword_data, source_column="keyword", to_column="article_id", 
-                                                    value_column="value", height="500px", width="100%", directed=False, notebook=False,
-                                                    bgcolor="#ffffff", font_color=False, layout=None, heading="", path_graph=path_write_graph,
-                                                    folder_graph=folder_graph, buttons=buttons, name_file=name_file)
+        df_keyword_data['value_sum'] = df_keyword_data['value_sum'].apply(lambda e: round(e,2))
+        df_keyword_data['value_mean'] = df_keyword_data['value_mean'].apply(lambda e: round(e,2))
+        dict_dfs['keywords']['graph']['df_keyword_data'] = df_keyword_data
+        
+        # Selecting edges that contains top keywords
+        filtro = (df_article_keywords_all.keyword.isin(df_keyword_data.keyword.tolist()))
+        df_art_key_all = df_article_keywords_all.loc[(filtro)].copy()
+
+        # Selecting nodes in the list of selected edges
+        df_nodes = get_node_data(dict_dfs)
+
+        filtro = (df_nodes['article_id'].isin(df_art_key_all['article_id'].tolist()))
+        df_nodes = df_nodes.loc[(filtro)].copy()
+        
+        path_write_graph = os.path.join(input_folder_path, cache_folder_name)
+            
+        keywords_graph, path_graph, path_folder_graph = tmining.make_keywords_graph(edges_key_articles=df_art_key_all, node_data=df_nodes,
+                                                        node_keywords_data=df_keyword_data, source_column="keyword", to_column="article_id", 
+                                                        value_column="value", height="500px", width="100%", directed=False, notebook=False,
+                                                        bgcolor="#ffffff", font_color=False, layout=None, heading="", path_graph=path_write_graph,
+                                                        folder_graph=folder_graph, buttons=buttons, name_file=name_file)
+        dict_dfs['keywords']['graph']['keywords_graph'] = keywords_graph
+        dict_dfs['keywords']['graph']['path_graph'] = path_graph
+        dict_dfs['keywords']['graph']['path_folder_graph'] = path_folder_graph
+        
     with st.expander("How it works?"):
         st.write("This is MAGIC!")
         
     col1, col2 = st.columns([2,1])
     with col1:
-        show_graph(keywords_graph, path_graph, path_folder_graph, text_spinner='👁‍🗨 Similarity Graph: drawing...')
+        show_graph(dict_dfs['keywords']['graph']['keywords_graph'],
+                   dict_dfs['keywords']['graph']['path_graph'],
+                   dict_dfs['keywords']['graph']['path_folder_graph'],
+                   text_spinner='👁‍🗨 Similarity Graph: drawing...')
     with col2:
-        df_keyword_data['value_sum'] = df_keyword_data['value_sum'].apply(lambda e: round(e,2))
-        df_keyword_data['value_mean'] = df_keyword_data['value_mean'].apply(lambda e: round(e,2))
-        AgGrid(df_keyword_data.head(50),
-                data_return_mode='AS_INPUT', 
-                # update_mode='MODEL_CHANGED', 
-                fit_columns_on_grid_load=False,
-                # theme='fresh',
-                enable_enterprise_modules=False,
-                height=510, 
-                width='100%',
-                reload_data=True)
+        AgGrid(dict_dfs['keywords']['graph']['df_keyword_data'].head(100),
+               data_return_mode='AS_INPUT', 
+               # update_mode='MODEL_CHANGED', 
+               fit_columns_on_grid_load=False,
+               # theme='fresh',
+               enable_enterprise_modules=False,
+               height=510, 
+               width='100%',
+               reload_data=True)
+        
+    return dict_dfs
         
     
 def show_graph(graph, path_graph, path_folder_graph, text_spinner='👁‍🗨 Keyword Graph: drawing...'):
@@ -960,19 +1009,36 @@ def choose_filepath(st):
 def get_last_executions(input_folder_path, cache_folder_name='summarticles_cache', folder_execs='summa_files', ext_file='summa'):
     
     path_execs = os.path.join(input_folder_path, cache_folder_name, folder_execs)
-    list_files_execs = ['Test']
+    list_files_execs = []
     if os.path.exists(path_execs):
         for f in os.listdir(path_execs):
             if str(f).endswith(ext_file):
                 list_files_execs.append(f)
-                
     return list_files_execs
 
 
-def load_previous_execution(file):
+def load_previous_execution(file, inputpath, cache_folder_name='summarticles_cache', folder_execs='summa_files', ext_file='summa'):
     """"""
-    return None
+    dict_dfs = None
+    file_path = os.path.join(inputpath,cache_folder_name,folder_execs,file)
+    if os.path.exists(file_path):
+        dict_dfs = load(file_path)
+    return dict_dfs
 
+
+def write_previous_execution(object, input_path, cache_folder_name='summarticles_cache', folder_execs='summa_files', file_name="report_summarticles", ext_file='summa'):
+    """"""
+    path = os.path.join(input_path, cache_folder_name, folder_execs)
+    if not os.path.exists(path):
+        rpath = os.mkdir(path)
+    
+    dtnow = dt.now().strftime("%Y%m%d%H%M%S")
+    file_name_full = f"{file_name}_{dtnow}.{ext_file}" 
+    file_path = os.path.join(path, file_name_full)
+    rdump = dump(object, file_path, compress=0)
+    
+    st.success("✅ Save execution complete!")
+    
 
 def make_select_box(list_files_execs, label, id):
     
@@ -986,41 +1052,46 @@ def make_select_box(list_files_execs, label, id):
                </select>"""
 
 
-def show_last_executions(st, list_files_execs, cache_folder_name='summarticles_cache', folder_execs='summa_files', ext_file='summa'):
+def show_last_executions(st, list_files_execs, inputpath, cache_folder_name='summarticles_cache', 
+                         folder_execs='summa_files', ext_file='summa'):
     """"""
     
     choice_exec = None
     dict_dfs = None
     st.session_state['previous_exec_check'] = False
     
-    opt_default = "Select one option"
+    opt_default = "Select an option"
     opt_new_run = "No I don't want to use previously execution, continue with new execution"
-    list_files_execs = [opt_default, opt_new_run] + list_files_execs
+    default_opt = [opt_default, opt_new_run]
+    list_files_execs_final = default_opt + list_files_execs
     
-    if len(list_files_execs):
+    if len(list_files_execs_final) > len(default_opt):
         
         st.markdown("""<hr style="height:5px;border:none;color:#333;background-color:#333;" /> """, unsafe_allow_html=True)
         st.info("❕ We found previously executions, do you want to recovery it?")
         
-        choice_exec = st.selectbox("Please, choose one: ", list_files_execs, key="select_box_execs")
-        st.write('You selected:', choice_exec)
+        choice_exec = st.selectbox("Please, choose one: ", list_files_execs_final, key="select_box_execs")
+        # st.write('You selected:', choice_exec)
         if (choice_exec != opt_new_run) and (choice_exec != opt_default):
-            dict_dfs = load_previous_execution(choice_exec)
-            print("Catch cache execution!")
-            st.session_state['previous_exec_check'] = True
+            try:
+                dict_dfs = load_previous_execution(choice_exec, inputpath)
+                st.session_state['previous_exec_check'] = True
+                st.success("✅ Reload complete!")
+            except Exception as error:
+                st.error(f"❌ Error while reload previously execution: {str(error)}")
         elif choice_exec == opt_new_run:
             st.session_state['previous_exec_check'] = True
-            print("New execution!")
         else:
             st.session_state['previous_exec_check'] = False
-        
+            st.warning("⚠️ You need to choose an option!")
     else:
         st.session_state['previous_exec_check'] = True
+        st.info("❕ There is no previously executions to recovery.")
         
     return dict_dfs
             
 
-def checkey(dic,key):
+def checkey(dic, key):
     """"""
     return True if key in dic else False
 
@@ -1035,7 +1106,10 @@ def make_reset_button(st):
             st.experimental_memo.clear()
             st.experimental_singleton.clear()
             st.experimental_rerun()
-
+    
+            
+def make_save_execution_button():
+    """"""
 
 ###############################################################################################
 # ---------------------------------------------------------------------------------------------
@@ -1059,7 +1133,8 @@ if __name__ == '__main__':
         st.session_state['choice_exec'] = "Select one option"
     if 'dict_dfs' not in st.session_state:
         st.session_state['dict_dfs'] = None
-    
+    if 'save_execution' not in st.session_state:
+        st.session_state['save_execution'] = False
     # ----------------------------------------------------------------------------
     # Entrance of app
     make_head(st) # st.header("")
@@ -1111,12 +1186,16 @@ if __name__ == '__main__':
                 st.session_state['path_check'] = True
             else:
                 st.session_state['path_check'] = False
+                
+        if st.session_state['path_check']:
+            make_reset_button(st)
     
     # ----------------------------------------------------------------------------
     # Check if there are another executions in the cache
+    
     if st.session_state['path_check']:
         
-        input_path_sucess_message(st, st.session_state['input_path'])
+        input_path_success_message(st, st.session_state['input_path'])
     
         with st.spinner('⚙️ Check if there are another executions in the cache!'):
             
@@ -1124,11 +1203,10 @@ if __name__ == '__main__':
                                                        cache_folder_name='summarticles_cache',
                                                        folder_execs='summa_files',
                                                        ext_file='summa')
-            if list_last_executions:
-                dict_dfs = show_last_executions(st, list_last_executions,
-                                                cache_folder_name='summarticles_cache',
-                                                folder_execs='summa_files', ext_file='summa')
-                st.session_state['dict_dfs'] = dict_dfs
+            dict_dfs = show_last_executions(st, list_last_executions, st.session_state['input_path'],
+                                            cache_folder_name='summarticles_cache',
+                                            folder_execs='summa_files', ext_file='summa')
+            st.session_state['dict_dfs'] = dict_dfs
         
     # ----------------------------------------------------------------------------
     # button getpath containers
@@ -1140,25 +1218,24 @@ if __name__ == '__main__':
 
             # Run and display batch process, return a dictionary of dataframes with all data extract from articles
             # if not option and not checkey(dict_dfs, 'df_doc_info'):
-            dict_dfs = st.session_state['dict_dfs']
             
-            if not dict_dfs:
-                dict_dfs = run_batch_process(st, input_folder_path, n_workers=10, cache_folder_name='summarticles_cache',
+            if not st.session_state['dict_dfs']:
+                st.session_state['dict_dfs'] = run_batch_process(st, input_folder_path, n_workers=10, cache_folder_name='summarticles_cache',
                                                 display_articles_data=False, save_xmltei=True)
             
-            if not dict_dfs:
+            if not st.session_state['dict_dfs']:
                 st.error("❓ There is no information to extract from articles in the specified path! Please, choose another file path.")
             else:
-                if not len(dict_dfs.keys()) or not dict_dfs['df_doc_info'].shape[0]:
+                if not len(st.session_state['dict_dfs'].keys()) or not st.session_state['dict_dfs']['df_doc_info'].shape[0]:
                     st.error("❓ There is no information to extract from articles in the specified path! Please, choose another file path.")
                 else:
                     with st.container():
                         with st.spinner('🔢📊 Generating articles macro numbers...'):
                             st.markdown("""<hr style="height:10px;border:none;color:#333;background-color:#333;" /> """, unsafe_allow_html=True)
-                            show_macro_numbers(st, dict_dfs)
+                            show_macro_numbers(st, st.session_state['dict_dfs'])
                         
                     with st.spinner('🛠️📄 Text prepatation...'):
-                        dict_dfs = text_preparation(st, dict_dfs, input_folder_path)
+                        st.session_state['dict_dfs'] = text_preparation(st, st.session_state['dict_dfs'], input_folder_path)
                     
                     # Container for wordcloud and text macro numbers
                     with st.container():
@@ -1168,32 +1245,47 @@ if __name__ == '__main__':
                     
                         if st.session_state['show_wordcloud']:
                             with st.spinner('📄➞☁️ Making WordCloud...'):
-                                dict_dfs = show_word_cloud(st, dict_dfs, input_folder_path, cache_folder_name='summarticles_cache',
-                                                        folder_images='images', wc_image_name='wc_image.png')
+                                st.session_state['dict_dfs'] = show_word_cloud(st, st.session_state['dict_dfs'], input_folder_path, 
+                                                                               cache_folder_name='summarticles_cache',
+                                                                               folder_images='images', wc_image_name='wc_image.png')
+                                
                         if st.session_state['show_text_macro']:
                             with st.spinner('🔢📊 Generating articles text numbers/stats...'):
                                 st.markdown("""<hr style="height:0.1px;border:none;color:#F1F1F1;background-color:#F1F1F1;" /> """, unsafe_allow_html=True)
-                                dict_dfs = show_text_numbers(st, dict_dfs)
+                                st.session_state['dict_dfs'] = show_text_numbers(st, st.session_state['dict_dfs'])
 
                     with st.container():
                         if  st.session_state['show_keywords_table']:
+                            
                             st.markdown("""<hr style="height:1px;border:none;color:#F1F1F1;background-color:#F1F1F1;" /> """, unsafe_allow_html=True)
                             st.markdown("""<h3 style="text-align:left;"><b>KeyWords</b></h3>""",unsafe_allow_html=True)
                             
                             with st.spinner('📄➞🔤  Extracting KeyWords...'):
-                                df_keywords_all, df_article_keywords_all, dict_keywords = generate_keywords(dict_dfs)
+                                st.session_state['dict_dfs'] = generate_keywords(st, st.session_state['dict_dfs'])
                                 
                             with st.spinner('📄➞🔤  Showing KeyWords...'):
-                                show_keywords(st, df_keywords_all)
+                                show_keywords(st, st.session_state['dict_dfs']['keywords']['df_keywords_all'])
                                 
                             if st.session_state['show_keywords_graph_cond']:
                                 with st.spinner('📄➞📄  Making KeyWord Graph...'):
-                                    show_keywords_graph(st, dict_dfs, df_article_keywords_all, input_folder_path)
-                            
+                                    st.session_state['dict_dfs'] = show_keywords_graph(st, st.session_state['dict_dfs'], 
+                                                                   st.session_state['dict_dfs']['keywords']['df_article_keywords_all'],
+                                                                   input_folder_path)
+                                    
                     with st.container():
                         if st.session_state['show_similaritygraph']:
                             with st.spinner('📄➞📄  Making Similarity Graph...'):
                                 st.markdown("""<hr style="height:1px;border:none;color:#F1F1F1;background-color:#F1F1F1;" /> """, unsafe_allow_html=True)
-                                similarity_graph(st, dict_dfs, input_folder_path, percentil="75%", 
-                                                n_sim=100, cache_folder_name='summarticles_cache')
+                                st.session_state['dict_dfs'] = similarity_graph(st, st.session_state['dict_dfs'], input_folder_path, percentil="75%", 
+                                                            n_sim=100, cache_folder_name='summarticles_cache')
+                                
+            st.session_state['save_execution'] = True
+    
+    if st.session_state['dict_dfs'] and st.session_state['save_execution']:                     
+        write_previous_execution(st.session_state['dict_dfs'], 
+                                 st.session_state['input_path'],
+                                 file_name="report_summarticles",
+                                 ext_file='summa',
+                                 cache_folder_name='summarticles_cache', 
+                                 folder_execs='summa_files')
         
