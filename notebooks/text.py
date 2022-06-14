@@ -200,7 +200,18 @@ class text_mining(object):
     
     
     def get_cossine_similarity_matrix(self, documents_vector_matrix, index_docs):
+        
         """"""
+        
+        def isfloat(num):
+            try:
+                float(num)
+                return True
+            except ValueError:
+                return False
+        
+        index_docs = [str(int(e)) if isfloat(e) else str(e) for e in index_docs]
+        
         docs_sim = cosine_similarity(documents_vector_matrix, documents_vector_matrix)
         df_docs_sim = pd.DataFrame(docs_sim, columns=index_docs, index=index_docs)
         return df_docs_sim
@@ -263,7 +274,7 @@ class text_mining(object):
 
         for i, row in node_data.iterrows():
             
-            article_id = str(row['pdf_md5'])
+            article_id = str(row['article_id'])
             article_title = str(row['title_head'])
             article_abstract_short = str(row['abstract_short'])
             article_date = str(row['date_head'])
@@ -281,8 +292,8 @@ class text_mining(object):
                             DOI:{article_doi}
                             FILE NAME:{article_file_name}"""
             
-            graph.add_node(n_id=article_id, 
-                           label=f"Node ID: {str(article_id)[0:4]}", 
+            graph.add_node(n_id=str(article_id), 
+                           label=f"Node ID: {str(article_id)}", 
                            borderWidth=1, 
                            borderWidthSelected=2, 
                            #brokenImage="url", 
@@ -301,14 +312,14 @@ class text_mining(object):
                            value=1)
             
         for i,row in matrix.iterrows():
-            graph.add_edge(source=row[source_column],
-                        to=row[to_column],
-                        value=round(row[value_column],1),
-                        title=str(round(row[value_column],1)))
-                        #width=row['value'],
-                        #arrowStrikethrough=False,
-                        #physics=False,
-                        #hidden=False)
+            graph.add_edge(source=str(row[source_column]),
+                           to=str(row[to_column]),
+                           value=round(row[value_column],1),
+                           title=str(round(row[value_column],1)))
+                           #width=row['value'],
+                           #arrowStrikethrough=False,
+                           #physics=False,
+                           #hidden=False)
         
         graph.force_atlas_2based(gravity=-50,
                                  central_gravity=0.01,
@@ -331,7 +342,7 @@ class text_mining(object):
     
     
     def make_keywords_graph(self, edges_key_articles, node_data, node_keywords_data,
-                            source_column="keyword",to_column="pdf_md5", value_column="value",
+                            source_column="keyword",to_column="article_id", value_column="value",
                             height="1000px",width="1000px", directed=False, notebook=False,
                             bgcolor="#ffffff", font_color=False, layout=None, heading="", buttons=True,
                             path_graph="./", folder_graph="graphs", name_file="graph_keyword.html"):
@@ -349,7 +360,7 @@ class text_mining(object):
 
         for i, row in node_data.iterrows():
             
-            article_id = str(row['pdf_md5'])
+            article_id = str(row['article_id'])
             article_title = str(row['title_head'])
             article_abstract_short = str(row['abstract_short'])
             article_date = str(row['date_head'])
@@ -399,42 +410,42 @@ class text_mining(object):
                         """
             
             graph.add_node(n_id=keyword_id, 
-                        label=keyword_id, 
-                        borderWidth=2, 
-                        borderWidthSelected=4,
-                        color=self.get_aleatory_color(),
-                        #brokenImage="url", 
-                        #group="a", 
-                        #hidden=False, 
-                        #image="url", 
-                        #labelHighlightBold=True, 
-                        #level=1, 
-                        #mass=1, 
-                        #physics=True,
-                        shape="box", # image, circularImage, diamond, dot, star, triangle, triangleDown, square and icon, box, text
-                        size=article_count, 
-                        title=title_html,  
-                        #x=0.5, 
-                        #y=1.0)
-                        value=article_count*1000)
+                           label=keyword_id, 
+                           borderWidth=2, 
+                           borderWidthSelected=4,
+                           color=self.get_aleatory_color(),
+                           #brokenImage="url", 
+                           #group="a", 
+                           #hidden=False, 
+                           #image="url", 
+                           #labelHighlightBold=True, 
+                           #level=1, 
+                           #mass=1, 
+                           #physics=True,
+                           shape="box", # image, circularImage, diamond, dot, star, triangle, triangleDown, square and icon, box, text
+                           size=article_count, 
+                           title=title_html,  
+                           #x=0.5, 
+                           #y=1.0)
+                           value=article_count*1000)
         
         for i, row in edges_key_articles.iterrows():
             
-            graph.add_edge(source=row[source_column],
-                        to=row[to_column],
-                        value=round(row[value_column],1),
-                        title=row[value_column])
-                        #width=row['value'],
-                        #arrowStrikethrough=False,
-                        #physics=False,
-                        #hidden=False)
+            graph.add_edge(source=str(row[source_column]),
+                           to=str(row[to_column]),
+                           value=round(row[value_column],1),
+                           title=str(row[value_column]))
+                           #width=row['value'],
+                           #arrowStrikethrough=False,
+                           #physics=False,
+                           #hidden=False)
         
         graph.force_atlas_2based(gravity=-50,
-                                central_gravity=0.01,
-                                spring_length=360,
-                                spring_strength=0.08,
-                                damping=0.4,
-                                overlap=0)
+                                 central_gravity=0.01,
+                                 spring_length=360,
+                                 spring_strength=0.08,
+                                 damping=0.4,
+                                 overlap=0)
         
         if buttons:
             graph.show_buttons(filter_=['physics'])
