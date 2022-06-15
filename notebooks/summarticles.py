@@ -572,6 +572,59 @@ def show_word_cloud(st, dict_dfs, input_path, folder_images='app_images', wc_ima
     return dict_dfs
 
 
+def show_keyword_word_cloud(st, dict_dfs,
+                            input_path,
+                            folder_images='app_images',
+                            wc_image_name='wc_image_keyword.png',
+                            cache_folder_name='summarticles_cache'):
+    
+    """"""
+    
+    tviz = text_viz()
+    tprep = text_prep()
+    
+    # st.warning("🛠🧾 Text in preparation for WordCloud!")
+    if not checkey(dict_dfs,'show_keyword_word_cloud'):
+        
+        dict_dfs['show_keyword_word_cloud'] = {}
+        
+        df_unigram = dict_dfs['keywords']['df_unigram']
+        df_unigram = df_unigram.rename(columns={'keyword_unigram':'keyword',
+                                                'value_unigram':'value'})
+        df_bigram = dict_dfs['keywords']['df_bigram']
+        df_bigram = df_bigram.rename(columns={'keyword_bigram':'keyword',
+                                              'value_bigram':'value'})
+        df_trigram = dict_dfs['keywords']['df_trigram'].rename(columns={'keyword_trigram':'keyword',
+                                                                        'value_trigram':'value'})
+        df_trigram = df_trigram.rename(columns={'keyword_trigram':'keyword',
+                                                'value_trigram':'value'})
+        
+        df_keywords = pd.concat([df_unigram, df_bigram, df_trigram])
+        
+        dict_freq = {}
+        for i, row in df_keywords.iterrows():
+            dict_freq[row['keyword']] = row['value']
+        
+        path_images = os.path.join(input_path, cache_folder_name, folder_images)
+        if not os.path.exists(path_images):
+            os.mkdir(path_images)
+
+        wc, ax, fig = tviz.keyword_word_cloud(dict_freq, 
+                                              path_image=os.path.join(path_images, wc_image_name), 
+                                              show_wc=False, 
+                                              width=1000, 
+                                              height=300, 
+                                              collocations=True, 
+                                              background_color='white')
+        
+        # st.markdown("""<h5 style="text-align:left;"><b>WordCloud:</b></h5>""",unsafe_allow_html=True)
+        dict_dfs['show_keyword_word_cloud']['word_cloud_fig'] = fig
+    
+    st.pyplot(dict_dfs['show_keyword_word_cloud']['word_cloud_fig'])
+    
+    return dict_dfs
+
+
 def cossine_similarity_data(st, dict_dfs, column='abstract', n_sim=200,
                             percentil="99%", sim_value_min=0, sim_value_max=0.99):
     
@@ -1302,6 +1355,11 @@ if __name__ == '__main__':
                                 
                             with st.spinner('📄➞🔤  Showing KeyWords...'):
                                 show_keywords(st, st.session_state['dict_dfs'])
+                                
+                            with st.spinner('📄➞🔤  Showing KeyWords WordCloud...'):
+                                st.session_state['dict_dfs'] = show_keyword_word_cloud(st, st.session_state['dict_dfs'], input_folder_path, 
+                                                                                       cache_folder_name='summarticles_cache',
+                                                                                       folder_images='images', wc_image_name='wc_image_keyword.png')
                                 
                             if st.session_state['show_keywords_graph_cond']:
                                 with st.spinner('📄➞📄  Making KeyWord Graph...'):

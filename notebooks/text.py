@@ -487,3 +487,25 @@ class text_viz(object):
             ax.show()
             
         return objWC, ax, fig
+    
+    def keyword_word_cloud(self, frequencies, path_image=None, show_wc=True, width=1000, height=200, collocations=True, background_color='white'):
+        
+        """Create and plot a wordcloud from documents list. Return: objWC, ax"""
+        
+        fig, ax = plt.subplots(1,1)
+        objWC = WordCloud(collocations=collocations,
+                          background_color=background_color,
+                          width=width,
+                          height=height)
+        objWC = objWC.generate_from_frequencies(frequencies)
+        
+        if path_image!=None:
+            objWC.to_file(path_image)
+            
+        ax.imshow(objWC)
+        ax.axis("off")
+        
+        if show_wc:
+            ax.show()
+            
+        return objWC, ax, fig
