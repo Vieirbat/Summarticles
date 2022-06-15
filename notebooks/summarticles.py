@@ -150,7 +150,7 @@ def run_batch_process(st, path_input, cache_folder_name='summarticles_cache', n_
         st.error(f"❌ You need to specify a path with at least two pdf files!")
         return None
     
-    with st.spinner('⚡ Running batch process...'):
+    with st.spinner('⚡ [Extract Text from Articles] Running batch process...'):
         
         result_batch = batch_process_path(input_folder_path, n_workers= n_workers)
         result_batch = clean_error_results(result_batch)
@@ -572,6 +572,59 @@ def show_word_cloud(st, dict_dfs, input_path, folder_images='app_images', wc_ima
     return dict_dfs
 
 
+def show_keyword_word_cloud(st, dict_dfs,
+                            input_path,
+                            folder_images='app_images',
+                            wc_image_name='wc_image_keyword.png',
+                            cache_folder_name='summarticles_cache'):
+    
+    """"""
+    
+    tviz = text_viz()
+    tprep = text_prep()
+    
+    # st.warning("🛠🧾 Text in preparation for WordCloud!")
+    if not checkey(dict_dfs,'show_keyword_word_cloud'):
+        
+        dict_dfs['show_keyword_word_cloud'] = {}
+        
+        df_unigram = dict_dfs['keywords']['df_unigram']
+        df_unigram = df_unigram.rename(columns={'keyword_unigram':'keyword',
+                                                'value_unigram':'value'})
+        df_bigram = dict_dfs['keywords']['df_bigram']
+        df_bigram = df_bigram.rename(columns={'keyword_bigram':'keyword',
+                                              'value_bigram':'value'})
+        df_trigram = dict_dfs['keywords']['df_trigram'].rename(columns={'keyword_trigram':'keyword',
+                                                                        'value_trigram':'value'})
+        df_trigram = df_trigram.rename(columns={'keyword_trigram':'keyword',
+                                                'value_trigram':'value'})
+        
+        df_keywords = pd.concat([df_unigram, df_bigram, df_trigram])
+        
+        dict_freq = {}
+        for i, row in df_keywords.iterrows():
+            dict_freq[row['keyword']] = row['value']
+        
+        path_images = os.path.join(input_path, cache_folder_name, folder_images)
+        if not os.path.exists(path_images):
+            os.mkdir(path_images)
+
+        wc, ax, fig = tviz.keyword_word_cloud(dict_freq, 
+                                              path_image=os.path.join(path_images, wc_image_name), 
+                                              show_wc=False, 
+                                              width=1000, 
+                                              height=300, 
+                                              collocations=True, 
+                                              background_color='white')
+        
+        # st.markdown("""<h5 style="text-align:left;"><b>WordCloud:</b></h5>""",unsafe_allow_html=True)
+        dict_dfs['show_keyword_word_cloud']['word_cloud_fig'] = fig
+    
+    st.pyplot(dict_dfs['show_keyword_word_cloud']['word_cloud_fig'])
+    
+    return dict_dfs
+
+
 def cossine_similarity_data(st, dict_dfs, column='abstract', n_sim=200,
                             percentil="99%", sim_value_min=0, sim_value_max=0.99):
     
@@ -740,6 +793,7 @@ def text_preparation(st, dict_dfs, input_folder_path):
 
 def generate_keywords(st, dict_dfs):
     
+    """"""
     
     if not checkey(dict_dfs,'keywords'):
         
@@ -796,6 +850,10 @@ def generate_keywords(st, dict_dfs):
         
         dict_dfs['keywords']['list_keywordsdf'] = list_keywordsdf
         dict_dfs['keywords']['list_keywordsdf_article'] = list_keywordsdf_article
+        dict_dfs['keywords']['df_unigram'] = df_unigram
+        dict_dfs['keywords']['df_bigram'] = df_bigram
+        dict_dfs['keywords']['df_trigram'] = df_trigram
+        
         
     df_keywords_all = pd.concat(dict_dfs['keywords']['list_keywordsdf'])
     df_keywords_all.dropna(inplace=True)
@@ -825,22 +883,55 @@ def generate_keywords(st, dict_dfs):
     return dict_dfs
 
 
-def show_keywords(st, df_keywords_all):
+def show_keywords(st, dict_dfs):
     
     """"""
     
+    # with st.container():
+    #     _, col, _ = st.columns([0.1,8,0.1])
+    #     with col:
+    #         AgGrid(dict_dfs['keywords']['df_keywords_all'].head(50),
+    #             data_return_mode='AS_INPUT', 
+    #             # update_mode='MODEL_CHANGED', 
+    #             fit_columns_on_grid_load=False,
+    #             # theme='fresh',
+    #             enable_enterprise_modules=False,
+    #             height=510, 
+    #             width='100%',
+    #             reload_data=True)
+            
     with st.container():
-        _, col, _ = st.columns([0.1,8,0.1])
-        with col:
-            AgGrid(df_keywords_all.head(50),
-                data_return_mode='AS_INPUT', 
-                # update_mode='MODEL_CHANGED', 
-                fit_columns_on_grid_load=False,
-                # theme='fresh',
-                enable_enterprise_modules=False,
-                height=510, 
-                width='100%',
-                reload_data=True)
+        _ , col1, col2, col3, _ = st.columns([0.01,3,3,3,0.01])
+        with col1:
+            AgGrid(dict_dfs['keywords']['df_unigram'].head(100),
+                   data_return_mode='AS_INPUT', 
+                   # update_mode='MODEL_CHANGED', 
+                   fit_columns_on_grid_load=False,
+                   # theme='fresh',
+                   enable_enterprise_modules=False,
+                   height=250, 
+                   width='100%',
+                   reload_data=True)
+        with col2:
+            AgGrid(dict_dfs['keywords']['df_bigram'].head(100),
+                   data_return_mode='AS_INPUT', 
+                   # update_mode='MODEL_CHANGED', 
+                   fit_columns_on_grid_load=False,
+                   # theme='fresh',
+                   enable_enterprise_modules=False,
+                   height=250, 
+                   width='100%',
+                   reload_data=True)
+        with col3:
+            AgGrid(dict_dfs['keywords']['df_trigram'].head(100),
+                   data_return_mode='AS_INPUT', 
+                   # update_mode='MODEL_CHANGED', 
+                   fit_columns_on_grid_load=False,
+                   # theme='fresh',
+                   enable_enterprise_modules=False,
+                   height=250, 
+                   width='100%',
+                   reload_data=True)
 
 
 def agg_keys_node_data(grupo):
@@ -892,9 +983,6 @@ def show_keywords_graph(st, dict_dfs, df_article_keywords_all, input_folder_path
         dict_dfs['keywords']['graph']['keywords_graph'] = keywords_graph
         dict_dfs['keywords']['graph']['path_graph'] = path_graph
         dict_dfs['keywords']['graph']['path_folder_graph'] = path_folder_graph
-        
-    with st.expander("How it works?"):
-        st.write("This is MAGIC!")
         
     col1, col2 = st.columns([2,1])
     with col1:
@@ -1165,7 +1253,6 @@ if __name__ == '__main__':
         # This variables shall convert to checkbox 
         
         with st.expander("Settings and parameters"):
-            st.write("This is in development!")
             c1, c2, c3 = st.columns([1,1,1])
             with c1:
                 st.session_state['show_text_macro'] = show_text_macro = st.checkbox("Show Macro Text Information", True, key="chk_show_text_macro")
@@ -1260,11 +1347,19 @@ if __name__ == '__main__':
                             st.markdown("""<hr style="height:1px;border:none;color:#F1F1F1;background-color:#F1F1F1;" /> """, unsafe_allow_html=True)
                             st.markdown("""<h3 style="text-align:left;"><b>KeyWords</b></h3>""",unsafe_allow_html=True)
                             
+                            with st.expander("How it works?"):
+                                st.write("This is MAGIC!")
+                            
                             with st.spinner('📄➞🔤  Extracting KeyWords...'):
                                 st.session_state['dict_dfs'] = generate_keywords(st, st.session_state['dict_dfs'])
                                 
                             with st.spinner('📄➞🔤  Showing KeyWords...'):
-                                show_keywords(st, st.session_state['dict_dfs']['keywords']['df_keywords_all'])
+                                show_keywords(st, st.session_state['dict_dfs'])
+                                
+                            with st.spinner('📄➞🔤  Showing KeyWords WordCloud...'):
+                                st.session_state['dict_dfs'] = show_keyword_word_cloud(st, st.session_state['dict_dfs'], input_folder_path, 
+                                                                                       cache_folder_name='summarticles_cache',
+                                                                                       folder_images='images', wc_image_name='wc_image_keyword.png')
                                 
                             if st.session_state['show_keywords_graph_cond']:
                                 with st.spinner('📄➞📄  Making KeyWord Graph...'):
