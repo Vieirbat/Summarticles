@@ -1164,16 +1164,20 @@ def show_last_executions(st, list_files_execs, inputpath, cache_folder_name='sum
             try:
                 dict_dfs = load_previous_execution(choice_exec, inputpath)
                 st.session_state['previous_exec_check'] = True
+                st.session_state['save_execution'] = False
                 st.success("✅ Reload complete!")
             except Exception as error:
                 st.error(f"❌ Error while reload previously execution: {str(error)}")
         elif choice_exec == opt_new_run:
             st.session_state['previous_exec_check'] = True
+            st.session_state['save_execution'] = True
         else:
             st.session_state['previous_exec_check'] = False
+            st.session_state['save_execution'] = True
             st.warning("⚠️ You need to choose an option!")
     else:
         st.session_state['previous_exec_check'] = True
+        st.session_state['save_execution'] = True
         st.info("❕ There is no previously executions to recovery.")
         
     return dict_dfs
@@ -1222,7 +1226,8 @@ if __name__ == '__main__':
     if 'dict_dfs' not in st.session_state:
         st.session_state['dict_dfs'] = None
     if 'save_execution' not in st.session_state:
-        st.session_state['save_execution'] = False
+        st.session_state['save_execution'] = True
+        
     # ----------------------------------------------------------------------------
     # Entrance of app
     make_head(st) # st.header("")
@@ -1293,6 +1298,7 @@ if __name__ == '__main__':
             dict_dfs = show_last_executions(st, list_last_executions, st.session_state['input_path'],
                                             cache_folder_name='summarticles_cache',
                                             folder_execs='summa_files', ext_file='summa')
+                   
             st.session_state['dict_dfs'] = dict_dfs
         
     # ----------------------------------------------------------------------------
@@ -1373,8 +1379,6 @@ if __name__ == '__main__':
                                 st.markdown("""<hr style="height:1px;border:none;color:#F1F1F1;background-color:#F1F1F1;" /> """, unsafe_allow_html=True)
                                 st.session_state['dict_dfs'] = similarity_graph(st, st.session_state['dict_dfs'], input_folder_path, percentil="75%", 
                                                             n_sim=100, cache_folder_name='summarticles_cache')
-                                
-            st.session_state['save_execution'] = True
     
     if st.session_state['dict_dfs'] and st.session_state['save_execution']:                     
         write_previous_execution(st.session_state['dict_dfs'], 
@@ -1383,4 +1387,5 @@ if __name__ == '__main__':
                                  ext_file='summa',
                                  cache_folder_name='summarticles_cache', 
                                  folder_execs='summa_files')
+        st.session_state['save_execution'] = False
         
