@@ -644,6 +644,7 @@ def cossine_similarity_data(st, dict_dfs, column='abstract', n_sim=200,
         
         df_cos_tfidf_sim_filter = tmining.filter_sim_matrix(df_cos_tfidf_sim,
                                                             df_cos_tfidf_sim.index.tolist(),
+                                                            n_sim=n_sim,
                                                             percentil=percentil,
                                                             value_min=sim_value_min,
                                                             value_max=sim_value_max)
@@ -694,8 +695,8 @@ def similarity_graph(st, dict_dfs, input_folder_path, folder_graph='graphs', nam
                      column='abstract', n_sim=200, percentil="99%", sim_value_min=0, sim_value_max=0.99, buttons=False):
     
     """"""
-    
-    if  not checkey(dict_dfs,'similarity_graph'):
+
+    if  not ('similarity_graph' in dict_dfs):
         
         dict_dfs['similarity_graph'] = {}
     
@@ -703,6 +704,7 @@ def similarity_graph(st, dict_dfs, input_folder_path, folder_graph='graphs', nam
         
         df_cos_tfidf_sim_filter = cossine_similarity_data(st, dict_dfs, column, n_sim, percentil,
                                                           sim_value_min, sim_value_max)
+        
         dict_dfs['similarity_graph']['df_cos_tfidf_sim_filter'] = df_cos_tfidf_sim_filter
     
         df_nodes = nodes_data(st, dict_dfs, df_cos_tfidf_sim_filter)
@@ -711,6 +713,8 @@ def similarity_graph(st, dict_dfs, input_folder_path, folder_graph='graphs', nam
         path_write_graph = os.path.join(input_folder_path, cache_folder_name)
         dict_dfs['similarity_graph']['path_write_graph'] = path_write_graph
 
+        print('SIM SHAPE: ', df_cos_tfidf_sim_filter.shape)
+
         sim_graph, path_graph, path_folder_graph = tmining.make_sim_graph(matrix=df_cos_tfidf_sim_filter, node_data=df_nodes,
                                                     source_column="doc_a", to_column="doc_b", value_column="value",
                                                     height="500px", width="100%", directed=False, notebook=False,
@@ -718,27 +722,21 @@ def similarity_graph(st, dict_dfs, input_folder_path, folder_graph='graphs', nam
                                                     heading="Similarity Graph: this graph shows you similarity across articles.",
                                                     path_graph=path_write_graph, folder_graph=folder_graph, buttons=buttons,
                                                     name_file=name_file)
+        
         dict_dfs['similarity_graph']['sim_graph'] = sim_graph
         dict_dfs['similarity_graph']['path_graph'] = path_graph
         dict_dfs['similarity_graph']['path_folder_graph'] = path_folder_graph
         
     with st.container():
-        st.markdown("""<h3 style="text-align:left;"><b>Similarity Graph: this graph shows you similarity across articles.</b></h3>""", unsafe_allow_html=True)
-        
-        # path_comp_sim = os.path.join(path,'components','collapse_similarity.html')
-        # print(path_comp_sim)
-        # components.html(get_component_from_file(path_comp_sim),height=None, width=None, scrolling=False)
-        
-        with st.expander("How it works?"):
-            st.write("This is MAGIC!")
             
         col1, col2 = st.columns([1,2])
         with col1:
+            df_sim = None
             df_sim = dict_dfs['similarity_graph']['df_cos_tfidf_sim_filter']
-            df_sim['value'] = df_sim['value'].apply(lambda e: round(100*e,2))
+            df_sim['value'] = df_sim['value'].apply(lambda e: round(e,2))
             df_sim['doc_a'] = df_sim['doc_a'].apply(lambda e: e[0:4])
             df_sim['doc_b'] = df_sim['doc_b'].apply(lambda e: e[0:4])
-            AgGrid(df_sim.head(50),
+            AgGrid(df_sim.head(n_sim),
                    data_return_mode='AS_INPUT', 
                    # update_mode='MODEL_CHANGED', 
                    fit_columns_on_grid_load=False,
@@ -752,8 +750,11 @@ def similarity_graph(st, dict_dfs, input_folder_path, folder_graph='graphs', nam
                        dict_dfs['similarity_graph']['path_graph'],
                        dict_dfs['similarity_graph']['path_folder_graph'],
                        text_spinner='👁‍🗨 Similarity Graph: drawing...')
+            
+        relations_size = dict_dfs['similarity_graph']['df_cos_tfidf_sim_filter'].shape[0]
+        sim_max_val = dict_dfs['similarity_graph']['df_cos_tfidf_sim_filter'].value.max()
         
-        return dict_dfs
+        return dict_dfs, relations_size, sim_max_val
 
 
 def get_component_from_file(path_html):
@@ -1199,9 +1200,6 @@ def make_reset_button(st):
             st.experimental_singleton.clear()
             st.experimental_rerun()
     
-            
-def make_save_execution_button():
-    """"""
 
 ###############################################################################################
 # ---------------------------------------------------------------------------------------------
@@ -1227,6 +1225,10 @@ if __name__ == '__main__':
         st.session_state['dict_dfs'] = None
     if 'save_execution' not in st.session_state:
         st.session_state['save_execution'] = True
+    if 'param_n_sim' not in st.session_state:
+        st.session_state['param_n_sim'] = 100
+    if 'param_sim' not in st.session_state:
+        st.session_state['param_sim'] = 0.0
         
     # ----------------------------------------------------------------------------
     # Entrance of app
@@ -1285,7 +1287,7 @@ if __name__ == '__main__':
     # ----------------------------------------------------------------------------
     # Check if there are another executions in the cache
     
-    if st.session_state['path_check']:
+    if st.session_state['path_check'] and not st.session_state['previous_exec_check']:
         
         input_path_success_message(st, st.session_state['input_path'])
     
@@ -1376,16 +1378,40 @@ if __name__ == '__main__':
                     with st.container():
                         if st.session_state['show_similaritygraph']:
                             with st.spinner('📄➞📄  Making Similarity Graph...'):
+                                
                                 st.markdown("""<hr style="height:1px;border:none;color:#F1F1F1;background-color:#F1F1F1;" /> """, unsafe_allow_html=True)
-                                st.session_state['dict_dfs'] = similarity_graph(st, st.session_state['dict_dfs'], input_folder_path, percentil="75%", 
-                                                            n_sim=100, cache_folder_name='summarticles_cache')
+                                st.markdown("""<h3 style="text-align:left;"><b>Similarity Graph: this graph shows you similarity across articles.</b></h3>""", unsafe_allow_html=True)
+
+                                with st.expander("How it works?"):
+                                    st.write("This is MAGIC!")
+                                    
+                                def del_similarity_graph():
+                                    del st.session_state['dict_dfs']['similarity_graph']
+                                    
+                                st.session_state['dict_dfs'], rel_size, sim_size = similarity_graph(st, st.session_state['dict_dfs'],
+                                                                                                    input_folder_path,
+                                                                                                    percentil="75%",
+                                                                                                    n_sim=st.session_state['param_n_sim'],
+                                                                                                    cache_folder_name='summarticles_cache')
+                                _, sld1, _ , sld2, _ = st.columns([1,3,0.5,3,1])
+                                with sld1:
+                                    st.session_state['param_n_sim'] = st.slider(label='Select number of relations:', min_value=0, max_value=rel_size, value=st.session_state['param_n_sim'], on_change=del_similarity_graph)
+                                with sld2:
+                                    st.session_state['param_sim'] = st.slider(label='Select min similarity score:', min_value=0.0, max_value=float(sim_size), value=st.session_state['param_sim'], on_change=del_similarity_graph)
+                                    
+                    with st.container():
+                        if st.session_state['show_clustering']:
+                            with st.spinner('📄➞📄  Making Clustering...'):
+                                st.write("Agrupamento em desenvolvimento...")
     
-    if st.session_state['dict_dfs'] and st.session_state['save_execution']:                     
+    if st.session_state['dict_dfs'] and st.session_state['save_execution']:
+                             
         write_previous_execution(st.session_state['dict_dfs'], 
                                  st.session_state['input_path'],
                                  file_name="report_summarticles",
                                  ext_file='summa',
                                  cache_folder_name='summarticles_cache', 
                                  folder_execs='summa_files')
+        
         st.session_state['save_execution'] = False
         
