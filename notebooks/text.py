@@ -167,9 +167,9 @@ class text_mining(object):
 
 
     def get_df_tfidf(self, documents_list, encoding="utf-8", stop_words="english", strip_accents="ascii", lowercase=True, 
-                    preprocessor=None, tokenizer=None, token_pattern=r"""(?u)\b\w\w+\b""", ngram_range=(1,2), analyzer="word",
-                    max_df=1.0, min_df=2, max_features=None, vocabulary= None, binary=False, dtype=np.float64, norm='l2', 
-                    use_idf=True, smooth_idf=True, sublinear_tf=False):
+                     preprocessor=None, tokenizer=None, token_pattern=r"""(?u)\b\w\w+\b""", ngram_range=(1,2), analyzer="word",
+                     max_df=1.0, min_df=2, max_features=None, vocabulary= None, binary=False, dtype=np.float64, norm='l2', 
+                     use_idf=True, smooth_idf=True, sublinear_tf=False):
         """"""
         obj_tfidf = TfidfVectorizer(encoding=encoding,
                                     stop_words=stop_words,
