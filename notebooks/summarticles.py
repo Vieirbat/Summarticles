@@ -240,22 +240,22 @@ def make_head(st):
 
     # Head
     st.set_page_config(
-        page_title="[APP] Summarticles: Materials Science ⚛👨‍🔬👩‍🔬",
-        page_icon="⚛", # https://www.freecodecamp.org/news/all-emojis-emoji-list-for-copy-and-paste/, https://share.streamlit.io/streamlit/emoji-shortcodes
+        page_title="[APP] Summarticles",
+        page_icon="🧾", # https://www.freecodecamp.org/news/all-emojis-emoji-list-for-copy-and-paste/, https://share.streamlit.io/streamlit/emoji-shortcodes
         layout="wide", # centered
         initial_sidebar_state="collapsed", #collapsed #auto #expanded
         menu_items={"About":"https://github.com/Vieirbat/PGC",
                     "Get help":"https://github.com/Vieirbat/PGC",
                     "Report a bug":"https://github.com/Vieirbat/PGC"}) 
     
-    st.markdown("""<h1 style="text-align:center;">⚛👨‍🔬👩‍🔬 Summarticles: Materials Science</h1>""",
+    st.markdown("""<h1 style="text-align:center;">🧾➜📊 Summarticles</h1>""",
                 unsafe_allow_html=True)
     
     st.markdown("""<h3 style="text-align:center;"><b>Summarticles is an application to summarize articles information, 
                     using IA and analytics.</b></h3>""", 
                 unsafe_allow_html=True) # st.write("Application")
     
-    st.markdown("""<h6 style="text-align:center;">Do you want to use it? So, you only need to specify a folder path clicking 
+    st.markdown("""<h6 style="text-align:center;">Do you want to use it? So, you only need to specify a folder path (with PDF article files) clicking 
                 on '📁 Select a folder path!' and let the magic happen!</h6>""",
                 unsafe_allow_html=True)
 
@@ -796,7 +796,7 @@ def generate_keywords(st, dict_dfs):
     
     """"""
     
-    if not checkey(dict_dfs,'keywords'):
+    if 'keywords' not in dict_dfs:
         
         dict_dfs['keywords'] = {}
         
@@ -1393,11 +1393,11 @@ if __name__ == '__main__':
                                                                                                     percentil="75%",
                                                                                                     n_sim=st.session_state['param_n_sim'],
                                                                                                     cache_folder_name='summarticles_cache')
-                                _, sld1, _ , sld2, _ = st.columns([1,3,0.5,3,1])
-                                with sld1:
-                                    st.session_state['param_n_sim'] = st.slider(label='Select number of relations:', min_value=0, max_value=rel_size, value=st.session_state['param_n_sim'], on_change=del_similarity_graph)
-                                with sld2:
-                                    st.session_state['param_sim'] = st.slider(label='Select min similarity score:', min_value=0.0, max_value=float(sim_size), value=st.session_state['param_sim'], on_change=del_similarity_graph)
+                                # _, sld1, _ , sld2, _ = st.columns([1,3,0.5,3,1])
+                                # with sld1:
+                                #     st.session_state['param_n_sim'] = st.slider(label='Select number of relations:', min_value=0, max_value=rel_size, value=st.session_state['param_n_sim'], on_change=del_similarity_graph)
+                                # with sld2:
+                                #     st.session_state['param_sim'] = st.slider(label='Select min similarity score:', min_value=0.0, max_value=float(sim_size), value=st.session_state['param_sim'], on_change=del_similarity_graph)
                                     
                     with st.container():
                         if st.session_state['show_clustering']:
