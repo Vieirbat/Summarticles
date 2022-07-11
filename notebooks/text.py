@@ -221,14 +221,14 @@ class text_mining(object):
         
         """"""
         
-        # list_elements = []
-        # for colum in columns:
-        #     list_elements += matrix[colum].tolist()
-        # sim_describe = pd.Series(list_elements).describe(percentiles=np.arange(0, 1, 0.001))
-        # del list_elements
+        list_elements = [] #
+        for colum in columns: #
+            list_elements += matrix[colum].tolist() #
+        sim_describe = pd.Series(list_elements).describe(percentiles=np.arange(0, 1, 0.001)) #
+        del list_elements #
         
-        # filter_matrix = sim_describe[percentil]
-        #
+        filter_matrix = sim_describe[percentil] #
+        
         
         list_filter = []
         for num_line, irow in enumerate(matrix.iterrows()):
@@ -237,14 +237,14 @@ class text_mining(object):
                 if num_line >= num_col:
                     continue
                 value = matrix.loc[i,j]
-                logic_filter = value>=value_min and value<=value_max # and value>=filter_matrix
+                logic_filter = value>=value_min and value<=value_max and value>=filter_matrix #
                 if not pd.isna(value) and logic_filter:
                     dictCell = {"doc_a":i,"doc_b":j,colum_value:matrix.loc[i,j]}
                     list_filter.append(dictCell)
         df_maxtrix_filter = pd.DataFrame(list_filter)
         del list_filter
         
-        # df_maxtrix_filter = df_maxtrix_filter.nlargest(n_sim, colum_value)
+        df_maxtrix_filter = df_maxtrix_filter.nlargest(n_sim, colum_value)
         
         return df_maxtrix_filter
     
