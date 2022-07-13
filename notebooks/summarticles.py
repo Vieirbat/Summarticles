@@ -1358,7 +1358,7 @@ def clustering_2d(dict_dfs, title_text="Group Articles", n_components=2, algorit
                              x='x',
                              y='y',
                              color='label',
-                             height=600,
+                             height=550,
                              width=750,
                              custom_data=['file_name','title_head','label','x','y'])
 
@@ -1609,7 +1609,7 @@ if __name__ == '__main__':
                                             fit_columns_on_grid_load=False,
                                             # theme='fresh',
                                             enable_enterprise_modules=False,
-                                            height=510, 
+                                            height=515, 
                                             width='100%',
                                             reload_data=True)
                                 
