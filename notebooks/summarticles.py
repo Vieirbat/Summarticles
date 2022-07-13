@@ -1199,6 +1199,190 @@ def make_reset_button(st):
             st.experimental_memo.clear()
             st.experimental_singleton.clear()
             st.experimental_rerun()
+            
+            
+def clustering_3d(dict_dfs, title_text="Group Articles", n_components=2, algorithm='UMAP'):
+    
+    """"""
+    
+    if "clustering_data_3d" not in dict_dfs:
+        
+        dict_dfs["clustering_data_3d"] = {}
+        
+        tmining = text_mining()
+        
+        if "documents_abs" not in dict_dfs["clustering_data_3d"]:
+            dict_dfs["clustering_data_3d"]['documents_abs'] = dict_dfs['df_doc_info']['abstract_prep'].fillna(' ').tolist()
+        # documents_body = dict_dfs['df_doc_info']['body_prep'].fillna(' ').tolist()
+        
+        if "df_tfidf_abstract_abs" not in dict_dfs["clustering_data_3d"]:
+            dict_dfs["clustering_data_3d"]['df_tfidf_abstract_abs'] = tmining.get_df_tfidf(dict_dfs["clustering_data_3d"]['documents_abs'])
+        # df_tfidf_abstract_body = tmining.get_df_tfidf(documents_body)
+        
+        # df_bow_abstract_abs = tmining.get_df_bow(documents_abs)
+        # df_bow_abstract_body = tmining.get_df_bow(documents_body)
+        
+        cluster_labels = tmining.make_clustering(dict_dfs["clustering_data_3d"]['df_tfidf_abstract_abs'].values,
+                                                 lim_sup=None, 
+                                                 init='k-means++', 
+                                                 n_init=10, 
+                                                 max_iter=30, 
+                                                 tol=1e-4, 
+                                                 random_state=0)
+        
+        X, y = tmining.reduce_dimensionality(dict_dfs["clustering_data_3d"]['df_tfidf_abstract_abs'].values, 
+                                             y=cluster_labels,
+                                             n_components=n_components,
+                                             algorithm=algorithm # TSNE e PCA
+                                             ), cluster_labels
+
+        dict_dfs['df_doc_info']['file_name'] = dict_dfs['df_doc_info']['file'].apply(lambda e: os.path.split(e)[-1])
+            
+        # Concatenate X and y arrays
+        article_title = dict_dfs['df_doc_head']['title_head'].apply(lambda e: ''.join([str(e)[0:30],'...']) if len(str(e)) >= 30 else str(e)).values.reshape(dict_dfs['df_doc_info']['file'].shape[0],1)
+        file_name = dict_dfs['df_doc_info']['file_name'].values.reshape(dict_dfs['df_doc_info']['file_name'].shape[0],1)
+
+        arr_concat=np.concatenate((X,
+                                y.reshape(y.shape[0],1),
+                                file_name,
+                                article_title), axis=1)
+
+        # Create a Pandas dataframe using the above array
+        df=pd.DataFrame(arr_concat, columns=['x', 'y', 'z', 'label', 'file_name', 'title_head'])
+        
+        dict_dfs['cluster_data_table'] = df.loc[:,['file_name', 'title_head','label']].copy()
+        
+        # Convert label data type from float to integer
+        df['label'] = df['label'].astype(int)
+        # Finally, sort the dataframe by label
+        df.sort_values(by='label', axis=0, ascending=True, inplace=True)
+        #--------------------------------------------------------------------------#
+
+        if "fig" not in dict_dfs["clustering_data_3d"]:
+            
+            # Create a 3D graph
+            fig = px.scatter_3d(df, 
+                                x='x',
+                                y='y',
+                                z='z',
+                                color='label',
+                                height=600,
+                                width=750,
+                                custom_data=['file_name','title_head','label','x','y','z'])
+
+            # Update chart looks
+            fig.update_layout(title_text=title_text,
+                            showlegend=True,
+                            legend=dict(orientation="h", yanchor="top", y=0, xanchor="center", x=0.5))
+
+            labels = ["Article File Name: %{customdata[0]}",
+                      "Article Title: %{customdata[1]}",
+                      "Grupo: %{customdata[2]}",
+                      "X: %{x}",
+                      "Y: %{y}",
+                      "Z: %{z}"]
+                        
+            fig.update_traces(hovertemplate="<br>".join(labels))
+            fig.update_coloraxes(showscale=False)
+
+            # Update marker size
+            # fig.update_traces(marker=dict(size=3, line=dict(color='black', width=0.1)))
+            dict_dfs["clustering_data_3d"]["fig"] = fig
+        
+    st.plotly_chart(dict_dfs["clustering_data_3d"]["fig"], use_container_width=True)
+    
+    return dict_dfs
+    
+    
+def clustering_2d(dict_dfs, title_text="Group Articles", n_components=2, algorithm='UMAP'):
+    
+    """"""
+    
+    if "clustering_data_2d" not in dict_dfs:
+        
+        dict_dfs["clustering_data_2d"] = {}
+        
+        tmining = text_mining()
+        
+        if "documents_abs" not in dict_dfs["clustering_data_2d"]:
+            dict_dfs["clustering_data_2d"]['documents_abs'] = dict_dfs['df_doc_info']['abstract_prep'].fillna(' ').tolist()
+        # documents_body = dict_dfs['df_doc_info']['body_prep'].fillna(' ').tolist()
+        
+        if "df_tfidf_abstract_abs" not in dict_dfs["clustering_data_2d"]:
+            dict_dfs["clustering_data_2d"]['df_tfidf_abstract_abs'] = tmining.get_df_tfidf(dict_dfs["clustering_data_2d"]['documents_abs'])
+        # df_tfidf_abstract_body = tmining.get_df_tfidf(documents_body)
+        
+        # df_bow_abstract_abs = tmining.get_df_bow(documents_abs)
+        # df_bow_abstract_body = tmining.get_df_bow(documents_body)
+        
+        cluster_labels = tmining.make_clustering(dict_dfs["clustering_data_2d"]['df_tfidf_abstract_abs'],
+                                                 lim_sup=None, 
+                                                 init='k-means++', 
+                                                 n_init=10, 
+                                                 max_iter=30, 
+                                                 tol=1e-4, 
+                                                 random_state=0)
+        
+        X, y = tmining.reduce_dimensionality(dict_dfs["clustering_data_2d"]['df_tfidf_abstract_abs'], 
+                                             y=cluster_labels,
+                                             n_components=n_components,
+                                             algorithm=algorithm # TSNE e PCA
+                                             ), cluster_labels
+
+        dict_dfs['df_doc_info']['file_name'] = dict_dfs['df_doc_info']['file'].apply(lambda e: os.path.split(e)[-1])
+            
+        # Concatenate X and y arrays
+        article_title = dict_dfs['df_doc_head']['title_head'].apply(lambda e: ''.join([str(e)[0:30],'...']) if len(str(e)) >= 30 else str(e)).values.reshape(dict_dfs['df_doc_info']['file'].shape[0],1)
+        file_name = dict_dfs['df_doc_info']['file_name'].values.reshape(dict_dfs['df_doc_info']['file_name'].shape[0],1)
+
+        arr_concat=np.concatenate((X,
+                                   y.reshape(y.shape[0],1),
+                                   file_name,
+                                   article_title), axis=1)
+
+        # Create a Pandas dataframe using the above array
+        df=pd.DataFrame(arr_concat, columns=['x', 'y', 'label', 'file_name', 'title_head'])
+        
+        dict_dfs['cluster_data_table'] = df.loc[:,['file_name', 'title_head','label']].copy()
+        
+        # Convert label data type from float to integer
+        df['label'] = df['label'].astype(int)
+        # Finally, sort the dataframe by label
+        df.sort_values(by='label', axis=0, ascending=True, inplace=True)
+        #--------------------------------------------------------------------------#
+
+        if "fig" not in dict_dfs["clustering_data_2d"]:
+            
+            # Create a 3D graph
+            fig = px.scatter(df, 
+                             x='x',
+                             y='y',
+                             color='label',
+                             height=550,
+                             width=750,
+                             custom_data=['file_name','title_head','label','x','y'])
+
+            # Update chart looks
+            fig.update_layout(title_text=title_text,
+                              showlegend=True,
+                              legend=dict(orientation="h", yanchor="top", y=0, xanchor="center", x=0.5))
+
+            labels = ["Article File Name: %{customdata[0]}",
+                      "Article Title: %{customdata[1]}",
+                      "Grupo: %{customdata[2]}",
+                      "X: %{x}",
+                      "Y: %{y}"]
+                        
+            fig.update_traces(hovertemplate="<br>".join(labels))
+            fig.update_coloraxes(showscale=False)
+
+            # Update marker size
+            # fig.update_traces(marker=dict(size=3, line=dict(color='black', width=0.1)))
+            dict_dfs["clustering_data_2d"]["fig"] = fig
+        
+    st.plotly_chart(dict_dfs["clustering_data_2d"]["fig"], use_container_width=True)
+    
+    return dict_dfs
     
 
 ###############################################################################################
@@ -1402,8 +1586,40 @@ if __name__ == '__main__':
                     with st.container():
                         if st.session_state['show_clustering']:
                             with st.spinner('📄➞📄  Making Clustering...'):
-                                st.write("Agrupamento em desenvolvimento...")
-    
+                                
+                                st.markdown("""<hr style="height:1px;border:none;color:#F1F1F1;background-color:#F1F1F1;" /> """, unsafe_allow_html=True)
+                                st.markdown("""<h3 style="text-align:left;"><b>Clustering Articles</b></h3>""", unsafe_allow_html=True)
+
+                                with st.expander("How it works?"):
+                                    st.write("This is MAGIC!")
+                                
+                                c1, c2 = st.columns([0.5,1])
+                                
+                                with st.container():
+
+                                    with c2:
+                                        st.session_state['dict_dfs'] = clustering_2d(st.session_state['dict_dfs'],
+                                                                                    title_text="Group Articles 2D",
+                                                                                    n_components=2,
+                                                                                    algorithm='PCA') # UMAP, TSNE, PCA, MDS
+                                    with c1:
+                                        AgGrid(st.session_state['dict_dfs']['cluster_data_table'],
+                                            data_return_mode='AS_INPUT', 
+                                            # update_mode='MODEL_CHANGED', 
+                                            fit_columns_on_grid_load=False,
+                                            # theme='fresh',
+                                            enable_enterprise_modules=False,
+                                            height=515, 
+                                            width='100%',
+                                            reload_data=True)
+                                
+                                with st.container():
+                                    st.session_state['dict_dfs'] = clustering_3d(st.session_state['dict_dfs'],
+                                                                                 title_text="Group Articles 3D",
+                                                                                 n_components=3,
+                                                                                 algorithm='PCA') # UMAP, TSNE, PCA, MDS
+                                    
+                                
     if st.session_state['dict_dfs'] and st.session_state['save_execution']:
                              
         write_previous_execution(st.session_state['dict_dfs'], 
