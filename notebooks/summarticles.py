@@ -39,7 +39,8 @@ import nltk
 
 import random
 
-from keybert import KeyBERT
+# from keybert import KeyBERT
+import yake
 
 from st_aggrid import GridOptionsBuilder, AgGrid, GridUpdateMode, DataReturnMode
 
@@ -800,7 +801,7 @@ def generate_keywords(st, dict_dfs):
         
         dict_dfs['keywords'] = {}
         
-        kw_model = KeyBERT()
+        # kw_model = KeyBERT()
         
         dict_keywords = {}
         id_column = 'article_id'
@@ -815,20 +816,26 @@ def generate_keywords(st, dict_dfs):
             doc = str(row[text_column])
             id = row[id_column]
             
-            keywords_unigram = kw_model.extract_keywords(doc, keyphrase_ngram_range=(1, 1), stop_words='english', highlight=False, top_n=10)
+            # keywords_unigram = kw_model.extract_keywords(doc, keyphrase_ngram_range=(1, 1), stop_words='english', highlight=False, top_n=10)
+            kw_extractor  = yake.KeywordExtractor(lan='en', n=1, dedupLim=0.9, dedupFunc='seqm', windowsSize=1, top='20', features=None)
+            keywords_unigram = kw_extractor.extract_keywords(doc)
             if len(keywords_unigram):
                 df_unigram = pd.DataFrame([{'keyword':v[0],'value':v[1]} for v in keywords_unigram])
             else:
                 df_unigram = pd.DataFrame([], columns=['keyword','value'])
 
-            keywords_bigram = kw_model.extract_keywords(doc, keyphrase_ngram_range=(2, 2), stop_words='english', highlight=False, top_n=10)
+            # keywords_bigram = kw_model.extract_keywords(doc, keyphrase_ngram_range=(2, 2), stop_words='english', highlight=False, top_n=10)
+            kw_extractor  = yake.KeywordExtractor(lan='en', n=2, dedupLim=0.9, dedupFunc='seqm', windowsSize=1, top='20', features=None)
+            keywords_bigram = kw_extractor.extract_keywords(doc)
             if len(keywords_bigram):
                 df_bigram = pd.DataFrame([{'keyword':v[0],'value':v[1]} for v in keywords_bigram])
             else:
                 df_bigram = pd.DataFrame([], columns=['keyword','value'])
 
-            keywords_trigam = kw_model.extract_keywords(doc, keyphrase_ngram_range=(3, 3), stop_words='english', highlight=False, top_n=10)
-            if len(keywords_bigram):
+            # keywords_trigam = kw_model.extract_keywords(doc, keyphrase_ngram_range=(3, 3), stop_words='english', highlight=False, top_n=10)
+            kw_extractor  = yake.KeywordExtractor(lan='en', n=3, dedupLim=0.9, dedupFunc='seqm', windowsSize=1, top='20', features=None)
+            keywords_trigam = kw_extractor.extract_keywords(doc)
+            if len(keywords_trigam):
                 df_trigram = pd.DataFrame([{'keyword':v[0],'value':v[1]} for v in keywords_trigam])
             else:
                 df_trigram = pd.DataFrame([], columns=['keyword','value'])
