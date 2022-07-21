@@ -37,9 +37,12 @@ import matplotlib.pyplot as plt
 from graph.pyvis.network import Network
 import nltk
 
+from annotated_text import annotated_text
+
 import random
 
-from keybert import KeyBERT
+# from keybert import KeyBERT
+import yake
 
 from st_aggrid import GridOptionsBuilder, AgGrid, GridUpdateMode, DataReturnMode
 
@@ -690,6 +693,27 @@ def nodes_data(st, dict_dfs, df_cos_sim_filter):
 
     return df_nodes
 
+def part_of_speech(dict_dfs):
+
+    article_titles = dict_dfs['df_doc_head']['title_head'].tolist()
+    file_names = dict_dfs['df_doc_info']['file'].apply(lambda e: os.path.split(e)[-1])
+
+    list_articles = list(zip(article_titles,file_names))
+    list_articles_select = [' - '.join([str(e[0]),str(e[1])]) for e in list_articles]
+
+    abstracts = dict_dfs['df_doc_info']['abstract'].tolist()
+    list_articles_abstracts = list(zip(list_articles_select,abstracts))
+    dict_articles_abstracts = {e[0]:e[1] for e in list_articles_abstracts}
+    
+    choice_exec = st.selectbox("Please, choose one article: ", list_articles_select, key="select_box_pos")
+    
+    list_tokens = nltk.word_tokenize(dict_articles_abstracts[choice_exec])
+    list_pos_tag = nltk.pos_tag(list_tokens)
+    
+    col1, col2, col3 = st.columns([0.1,2,0.1])
+    with col2:
+        annotated_text(*list_pos_tag)
+
 
 def similarity_graph(st, dict_dfs, input_folder_path, folder_graph='graphs', name_file="graph.html", cache_folder_name='summarticles_cache', 
                      column='abstract', n_sim=200, percentil="99%", sim_value_min=0, sim_value_max=0.99, buttons=False):
@@ -800,7 +824,7 @@ def generate_keywords(st, dict_dfs):
         
         dict_dfs['keywords'] = {}
         
-        kw_model = KeyBERT()
+        # kw_model = KeyBERT()
         
         dict_keywords = {}
         id_column = 'article_id'
@@ -815,20 +839,26 @@ def generate_keywords(st, dict_dfs):
             doc = str(row[text_column])
             id = row[id_column]
             
-            keywords_unigram = kw_model.extract_keywords(doc, keyphrase_ngram_range=(1, 1), stop_words='english', highlight=False, top_n=10)
+            # keywords_unigram = kw_model.extract_keywords(doc, keyphrase_ngram_range=(1, 1), stop_words='english', highlight=False, top_n=10)
+            kw_extractor  = yake.KeywordExtractor(lan='en', n=1, dedupLim=0.9, dedupFunc='seqm', windowsSize=1, top='20', features=None)
+            keywords_unigram = kw_extractor.extract_keywords(doc)
             if len(keywords_unigram):
                 df_unigram = pd.DataFrame([{'keyword':v[0],'value':v[1]} for v in keywords_unigram])
             else:
                 df_unigram = pd.DataFrame([], columns=['keyword','value'])
 
-            keywords_bigram = kw_model.extract_keywords(doc, keyphrase_ngram_range=(2, 2), stop_words='english', highlight=False, top_n=10)
+            # keywords_bigram = kw_model.extract_keywords(doc, keyphrase_ngram_range=(2, 2), stop_words='english', highlight=False, top_n=10)
+            kw_extractor  = yake.KeywordExtractor(lan='en', n=2, dedupLim=0.9, dedupFunc='seqm', windowsSize=1, top='20', features=None)
+            keywords_bigram = kw_extractor.extract_keywords(doc)
             if len(keywords_bigram):
                 df_bigram = pd.DataFrame([{'keyword':v[0],'value':v[1]} for v in keywords_bigram])
             else:
                 df_bigram = pd.DataFrame([], columns=['keyword','value'])
 
-            keywords_trigam = kw_model.extract_keywords(doc, keyphrase_ngram_range=(3, 3), stop_words='english', highlight=False, top_n=10)
-            if len(keywords_bigram):
+            # keywords_trigam = kw_model.extract_keywords(doc, keyphrase_ngram_range=(3, 3), stop_words='english', highlight=False, top_n=10)
+            kw_extractor  = yake.KeywordExtractor(lan='en', n=3, dedupLim=0.9, dedupFunc='seqm', windowsSize=1, top='20', features=None)
+            keywords_trigam = kw_extractor.extract_keywords(doc)
+            if len(keywords_trigam):
                 df_trigram = pd.DataFrame([{'keyword':v[0],'value':v[1]} for v in keywords_trigam])
             else:
                 df_trigram = pd.DataFrame([], columns=['keyword','value'])
@@ -1532,6 +1562,19 @@ if __name__ == '__main__':
                             with st.spinner('🔢📊 Generating articles text numbers/stats...'):
                                 st.markdown("""<hr style="height:0.1px;border:none;color:#F1F1F1;background-color:#F1F1F1;" /> """, unsafe_allow_html=True)
                                 st.session_state['dict_dfs'] = show_text_numbers(st, st.session_state['dict_dfs'])
+                        
+                        with st.container():
+                            if st.session_state['show_clustering']:
+                                with st.spinner('📄➞📄  Making Clustering...'):
+                                    st.markdown("""<hr style="height:1px;border:none;color:#F1F1F1;background-color:#F1F1F1;" /> """, unsafe_allow_html=True)
+                                    st.markdown("""<h3 style="text-align:left;"><b>Authors Information</b></h3>""", unsafe_allow_html=True)
+                        
+                        with st.container():
+                            if st.session_state['show_clustering']:
+                                with st.spinner('📄➞📄  Making Clustering...'):
+                                    st.markdown("""<hr style="height:1px;border:none;color:#F1F1F1;background-color:#F1F1F1;" /> """, unsafe_allow_html=True)
+                                    st.markdown("""<h3 style="text-align:left;"><b>Citation Information</b></h3>""", unsafe_allow_html=True)
+
 
                     with st.container():
                         if  st.session_state['show_keywords_table']:
@@ -1618,7 +1661,14 @@ if __name__ == '__main__':
                                                                                  title_text="Group Articles 3D",
                                                                                  n_components=3,
                                                                                  algorithm='PCA') # UMAP, TSNE, PCA, MDS
-                                    
+                     
+                    with st.container():
+                        with st.spinner('📄➞📄  Part-of-speech...'):
+                            
+                            st.markdown("""<hr style="height:1px;border:none;color:#F1F1F1;background-color:#F1F1F1;" /> """, unsafe_allow_html=True)
+                            st.markdown("""<h3 style="text-align:left;"><b>Part-of-Speech</b></h3>""", unsafe_allow_html=True)
+
+                            part_of_speech(st.session_state['dict_dfs'])              
                                 
     if st.session_state['dict_dfs'] and st.session_state['save_execution']:
                              
