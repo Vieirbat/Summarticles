@@ -38,6 +38,8 @@ from graph.pyvis.network import Network
 import nltk
 
 from annotated_text import annotated_text
+import spacy
+from spacy_streamlit import visualize_parser, visualize_ner
 
 import random
 
@@ -587,7 +589,7 @@ def show_keyword_word_cloud(st, dict_dfs,
     tprep = text_prep()
     
     # st.warning("🛠🧾 Text in preparation for WordCloud!")
-    if not checkey(dict_dfs,'show_keyword_word_cloud'):
+    if not 'show_keyword_word_cloud' in dict_dfs:
         
         dict_dfs['show_keyword_word_cloud'] = {}
         
@@ -693,7 +695,7 @@ def nodes_data(st, dict_dfs, df_cos_sim_filter):
 
     return df_nodes
 
-def part_of_speech(dict_dfs):
+def part_of_speech(st, dict_dfs):
 
     article_titles = dict_dfs['df_doc_head']['title_head'].tolist()
     file_names = dict_dfs['df_doc_info']['file'].apply(lambda e: os.path.split(e)[-1])
@@ -707,12 +709,22 @@ def part_of_speech(dict_dfs):
     
     choice_exec = st.selectbox("Please, choose one article: ", list_articles_select, key="select_box_pos")
     
-    list_tokens = nltk.word_tokenize(dict_articles_abstracts[choice_exec])
-    list_pos_tag = nltk.pos_tag(list_tokens)
+    # Há mais modelos para testar aqui https://github.com/allenai/scispacy
+    # python -m spacy download en_core_web_sm
+    nlp = spacy.load("en_core_web_sm")
+    doc = nlp(dict_articles_abstracts[choice_exec])
+    list_pos_tag = [(ent.text,ent.label_) for ent in doc.ents]
     
-    col1, col2, col3 = st.columns([0.1,2,0.1])
-    with col2:
-        annotated_text(*list_pos_tag)
+    # col1, col2, col3 = st.columns([0.1,2,0.1])
+    # with col2:
+    
+    doc.user_data["title"] = f"File: {choice_exec}"
+    
+    # https://github.com/explosion/spacy-streamlit
+    visualize_ner(doc, show_table=False, title=False)
+    #visualize_parser(doc)
+    
+    # annotated_text(*list_pos_tag)
 
 
 def similarity_graph(st, dict_dfs, input_folder_path, folder_graph='graphs', name_file="graph.html", cache_folder_name='summarticles_cache', 
@@ -1413,6 +1425,129 @@ def clustering_2d(dict_dfs, title_text="Group Articles", n_components=2, algorit
     st.plotly_chart(dict_dfs["clustering_data_2d"]["fig"], use_container_width=True)
     
     return dict_dfs
+
+###############################################################################################
+# ---------------------------------------------------------------------------------------------
+# ANALYTICS VISUALIZATION
+
+def getColumnsWithData(df, return_percent=False, n_round=2):
+    
+    """"""
+    
+    list_col_with_data = []
+    for col in df.columns.tolist():
+        rows = df[col].shape
+        n_null = df[col].isnull().sum()
+        not_null_data_perc = (1-n_null/rows)
+        if not_null_data_perc:
+            if return_percent:
+                list_col_with_data.append((col,np.round(not_null_data_perc, n_round)))
+            list_col_with_data.append(col)
+            
+    return list_col_with_data     
+
+
+def article_overview_information(st, dict_dfs):
+    
+    """"""
+    
+    import plotly.express as px
+    
+    df_doc_info = dict_dfs['df_doc_info'].loc[:,getColumnsWithData(dict_dfs['df_doc_info'])]
+    df_doc_head = dict_dfs['df_doc_head'].loc[:,getColumnsWithData(dict_dfs['df_doc_head'])]
+    df_doc_info_head = df_doc_info.join(df_doc_head, how='left')
+    
+    if 'date_head' in df_doc_info_head.columns.tolist():
+        df_doc_info_head.date_head = df_doc_info_head.date_head.apply(lambda e: pd.to_datetime(e))
+        df_doc_info_head['year'] = df_doc_info_head.date_head.apply(lambda e: e if pd.isna(e) else int(e.year))
+        df_doc_info_head.year = df_doc_info_head.year.fillna('Null Value')
+        fig = px.pie(df_doc_info_head, 
+                    values='year', 
+                    names='year',
+                    title='Number of Articles by Year',
+                    hover_data=['year'], 
+                    labels={'values':'Percentage','year':'Year of Article'}, hole=.5)
+
+        fig.update_traces(textposition='inside', textinfo='percent+label')
+        fig.update_layout(showlegend=False)
+        st.plotly_chart(fig)
+        
+    # _, col, _ = st.columns([0.1,3,0.1])
+    # with col:
+    
+        
+        # fig.show()
+        
+    return dict_dfs
+
+def article_authors_information(st, dict_dfs):
+    
+    """"""
+    
+    import plotly.express as px
+    
+    # DataSets and Preparation
+    df_doc_info = dict_dfs['df_doc_info'].loc[:,getColumnsWithData(dict_dfs['df_doc_info'])]
+    df_doc_head = dict_dfs['df_doc_head'].loc[:,getColumnsWithData(dict_dfs['df_doc_head'])]
+    df_doc_authors = dict_dfs['df_doc_authors'].loc[:,getColumnsWithData(dict_dfs['df_doc_authors'])]
+    df_doc_info_head = df_doc_info.join(df_doc_head, how='left')
+    
+    list_delete_authors = ['A R T I C L E I N F O', np.nan, 'Null', 'NaN','nan', 'null', '', ' ']
+    filter_delete_authors = ~(df_doc_authors.full_name_author.isin(list_delete_authors))
+    df_doc_authors = df_doc_authors.loc[filter_delete_authors].copy()
+    
+    # ---------------------------------------------------------------------------
+    # Top Authors
+    top_authors = df_doc_authors.full_name_author.value_counts()
+    df_top_authors = pd.DataFrame({'Full Name':top_authors.index,
+                                'Number of Articles':top_authors.values.tolist()})
+    
+    top_authors = df_top_authors.nlargest(20,'Number of Articles')
+    top_authors = top_authors.sort_values('Number of Articles',ascending=True)
+    fig_authors = px.bar(top_authors,
+                         title='Top 20 Number of Articles by Authors',
+                         y='Full Name',
+                         x='Number of Articles',
+                         color='Number of Articles',
+                         width=400, 
+                         height=600,
+                         text='Number of Articles')
+    fig_authors.update(layout_coloraxis_showscale=False)
+    # fig_authors.update_traces(showlegend=False)
+    # fig_authors.update_traces(marker_showscale=False)
+    fig_authors.update_xaxes(visible=False)
+    fig_authors.update_layout(yaxis_title=None, xaxis_title=None)
+
+    # ---------------------------------------------------------------------------
+    # Authors by Location
+    
+    columns_select = ['country_author','settlement_author', 'institution_author']
+    df_sun_agg = df_doc_authors.groupby(by=columns_select, as_index=False, dropna=False)['full_name_author'].count()
+    df_sun_agg = df_sun_agg.fillna("Null Value")
+    df_sun_agg.rename(columns={'country_author':'Author Country',
+                               'settlement_author':'Author Settlement',
+                               'institution_author':'Author Institution',
+                               'full_name_author':'Number of Authors'},
+                      inplace=True)
+    fig_authors_loc = px.sunburst(df_sun_agg,
+                                  title='Number of Authors by Location',
+                                  width=550, 
+                                  height=600,
+                                  path=['Author Country',
+                                        'Author Settlement',
+                                        'Author Institution'],
+                                  values='Number of Authors',)
+
+    col0 , _,col1 = st.columns([0.25,2,3])
+    with col0:
+        st.plotly_chart(fig_authors)
+    with col1:
+        st.plotly_chart(fig_authors_loc)
+        
+        # fig.show()
+        
+    return dict_dfs
+    
     
 
 ###############################################################################################
@@ -1565,10 +1700,20 @@ if __name__ == '__main__':
                         
                         with st.container():
                             if st.session_state['show_clustering']:
+                                with st.spinner('📄➞📄  Overview information...'):
+                                    st.markdown("""<hr style="height:1px;border:none;color:#F1F1F1;background-color:#F1F1F1;" /> """, unsafe_allow_html=True)
+                                    st.markdown("""<h3 style="text-align:left;"><b>Overview Information</b></h3>""", unsafe_allow_html=True)
+
+                                    st.session_state['dict_dfs'] = article_overview_information(st, st.session_state['dict_dfs'])
+                                    
+                        with st.container():
+                            if st.session_state['show_clustering']:
                                 with st.spinner('📄➞📄  Making Clustering...'):
                                     st.markdown("""<hr style="height:1px;border:none;color:#F1F1F1;background-color:#F1F1F1;" /> """, unsafe_allow_html=True)
                                     st.markdown("""<h3 style="text-align:left;"><b>Authors Information</b></h3>""", unsafe_allow_html=True)
-                        
+
+                                    st.session_state['dict_dfs'] = article_authors_information(st, st.session_state['dict_dfs'])
+                                    
                         with st.container():
                             if st.session_state['show_clustering']:
                                 with st.spinner('📄➞📄  Making Clustering...'):
@@ -1663,12 +1808,12 @@ if __name__ == '__main__':
                                                                                  algorithm='PCA') # UMAP, TSNE, PCA, MDS
                      
                     with st.container():
-                        with st.spinner('📄➞📄  Part-of-speech...'):
+                        with st.spinner('📄➞📄  Part-of-speech and Named Entities...'):
                             
                             st.markdown("""<hr style="height:1px;border:none;color:#F1F1F1;background-color:#F1F1F1;" /> """, unsafe_allow_html=True)
-                            st.markdown("""<h3 style="text-align:left;"><b>Part-of-Speech</b></h3>""", unsafe_allow_html=True)
+                            st.markdown("""<h3 style="text-align:left;"><b>Part-of-speech and Named Entities</b></h3>""", unsafe_allow_html=True)
 
-                            part_of_speech(st.session_state['dict_dfs'])              
+                            part_of_speech(st, st.session_state['dict_dfs'])              
                                 
     if st.session_state['dict_dfs'] and st.session_state['save_execution']:
                              
