@@ -1516,7 +1516,7 @@ def article_authors_information(st, dict_dfs):
     # fig_authors.update_traces(showlegend=False)
     # fig_authors.update_traces(marker_showscale=False)
     fig_authors.update_xaxes(visible=False)
-    fig_authors.update_layout(yaxis_title=None, xaxis_title=None)
+    fig_authors.update_layout(yaxis_title=None, xaxis_title=True)
 
     # ---------------------------------------------------------------------------
     # Authors by Location
@@ -1529,6 +1529,12 @@ def article_authors_information(st, dict_dfs):
                                'institution_author':'Author Institution',
                                'full_name_author':'Number of Authors'},
                       inplace=True)
+    
+    df_sun_agg['Percentage'] = (df_sun_agg['Number of Authors']/df_sun_agg['Number of Authors'].sum())
+    df_sun_agg['Percentage'] = df_sun_agg['Percentage'].apply(lambda e: int(100*np.round(float(e),2)))
+    
+    st.dataframe(df_sun_agg)
+    
     fig_authors_loc = px.sunburst(df_sun_agg,
                                   title='Number of Authors by Location',
                                   width=550, 
@@ -1536,7 +1542,9 @@ def article_authors_information(st, dict_dfs):
                                   path=['Author Country',
                                         'Author Settlement',
                                         'Author Institution'],
-                                  values='Number of Authors',)
+                                  hover_data=['Percentage'],
+                                  values='Number of Authors')
+                                  # values='Percentage')
 
     col0 , _,col1 = st.columns([0.25,2,3])
     with col0:
