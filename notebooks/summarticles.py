@@ -1474,11 +1474,109 @@ def article_overview_information(st, dict_dfs):
         
     # _, col, _ = st.columns([0.1,3,0.1])
     # with col:
-    
-        
         # fig.show()
         
     return dict_dfs
+
+
+def article_citation_information(st, dict_dfs):
+    
+    df_doc_authors_citations = dict_dfs['df_doc_authors_citations'].loc[:,getColumnsWithData(dict_dfs['df_doc_authors_citations'])]
+    df_doc_authors = dict_dfs['df_doc_authors'].loc[:,getColumnsWithData(dict_dfs['df_doc_authors'])]
+    
+    import plotly.express as px
+    
+    def agg_citations(grupo):
+        dictR = {}
+        dictR['citation_name'] = grupo['full_name_citation'].iat[0]
+        dictR['citation_count'] = grupo.shape[0]
+        dictR['number_authors'] = grupo['full_name_author'].nunique()
+        dictR['number_countries'] = grupo['country_author'].nunique()
+        return pd.Series(dictR)
+
+    df_authors_citations = df_doc_authors_citations.loc[:,['full_name_citation']].reset_index()
+    df_authors = df_doc_authors.loc[:,['full_name_author','country_author']].reset_index()
+
+    df_authors_citations = df_authors_citations.drop_duplicates(subset=['article_id','full_name_citation'])
+    df_authors = df_authors.drop_duplicates(subset=['article_id','full_name_author'])
+
+    df_authors_and_citations = df_authors.merge(df_authors_citations, on='article_id')
+
+    df_citation_plot = df_authors_and_citations.groupby(by=['full_name_citation'], as_index=False).apply(lambda g: agg_citations(g))
+
+    df_citation_plot = df_citation_plot.sort_values(by=['citation_count'], ascending=False)
+    df_citation_plot = df_citation_plot.head(100)
+
+    import plotly.express as px
+
+    fig = px.treemap(df_citation_plot, 
+                     path=['full_name_citation'],
+                     values='citation_count',
+                     color='number_authors',
+                     hover_data=['number_countries'],
+                     color_continuous_scale='RdBu',
+                     width=1000,
+                     height=400, maxdepth=1)
+    
+    fig.update_layout(margin = dict(t=0, l=0, r=0, b=0))
+    
+    labels = ["Author Cited: %{id}",
+               "Number of Citations: %{value}",
+               "Number of Unique Authors Using This Citation: %{color}",
+               "Number of Distinct Countries from Citation: %{customdata[0]}"]
+                
+    fig.update_traces(hovertemplate="<br>".join(labels))
+    
+    st.plotly_chart(fig)
+    
+    return dict_dfs
+    
+
+def plot_maps(st, dict_dfs):
+    """Plot folium maps."""
+    
+    from streamlit_folium import st_folium, folium_static
+    import folium
+    from folium.plugins import HeatMap
+    
+    df_doc_authors = dict_dfs['df_doc_authors'].loc[:,getColumnsWithData(dict_dfs['df_doc_authors'])]
+    
+    path_geo = os.path.join(path,'data','external')
+    country_latlong = pd.read_csv(os.path.join(path_geo,'countries_lat_long.csv'), sep=';', decimal='.')
+    shapes_correct = pd.read_csv(os.path.join(path_geo,'shapes_correct.csv'), encoding='latin-1',sep=';', decimal='.')
+
+
+    df_country_agg = df_doc_authors.groupby(by=['country_author'], as_index=False, dropna=True)['full_name_author'].count()
+    dictCorrectShapes = {e[0]:e[1] for e in zip(shapes_correct.convert, shapes_correct.name)}
+    df_country_agg.country_author = df_country_agg.country_author.apply(lambda e: dictCorrectShapes.get(e,e))
+    df_country_agg = df_country_agg.groupby(by=['country_author'], as_index=False)['full_name_author'].sum()
+    df_country_agg = df_country_agg.rename(columns={'country_author':'Country',
+                                                'full_name_author':'count'})
+    
+    df_country_agg = df_country_agg.merge(country_latlong, how='left', on=['Country'])
+    df_country_agg = df_country_agg.dropna()
+    
+    _, col1, _ = st.columns([0.75,3,0.1])
+    with st.container():
+        # with col1:
+            # map = folium.Map(location=[25.552354,14.814465], zoom_start=1.5)
+            # heat_points = []
+            # for i,row in df_country_agg.iterrows():
+            #     heat_points.append([row['Latitude'], row['Longitude'], row['count']])
+            #     folium.Marker([row['Latitude'], row['Longitude']],
+            #                 popup="<i>Number of Authors {0}<i>".format(row['count']),
+            #                 tooltip=f"Number of Authors {row['count']}").add_to(map)
+            #     st_point_map = st_folium(map)
+        with col1:
+            map = folium.Map(location=[25.552354,14.814465], zoom_start=1)
+            heat_points = []
+            for i,row in df_country_agg.iterrows():
+                heat_points.append([row['Latitude'], row['Longitude'], row['count']])
+            HeatMap(heat_points, radius=40, blur=20).add_to(map)
+            st_heat_map = folium_static(map, width=600, height=400)
+    
+    return dict_dfs
+
 
 def article_authors_information(st, dict_dfs):
     
@@ -1532,8 +1630,6 @@ def article_authors_information(st, dict_dfs):
     
     df_sun_agg['Percentage'] = (df_sun_agg['Number of Authors']/df_sun_agg['Number of Authors'].sum())
     df_sun_agg['Percentage'] = df_sun_agg['Percentage'].apply(lambda e: int(100*np.round(float(e),2)))
-    
-    st.dataframe(df_sun_agg)
     
     fig_authors_loc = px.sunburst(df_sun_agg,
                                   title='Number of Authors by Location',
@@ -1706,28 +1802,25 @@ if __name__ == '__main__':
                                 st.markdown("""<hr style="height:0.1px;border:none;color:#F1F1F1;background-color:#F1F1F1;" /> """, unsafe_allow_html=True)
                                 st.session_state['dict_dfs'] = show_text_numbers(st, st.session_state['dict_dfs'])
                         
-                        with st.container():
-                            if st.session_state['show_clustering']:
-                                with st.spinner('📄➞📄  Overview information...'):
-                                    st.markdown("""<hr style="height:1px;border:none;color:#F1F1F1;background-color:#F1F1F1;" /> """, unsafe_allow_html=True)
-                                    st.markdown("""<h3 style="text-align:left;"><b>Overview Information</b></h3>""", unsafe_allow_html=True)
+                        # with st.container():
+                        #     with st.spinner('📄➞📄  Overview information...'):
+                        #         st.markdown("""<hr style="height:1px;border:none;color:#F1F1F1;background-color:#F1F1F1;" /> """, unsafe_allow_html=True)
+                        #         st.markdown("""<h3 style="text-align:left;"><b>Overview Information</b></h3>""", unsafe_allow_html=True)
 
-                                    st.session_state['dict_dfs'] = article_overview_information(st, st.session_state['dict_dfs'])
-                                    
+                        #         st.session_state['dict_dfs'] = article_overview_information(st, st.session_state['dict_dfs'])
+                                
                         with st.container():
-                            if st.session_state['show_clustering']:
-                                with st.spinner('📄➞📄  Making Clustering...'):
-                                    st.markdown("""<hr style="height:1px;border:none;color:#F1F1F1;background-color:#F1F1F1;" /> """, unsafe_allow_html=True)
-                                    st.markdown("""<h3 style="text-align:left;"><b>Authors Information</b></h3>""", unsafe_allow_html=True)
-
-                                    st.session_state['dict_dfs'] = article_authors_information(st, st.session_state['dict_dfs'])
-                                    
+                            with st.spinner('📄➞📄  Authors Information...'):
+                                st.markdown("""<hr style="height:1px;border:none;color:#F1F1F1;background-color:#F1F1F1;" /> """, unsafe_allow_html=True)
+                                st.markdown("""<h3 style="text-align:left;"><b>Authors Information</b></h3>""", unsafe_allow_html=True)
+                                st.session_state['dict_dfs'] = article_authors_information(st, st.session_state['dict_dfs'])
+                                st.session_state['dict_dfs'] = plot_maps(st, st.session_state['dict_dfs'])
+                                
                         with st.container():
-                            if st.session_state['show_clustering']:
-                                with st.spinner('📄➞📄  Making Clustering...'):
-                                    st.markdown("""<hr style="height:1px;border:none;color:#F1F1F1;background-color:#F1F1F1;" /> """, unsafe_allow_html=True)
-                                    st.markdown("""<h3 style="text-align:left;"><b>Citation Information</b></h3>""", unsafe_allow_html=True)
-
+                            with st.spinner('📄➞📄  Citation Information...'):
+                                st.markdown("""<hr style="height:1px;border:none;color:#F1F1F1;background-color:#F1F1F1;" /> """, unsafe_allow_html=True)
+                                st.markdown("""<h3 style="text-align:left;"><b>Citation Information</b></h3>""", unsafe_allow_html=True)
+                                st.session_state['dict_dfs'] = article_citation_information(st, st.session_state['dict_dfs'])
 
                     with st.container():
                         if  st.session_state['show_keywords_table']:
