@@ -464,13 +464,23 @@ def show_text_numbers(st, dict_dfs):
         with col3:
             col3.metric("🔣 Total Characters", str(dict_agg_stats['num_total_chars']))
             col3.metric("🔤 Mean Lenght Words", str(round(dict_agg_stats['mean_length_words'],1)))
+            
+        with st.expander(" ❕ Information!"):
+            body = """Above:<br>These numbers represent informations from all article text together.<br><br>
+                      Below:<br>This graph represent the number of unique words by article cross number of words by article.<br>
+                      Each point represent an article, you can pass cursor over these points and get more information."""
+            st.markdown(body, unsafe_allow_html=True)
+        
         with st.container():
             fig = px.scatter(df_articles_stats, 
                             x="num_words_unique", 
                             y="num_words", 
                             size="mean_lenght_word", 
                             color="num_chars",
-                            custom_data=['file_name','num_chars','mean_lenght_word'])
+                            custom_data=['file_name','num_chars','mean_lenght_word'],
+                            labels={"num_words_unique":"Number of Unique Words",
+                                    "num_words":"Number of Words",
+                                    "num_chars":"Number of<br>Characters"})
             
             labels = ["Article File Name: %{customdata[0]}",
                       "Number Words: %{y}",
@@ -481,6 +491,7 @@ def show_text_numbers(st, dict_dfs):
             fig.update_traces(hovertemplate="<br>".join(labels))
             
             st.plotly_chart(fig, use_container_width=True)
+            
             
     with st.container():
         _ , col1, col2, col3, _ = st.columns([0.15,2.25,2.5,2.75,0.15])
@@ -515,6 +526,12 @@ def show_text_numbers(st, dict_dfs):
                    width='100%',
                    reload_data=True)
             
+        with st.expander(" ❕ Information!"):
+            body = """Unigram: only one frequent word that happen with high frequency over the all articles text<br>
+                      Bigram: two words that happen with high frequency together over the all articles text<br>
+                      Trigram: three words that happen with high frequency together over the all articles text<br>"""
+            st.markdown(body, unsafe_allow_html=True)
+            
     return dict_dfs
 
 
@@ -547,6 +564,10 @@ def show_word_cloud(st, dict_dfs, input_path, folder_images='app_images', wc_ima
     
     tviz = text_viz()
     tprep = text_prep()
+    
+    with st.expander(" ❕ Information!"):
+        st.write("""This WordCloud contain information from all article text together! 
+                    But, only uses the most frequent unigrams and bigrams.""")
     
     # st.warning("🛠🧾 Text in preparation for WordCloud!")
     if not checkey(dict_dfs,'show_word_cloud'):
@@ -711,7 +732,7 @@ def part_of_speech(st, dict_dfs):
     
     # Há mais modelos para testar aqui https://github.com/allenai/scispacy
     # python -m spacy download en_core_web_sm
-    nlp = spacy.load("en_core_web_sm")
+    nlp = spacy.load("en_core_sci_sm")
     doc = nlp(dict_articles_abstracts[choice_exec])
     list_pos_tag = [(ent.text,ent.label_) for ent in doc.ents]
     
@@ -772,6 +793,9 @@ def similarity_graph(st, dict_dfs, input_folder_path, folder_graph='graphs', nam
             df_sim['value'] = df_sim['value'].apply(lambda e: round(e,2))
             df_sim['doc_a'] = df_sim['doc_a'].apply(lambda e: e[0:4])
             df_sim['doc_b'] = df_sim['doc_b'].apply(lambda e: e[0:4])
+            df_sim = df_sim.rename(columns={"value":"Similarity",
+                                            "doc_a":"Article Source",
+                                            "doc_b":"Article Target"})
             AgGrid(df_sim.head(n_sim),
                    data_return_mode='AS_INPUT', 
                    # update_mode='MODEL_CHANGED', 
@@ -917,7 +941,7 @@ def generate_keywords(st, dict_dfs):
     df_keywords_all = pd.concat([df_keywords_unigram, df_keywords_bigram, df_keywords_trigram], axis=1)
     df_keywords_all = df_keywords_all.head(200)
     
-    f = lambda e: round(e,2) if not pd.isna(e) else e
+    f = lambda e: np.round(e,3) if not pd.isna(e) else e
     df_keywords_all['value_unigram'] = df_keywords_all['value_unigram'].apply(f)
     df_keywords_all['value_bigram'] = df_keywords_all['value_bigram'].apply(f)
     df_keywords_all['value_trigram'] = df_keywords_all['value_trigram'].apply(f)
@@ -946,7 +970,13 @@ def show_keywords(st, dict_dfs):
     with st.container():
         _ , col1, col2, col3, _ = st.columns([0.01,3,3,3,0.01])
         with col1:
-            AgGrid(dict_dfs['keywords']['df_unigram'].head(100),
+            df_show = dict_dfs['keywords']['df_unigram']
+            df_show = df_show.rename(columns={"keyword_unigram":"Keyword Unigram",
+                                              "value_unigram":"Relevance"})
+            df_show['Relevance'] = df_show['Relevance'].apply(lambda x: np.round(float(x),3) if not pd.isna(x) else x)
+            df_show = df_show.sort_values(by=['Relevance'], ascending=False)
+            
+            AgGrid(df_show.head(100),
                    data_return_mode='AS_INPUT', 
                    # update_mode='MODEL_CHANGED', 
                    fit_columns_on_grid_load=False,
@@ -956,7 +986,13 @@ def show_keywords(st, dict_dfs):
                    width='100%',
                    reload_data=True)
         with col2:
-            AgGrid(dict_dfs['keywords']['df_bigram'].head(100),
+            df_show = dict_dfs['keywords']['df_bigram']
+            df_show = df_show.rename(columns={"keyword_bigram":"Keyword Bigram",
+                                              "value_bigram":"Relevance"})
+            df_show['Relevance'] = df_show['Relevance'].apply(lambda x: np.round(float(x),3) if not pd.isna(x) else x)
+            df_show = df_show.sort_values(by=['Relevance'], ascending=False)
+            
+            AgGrid(df_show.head(100),
                    data_return_mode='AS_INPUT', 
                    # update_mode='MODEL_CHANGED', 
                    fit_columns_on_grid_load=False,
@@ -966,7 +1002,13 @@ def show_keywords(st, dict_dfs):
                    width='100%',
                    reload_data=True)
         with col3:
-            AgGrid(dict_dfs['keywords']['df_trigram'].head(100),
+            df_show = dict_dfs['keywords']['df_trigram']
+            df_show = df_show.rename(columns={"keyword_trigram":"Keyword Trigram",
+                                              "value_trigram":"Relevance"})
+            df_show['Relevance'] = df_show['Relevance'].apply(lambda x: np.round(float(x),3) if not pd.isna(x) else x)
+            df_show = df_show.sort_values(by=['Relevance'], ascending=False)
+            
+            AgGrid(df_show.head(100),
                    data_return_mode='AS_INPUT', 
                    # update_mode='MODEL_CHANGED', 
                    fit_columns_on_grid_load=False,
@@ -1034,7 +1076,12 @@ def show_keywords_graph(st, dict_dfs, df_article_keywords_all, input_folder_path
                    dict_dfs['keywords']['graph']['path_folder_graph'],
                    text_spinner='👁‍🗨 Similarity Graph: drawing...')
     with col2:
-        AgGrid(dict_dfs['keywords']['graph']['df_keyword_data'].head(100),
+        df_show = dict_dfs['keywords']['graph']['df_keyword_data'].head(100)
+        df_show = df_show.rename(columns={"keyword":"Keyword",
+                                          "article_count":"Total Articles",
+                                          "value_sum":"Total Relevance",
+                                          "value_mean":"Mean Relevance"})
+        AgGrid(df_show,
                data_return_mode='AS_INPUT', 
                # update_mode='MODEL_CHANGED', 
                fit_columns_on_grid_load=False,
@@ -1486,6 +1533,10 @@ def article_citation_information(st, dict_dfs):
     
     import plotly.express as px
     
+    with st.expander(" ❕ Information!"):
+        body = """This section contains information about all of citations from load articles."""
+        st.markdown(body, unsafe_allow_html=True)
+    
     def agg_citations(grupo):
         dictR = {}
         dictR['citation_name'] = grupo['full_name_citation'].iat[0]
@@ -1510,7 +1561,7 @@ def article_citation_information(st, dict_dfs):
     import plotly.express as px
 
     fig = px.treemap(df_citation_plot, 
-                     path=['full_name_citation'],
+                     path=[px.Constant(""),'full_name_citation'],
                      values='citation_count',
                      color='number_authors',
                      hover_data=['number_countries'],
@@ -1526,8 +1577,15 @@ def article_citation_information(st, dict_dfs):
                "Number of Distinct Countries from Citation: %{customdata[0]}"]
                 
     fig.update_traces(hovertemplate="<br>".join(labels))
+    fig.update_traces(marker_line_width = 4)
     
     st.plotly_chart(fig)
+    
+    with st.expander(" ❕ How can I read this chart?"):
+        body = """Each rectangle represent an mentioned author, the size of space area mean the number of citations.<br>
+                  The color represent the number of distinct authors that quote this author (cited).<br><br>
+                  If you need more information, then you can pass cursor over each rectangle."""
+        st.markdown(body, unsafe_allow_html=True)
     
     return dict_dfs
     
@@ -1583,6 +1641,10 @@ def article_authors_information(st, dict_dfs):
     """"""
     
     import plotly.express as px
+    
+    with st.expander(" ❕ Information!"):
+        body = """This section contains authors articles information."""
+        st.markdown(body, unsafe_allow_html=True)
     
     # DataSets and Preparation
     df_doc_info = dict_dfs['df_doc_info'].loc[:,getColumnsWithData(dict_dfs['df_doc_info'])]
@@ -1892,7 +1954,12 @@ if __name__ == '__main__':
                                                                                     n_components=2,
                                                                                     algorithm='PCA') # UMAP, TSNE, PCA, MDS
                                     with c1:
-                                        AgGrid(st.session_state['dict_dfs']['cluster_data_table'],
+                                        df_show = st.session_state['dict_dfs']['cluster_data_table']
+                                        df_show = df_show.rename(columns={"file_name":"File Name",
+                                                                          "title_head":"Title",
+                                                                          "label":"Group"})
+                                        
+                                        AgGrid(df_show,
                                             data_return_mode='AS_INPUT', 
                                             # update_mode='MODEL_CHANGED', 
                                             fit_columns_on_grid_load=False,
