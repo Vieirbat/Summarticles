@@ -464,13 +464,23 @@ def show_text_numbers(st, dict_dfs):
         with col3:
             col3.metric("🔣 Total Characters", str(dict_agg_stats['num_total_chars']))
             col3.metric("🔤 Mean Lenght Words", str(round(dict_agg_stats['mean_length_words'],1)))
+            
+        with st.expander(" ❕ Information!"):
+            body = """Above:<br>These numbers represent informations from all article text together.<br><br>
+                      Below:<br>This graph represent the number of unique words by article cross number of words by article.<br>
+                      Each point represent an article, you can pass cursor over these points and get more information."""
+            st.markdown(body, unsafe_allow_html=True)
+        
         with st.container():
             fig = px.scatter(df_articles_stats, 
                             x="num_words_unique", 
                             y="num_words", 
                             size="mean_lenght_word", 
                             color="num_chars",
-                            custom_data=['file_name','num_chars','mean_lenght_word'])
+                            custom_data=['file_name','num_chars','mean_lenght_word'],
+                            labels={"num_words_unique":"Number of Unique Words",
+                                    "num_words":"Number of Words",
+                                    "num_chars":"Number of<br>Characters"})
             
             labels = ["Article File Name: %{customdata[0]}",
                       "Number Words: %{y}",
@@ -481,6 +491,7 @@ def show_text_numbers(st, dict_dfs):
             fig.update_traces(hovertemplate="<br>".join(labels))
             
             st.plotly_chart(fig, use_container_width=True)
+            
             
     with st.container():
         _ , col1, col2, col3, _ = st.columns([0.15,2.25,2.5,2.75,0.15])
@@ -515,6 +526,12 @@ def show_text_numbers(st, dict_dfs):
                    width='100%',
                    reload_data=True)
             
+        with st.expander(" ❕ Information!"):
+            body = """Unigram: only one frequent word that happen with high frequency over the all articles text<br>
+                      Bigram: two words that happen with high frequency together over the all articles text<br>
+                      Trigram: three words that happen with high frequency together over the all articles text<br>"""
+            st.markdown(body, unsafe_allow_html=True)
+            
     return dict_dfs
 
 
@@ -547,6 +564,10 @@ def show_word_cloud(st, dict_dfs, input_path, folder_images='app_images', wc_ima
     
     tviz = text_viz()
     tprep = text_prep()
+    
+    with st.expander(" ❕ Information!"):
+        st.write("""This WordCloud contain information from all article text together! 
+                    But, only uses the most frequent unigrams and bigrams.""")
     
     # st.warning("🛠🧾 Text in preparation for WordCloud!")
     if not checkey(dict_dfs,'show_word_cloud'):
@@ -711,7 +732,7 @@ def part_of_speech(st, dict_dfs):
     
     # Há mais modelos para testar aqui https://github.com/allenai/scispacy
     # python -m spacy download en_core_web_sm
-    nlp = spacy.load("en_core_web_sm")
+    nlp = spacy.load("en_core_sci_sm")
     doc = nlp(dict_articles_abstracts[choice_exec])
     list_pos_tag = [(ent.text,ent.label_) for ent in doc.ents]
     
@@ -772,6 +793,9 @@ def similarity_graph(st, dict_dfs, input_folder_path, folder_graph='graphs', nam
             df_sim['value'] = df_sim['value'].apply(lambda e: round(e,2))
             df_sim['doc_a'] = df_sim['doc_a'].apply(lambda e: e[0:4])
             df_sim['doc_b'] = df_sim['doc_b'].apply(lambda e: e[0:4])
+            df_sim = df_sim.rename(columns={"value":"Similarity",
+                                            "doc_a":"Article Source",
+                                            "doc_b":"Article Target"})
             AgGrid(df_sim.head(n_sim),
                    data_return_mode='AS_INPUT', 
                    # update_mode='MODEL_CHANGED', 
@@ -917,7 +941,7 @@ def generate_keywords(st, dict_dfs):
     df_keywords_all = pd.concat([df_keywords_unigram, df_keywords_bigram, df_keywords_trigram], axis=1)
     df_keywords_all = df_keywords_all.head(200)
     
-    f = lambda e: round(e,2) if not pd.isna(e) else e
+    f = lambda e: np.round(e,3) if not pd.isna(e) else e
     df_keywords_all['value_unigram'] = df_keywords_all['value_unigram'].apply(f)
     df_keywords_all['value_bigram'] = df_keywords_all['value_bigram'].apply(f)
     df_keywords_all['value_trigram'] = df_keywords_all['value_trigram'].apply(f)
@@ -946,7 +970,13 @@ def show_keywords(st, dict_dfs):
     with st.container():
         _ , col1, col2, col3, _ = st.columns([0.01,3,3,3,0.01])
         with col1:
-            AgGrid(dict_dfs['keywords']['df_unigram'].head(100),
+            df_show = dict_dfs['keywords']['df_unigram']
+            df_show = df_show.rename(columns={"keyword_unigram":"Keyword Unigram",
+                                              "value_unigram":"Relevance"})
+            df_show['Relevance'] = df_show['Relevance'].apply(lambda x: np.round(float(x),3) if not pd.isna(x) else x)
+            df_show = df_show.sort_values(by=['Relevance'], ascending=False)
+            
+            AgGrid(df_show.head(100),
                    data_return_mode='AS_INPUT', 
                    # update_mode='MODEL_CHANGED', 
                    fit_columns_on_grid_load=False,
@@ -956,7 +986,13 @@ def show_keywords(st, dict_dfs):
                    width='100%',
                    reload_data=True)
         with col2:
-            AgGrid(dict_dfs['keywords']['df_bigram'].head(100),
+            df_show = dict_dfs['keywords']['df_bigram']
+            df_show = df_show.rename(columns={"keyword_bigram":"Keyword Bigram",
+                                              "value_bigram":"Relevance"})
+            df_show['Relevance'] = df_show['Relevance'].apply(lambda x: np.round(float(x),3) if not pd.isna(x) else x)
+            df_show = df_show.sort_values(by=['Relevance'], ascending=False)
+            
+            AgGrid(df_show.head(100),
                    data_return_mode='AS_INPUT', 
                    # update_mode='MODEL_CHANGED', 
                    fit_columns_on_grid_load=False,
@@ -966,7 +1002,13 @@ def show_keywords(st, dict_dfs):
                    width='100%',
                    reload_data=True)
         with col3:
-            AgGrid(dict_dfs['keywords']['df_trigram'].head(100),
+            df_show = dict_dfs['keywords']['df_trigram']
+            df_show = df_show.rename(columns={"keyword_trigram":"Keyword Trigram",
+                                              "value_trigram":"Relevance"})
+            df_show['Relevance'] = df_show['Relevance'].apply(lambda x: np.round(float(x),3) if not pd.isna(x) else x)
+            df_show = df_show.sort_values(by=['Relevance'], ascending=False)
+            
+            AgGrid(df_show.head(100),
                    data_return_mode='AS_INPUT', 
                    # update_mode='MODEL_CHANGED', 
                    fit_columns_on_grid_load=False,
@@ -1034,7 +1076,12 @@ def show_keywords_graph(st, dict_dfs, df_article_keywords_all, input_folder_path
                    dict_dfs['keywords']['graph']['path_folder_graph'],
                    text_spinner='👁‍🗨 Similarity Graph: drawing...')
     with col2:
-        AgGrid(dict_dfs['keywords']['graph']['df_keyword_data'].head(100),
+        df_show = dict_dfs['keywords']['graph']['df_keyword_data'].head(100)
+        df_show = df_show.rename(columns={"keyword":"Keyword",
+                                          "article_count":"Total Articles",
+                                          "value_sum":"Total Relevance",
+                                          "value_mean":"Mean Relevance"})
+        AgGrid(df_show,
                data_return_mode='AS_INPUT', 
                # update_mode='MODEL_CHANGED', 
                fit_columns_on_grid_load=False,
@@ -1474,17 +1521,130 @@ def article_overview_information(st, dict_dfs):
         
     # _, col, _ = st.columns([0.1,3,0.1])
     # with col:
-    
-        
         # fig.show()
         
     return dict_dfs
+
+
+def article_citation_information(st, dict_dfs):
+    
+    df_doc_authors_citations = dict_dfs['df_doc_authors_citations'].loc[:,getColumnsWithData(dict_dfs['df_doc_authors_citations'])]
+    df_doc_authors = dict_dfs['df_doc_authors'].loc[:,getColumnsWithData(dict_dfs['df_doc_authors'])]
+    
+    import plotly.express as px
+    
+    with st.expander(" ❕ Information!"):
+        body = """This section contains information about all of citations from load articles."""
+        st.markdown(body, unsafe_allow_html=True)
+    
+    def agg_citations(grupo):
+        dictR = {}
+        dictR['citation_name'] = grupo['full_name_citation'].iat[0]
+        dictR['citation_count'] = grupo.shape[0]
+        dictR['number_authors'] = grupo['full_name_author'].nunique()
+        dictR['number_countries'] = grupo['country_author'].nunique()
+        return pd.Series(dictR)
+
+    df_authors_citations = df_doc_authors_citations.loc[:,['full_name_citation']].reset_index()
+    df_authors = df_doc_authors.loc[:,['full_name_author','country_author']].reset_index()
+
+    df_authors_citations = df_authors_citations.drop_duplicates(subset=['article_id','full_name_citation'])
+    df_authors = df_authors.drop_duplicates(subset=['article_id','full_name_author'])
+
+    df_authors_and_citations = df_authors.merge(df_authors_citations, on='article_id')
+
+    df_citation_plot = df_authors_and_citations.groupby(by=['full_name_citation'], as_index=False).apply(lambda g: agg_citations(g))
+
+    df_citation_plot = df_citation_plot.sort_values(by=['citation_count'], ascending=False)
+    df_citation_plot = df_citation_plot.head(100)
+
+    import plotly.express as px
+
+    fig = px.treemap(df_citation_plot, 
+                     path=[px.Constant(""),'full_name_citation'],
+                     values='citation_count',
+                     color='number_authors',
+                     hover_data=['number_countries'],
+                     color_continuous_scale='RdBu',
+                     width=1000,
+                     height=400, maxdepth=1)
+    
+    fig.update_layout(margin = dict(t=0, l=0, r=0, b=0))
+    
+    labels = ["Author Cited: %{id}",
+               "Number of Citations: %{value}",
+               "Number of Unique Authors Using This Citation: %{color}",
+               "Number of Distinct Countries from Citation: %{customdata[0]}"]
+                
+    fig.update_traces(hovertemplate="<br>".join(labels))
+    fig.update_traces(marker_line_width = 4)
+    
+    st.plotly_chart(fig)
+    
+    with st.expander(" ❕ How can I read this chart?"):
+        body = """Each rectangle represent an mentioned author, the size of space area mean the number of citations.<br>
+                  The color represent the number of distinct authors that quote this author (cited).<br><br>
+                  If you need more information, then you can pass cursor over each rectangle."""
+        st.markdown(body, unsafe_allow_html=True)
+    
+    return dict_dfs
+    
+
+def plot_maps(st, dict_dfs):
+    """Plot folium maps."""
+    
+    from streamlit_folium import st_folium, folium_static
+    import folium
+    from folium.plugins import HeatMap
+    
+    df_doc_authors = dict_dfs['df_doc_authors'].loc[:,getColumnsWithData(dict_dfs['df_doc_authors'])]
+    
+    path_geo = os.path.join(path,'data','external')
+    country_latlong = pd.read_csv(os.path.join(path_geo,'countries_lat_long.csv'), sep=';', decimal='.')
+    shapes_correct = pd.read_csv(os.path.join(path_geo,'shapes_correct.csv'), encoding='latin-1',sep=';', decimal='.')
+
+
+    df_country_agg = df_doc_authors.groupby(by=['country_author'], as_index=False, dropna=True)['full_name_author'].count()
+    dictCorrectShapes = {e[0]:e[1] for e in zip(shapes_correct.convert, shapes_correct.name)}
+    df_country_agg.country_author = df_country_agg.country_author.apply(lambda e: dictCorrectShapes.get(e,e))
+    df_country_agg = df_country_agg.groupby(by=['country_author'], as_index=False)['full_name_author'].sum()
+    df_country_agg = df_country_agg.rename(columns={'country_author':'Country',
+                                                'full_name_author':'count'})
+    
+    df_country_agg = df_country_agg.merge(country_latlong, how='left', on=['Country'])
+    df_country_agg = df_country_agg.dropna()
+    
+    _, col1, _ = st.columns([0.75,3,0.1])
+    with st.container():
+        # with col1:
+            # map = folium.Map(location=[25.552354,14.814465], zoom_start=1.5)
+            # heat_points = []
+            # for i,row in df_country_agg.iterrows():
+            #     heat_points.append([row['Latitude'], row['Longitude'], row['count']])
+            #     folium.Marker([row['Latitude'], row['Longitude']],
+            #                 popup="<i>Number of Authors {0}<i>".format(row['count']),
+            #                 tooltip=f"Number of Authors {row['count']}").add_to(map)
+            #     st_point_map = st_folium(map)
+        with col1:
+            map = folium.Map(location=[25.552354,14.814465], zoom_start=1)
+            heat_points = []
+            for i,row in df_country_agg.iterrows():
+                heat_points.append([row['Latitude'], row['Longitude'], row['count']])
+            HeatMap(heat_points, radius=40, blur=20).add_to(map)
+            st_heat_map = folium_static(map, width=600, height=400)
+    
+    return dict_dfs
+
 
 def article_authors_information(st, dict_dfs):
     
     """"""
     
     import plotly.express as px
+    
+    with st.expander(" ❕ Information!"):
+        body = """This section contains authors articles information."""
+        st.markdown(body, unsafe_allow_html=True)
     
     # DataSets and Preparation
     df_doc_info = dict_dfs['df_doc_info'].loc[:,getColumnsWithData(dict_dfs['df_doc_info'])]
@@ -1516,7 +1676,7 @@ def article_authors_information(st, dict_dfs):
     # fig_authors.update_traces(showlegend=False)
     # fig_authors.update_traces(marker_showscale=False)
     fig_authors.update_xaxes(visible=False)
-    fig_authors.update_layout(yaxis_title=None, xaxis_title=None)
+    fig_authors.update_layout(yaxis_title=None, xaxis_title=True)
 
     # ---------------------------------------------------------------------------
     # Authors by Location
@@ -1529,6 +1689,10 @@ def article_authors_information(st, dict_dfs):
                                'institution_author':'Author Institution',
                                'full_name_author':'Number of Authors'},
                       inplace=True)
+    
+    df_sun_agg['Percentage'] = (df_sun_agg['Number of Authors']/df_sun_agg['Number of Authors'].sum())
+    df_sun_agg['Percentage'] = df_sun_agg['Percentage'].apply(lambda e: int(100*np.round(float(e),2)))
+    
     fig_authors_loc = px.sunburst(df_sun_agg,
                                   title='Number of Authors by Location',
                                   width=550, 
@@ -1536,7 +1700,9 @@ def article_authors_information(st, dict_dfs):
                                   path=['Author Country',
                                         'Author Settlement',
                                         'Author Institution'],
-                                  values='Number of Authors',)
+                                  hover_data=['Percentage'],
+                                  values='Number of Authors')
+                                  # values='Percentage')
 
     col0 , _,col1 = st.columns([0.25,2,3])
     with col0:
@@ -1698,28 +1864,25 @@ if __name__ == '__main__':
                                 st.markdown("""<hr style="height:0.1px;border:none;color:#F1F1F1;background-color:#F1F1F1;" /> """, unsafe_allow_html=True)
                                 st.session_state['dict_dfs'] = show_text_numbers(st, st.session_state['dict_dfs'])
                         
-                        with st.container():
-                            if st.session_state['show_clustering']:
-                                with st.spinner('📄➞📄  Overview information...'):
-                                    st.markdown("""<hr style="height:1px;border:none;color:#F1F1F1;background-color:#F1F1F1;" /> """, unsafe_allow_html=True)
-                                    st.markdown("""<h3 style="text-align:left;"><b>Overview Information</b></h3>""", unsafe_allow_html=True)
+                        # with st.container():
+                        #     with st.spinner('📄➞📄  Overview information...'):
+                        #         st.markdown("""<hr style="height:1px;border:none;color:#F1F1F1;background-color:#F1F1F1;" /> """, unsafe_allow_html=True)
+                        #         st.markdown("""<h3 style="text-align:left;"><b>Overview Information</b></h3>""", unsafe_allow_html=True)
 
-                                    st.session_state['dict_dfs'] = article_overview_information(st, st.session_state['dict_dfs'])
-                                    
+                        #         st.session_state['dict_dfs'] = article_overview_information(st, st.session_state['dict_dfs'])
+                                
                         with st.container():
-                            if st.session_state['show_clustering']:
-                                with st.spinner('📄➞📄  Making Clustering...'):
-                                    st.markdown("""<hr style="height:1px;border:none;color:#F1F1F1;background-color:#F1F1F1;" /> """, unsafe_allow_html=True)
-                                    st.markdown("""<h3 style="text-align:left;"><b>Authors Information</b></h3>""", unsafe_allow_html=True)
-
-                                    st.session_state['dict_dfs'] = article_authors_information(st, st.session_state['dict_dfs'])
-                                    
+                            with st.spinner('📄➞📄  Authors Information...'):
+                                st.markdown("""<hr style="height:1px;border:none;color:#F1F1F1;background-color:#F1F1F1;" /> """, unsafe_allow_html=True)
+                                st.markdown("""<h3 style="text-align:left;"><b>Authors Information</b></h3>""", unsafe_allow_html=True)
+                                st.session_state['dict_dfs'] = article_authors_information(st, st.session_state['dict_dfs'])
+                                st.session_state['dict_dfs'] = plot_maps(st, st.session_state['dict_dfs'])
+                                
                         with st.container():
-                            if st.session_state['show_clustering']:
-                                with st.spinner('📄➞📄  Making Clustering...'):
-                                    st.markdown("""<hr style="height:1px;border:none;color:#F1F1F1;background-color:#F1F1F1;" /> """, unsafe_allow_html=True)
-                                    st.markdown("""<h3 style="text-align:left;"><b>Citation Information</b></h3>""", unsafe_allow_html=True)
-
+                            with st.spinner('📄➞📄  Citation Information...'):
+                                st.markdown("""<hr style="height:1px;border:none;color:#F1F1F1;background-color:#F1F1F1;" /> """, unsafe_allow_html=True)
+                                st.markdown("""<h3 style="text-align:left;"><b>Citation Information</b></h3>""", unsafe_allow_html=True)
+                                st.session_state['dict_dfs'] = article_citation_information(st, st.session_state['dict_dfs'])
 
                     with st.container():
                         if  st.session_state['show_keywords_table']:
@@ -1791,7 +1954,12 @@ if __name__ == '__main__':
                                                                                     n_components=2,
                                                                                     algorithm='PCA') # UMAP, TSNE, PCA, MDS
                                     with c1:
-                                        AgGrid(st.session_state['dict_dfs']['cluster_data_table'],
+                                        df_show = st.session_state['dict_dfs']['cluster_data_table']
+                                        df_show = df_show.rename(columns={"file_name":"File Name",
+                                                                          "title_head":"Title",
+                                                                          "label":"Group"})
+                                        
+                                        AgGrid(df_show,
                                             data_return_mode='AS_INPUT', 
                                             # update_mode='MODEL_CHANGED', 
                                             fit_columns_on_grid_load=False,
