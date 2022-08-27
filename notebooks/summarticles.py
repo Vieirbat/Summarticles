@@ -245,8 +245,8 @@ def make_head(st):
 
     # Head
     st.set_page_config(
-        page_title="[APP] Summarticles",
-        page_icon="🧾", # https://www.freecodecamp.org/news/all-emojis-emoji-list-for-copy-and-paste/, https://share.streamlit.io/streamlit/emoji-shortcodes
+        page_title="Summarticles",
+        page_icon="📑", # https://www.freecodecamp.org/news/all-emojis-emoji-list-for-copy-and-paste/, https://share.streamlit.io/streamlit/emoji-shortcodes
         layout="wide", # centered
         initial_sidebar_state="collapsed", #collapsed #auto #expanded
         menu_items={"About":"https://github.com/Vieirbat/PGC",
@@ -467,7 +467,7 @@ def show_text_numbers(st, dict_dfs):
             
         with st.expander(" ❕ Information!"):
             body = """Above:<br>These numbers represent informations from all article text together.<br><br>
-                      Below:<br>This graph represent the number of unique words by article cross number of words by article.<br>
+                      Below:<br>This chart represent the number of unique words by article cross number of words by article.<br>
                       Each point represent an article, you can pass cursor over these points and get more information."""
             st.markdown(body, unsafe_allow_html=True)
         
@@ -629,7 +629,7 @@ def show_keyword_word_cloud(st, dict_dfs,
         
         dict_freq = {}
         for i, row in df_keywords.iterrows():
-            dict_freq[row['keyword']] = row['value']
+            dict_freq[row['keyword']] = 1/row['value']
         
         path_images = os.path.join(input_path, cache_folder_name, folder_images)
         if not os.path.exists(path_images):
@@ -785,31 +785,63 @@ def similarity_graph(st, dict_dfs, input_folder_path, folder_graph='graphs', nam
         dict_dfs['similarity_graph']['path_folder_graph'] = path_folder_graph
         
     with st.container():
+        
+        df_sim = None
+        df_sim = dict_dfs['similarity_graph']['df_cos_tfidf_sim_filter']
+        df_sim['value'] = df_sim['value'].apply(lambda e: round(e,2))
+        df_sim['doc_a'] = df_sim['doc_a'].apply(lambda e: e[0:4])
+        df_sim['doc_b'] = df_sim['doc_b'].apply(lambda e: e[0:4])
+
+        df_nodes_info = dict_dfs['similarity_graph']['df_nodes']
+        cols = ['article_id','title_head','file_name']
+        df_nodes_info = df_nodes_info.loc[:,cols].copy()
+        df_sim_all = df_sim.merge(df_nodes_info,
+                                  how='left', 
+                                  left_on='doc_a', 
+                                  right_on='article_id')
+        df_sim_all.drop(labels=['article_id'], axis=1, inplace=True)
+        df_sim_all.rename(columns={"doc_a":"ID Article Source",
+                                   "value":"Similarity",
+                                   "doc_b":"ID Article Target",
+                                   "title_head":"Article Title Source", 
+                                   "file_name":"Article File Name Source"}, inplace=True)
+        df_sim_all = df_sim_all.merge(df_nodes_info,
+                                      how='left', 
+                                      left_on='ID Article Target', 
+                                      right_on='article_id')
+        df_sim_all.drop(labels=['article_id'], axis=1, inplace=True)
+        df_sim_all.rename(columns={"title_head":"Article Title Target", 
+                                   "file_name":"Article File Name Target"}, inplace=True)
+                
+        df_sim = df_sim.rename(columns={"value":"Similarity",
+                                        "doc_a":"Article Source",
+                                        "doc_b":"Article Target"})
+        
+        AgGrid(df_sim_all,
+               data_return_mode='AS_INPUT', 
+               fit_columns_on_grid_load=False,
+               enable_enterprise_modules=False,
+               height=350, 
+               width='100%',
+               reload_data=True)
             
-        col1, col2 = st.columns([1,2])
-        with col1:
-            df_sim = None
-            df_sim = dict_dfs['similarity_graph']['df_cos_tfidf_sim_filter']
-            df_sim['value'] = df_sim['value'].apply(lambda e: round(e,2))
-            df_sim['doc_a'] = df_sim['doc_a'].apply(lambda e: e[0:4])
-            df_sim['doc_b'] = df_sim['doc_b'].apply(lambda e: e[0:4])
-            df_sim = df_sim.rename(columns={"value":"Similarity",
-                                            "doc_a":"Article Source",
-                                            "doc_b":"Article Target"})
-            AgGrid(df_sim.head(n_sim),
-                   data_return_mode='AS_INPUT', 
-                   # update_mode='MODEL_CHANGED', 
-                   fit_columns_on_grid_load=False,
-                   # theme='fresh',
-                   enable_enterprise_modules=False,
-                   height=510, 
-                   width='100%',
-                   reload_data=True)
-        with col2:
-            show_graph(dict_dfs['similarity_graph']['sim_graph'],
-                       dict_dfs['similarity_graph']['path_graph'],
-                       dict_dfs['similarity_graph']['path_folder_graph'],
-                       text_spinner='👁‍🗨 Similarity Graph: drawing...')
+        # col1, col2 = st.columns([1,2])
+        # with col1:
+        #     AgGrid(df_sim.head(n_sim),
+        #            data_return_mode='AS_INPUT', 
+        #            # update_mode='MODEL_CHANGED', 
+        #            fit_columns_on_grid_load=False,
+        #            # theme='fresh',
+        #            enable_enterprise_modules=False,
+        #            height=510, 
+        #            width='100%',
+        #            reload_data=True)
+        # with col2:
+        
+        show_graph(dict_dfs['similarity_graph']['sim_graph'],
+                    dict_dfs['similarity_graph']['path_graph'],
+                    dict_dfs['similarity_graph']['path_folder_graph'],
+                    text_spinner='👁‍🗨 Similarity Graph: drawing...')
             
         relations_size = dict_dfs['similarity_graph']['df_cos_tfidf_sim_filter'].shape[0]
         sim_max_val = dict_dfs['similarity_graph']['df_cos_tfidf_sim_filter'].value.max()
@@ -930,13 +962,13 @@ def generate_keywords(st, dict_dfs):
     dict_dfs['keywords']['df_article_keywords_all'] = df_article_keywords_all
 
     df_keywords_unigram = df_keywords_all.groupby(by=['keyword_unigram'], as_index=False)['value_unigram'].sum()
-    df_keywords_unigram.sort_values(by='value_unigram', ascending=False, inplace=True)
+    df_keywords_unigram.sort_values(by='value_unigram', ascending=True, inplace=True)
 
     df_keywords_bigram = df_keywords_all.groupby(by=['keyword_bigram'], as_index=False)['value_bigram'].sum()
-    df_keywords_bigram.sort_values(by='value_bigram', ascending=False, inplace=True)
+    df_keywords_bigram.sort_values(by='value_bigram', ascending=True, inplace=True)
 
     df_keywords_trigram = df_keywords_all.groupby(by=['keyword_trigram'], as_index=False)['value_trigram'].sum()
-    df_keywords_trigram.sort_values(by='value_trigram', ascending=False, inplace=True)
+    df_keywords_trigram.sort_values(by='value_trigram', ascending=True, inplace=True)
 
     df_keywords_all = pd.concat([df_keywords_unigram, df_keywords_bigram, df_keywords_trigram], axis=1)
     df_keywords_all = df_keywords_all.head(200)
@@ -974,7 +1006,7 @@ def show_keywords(st, dict_dfs):
             df_show = df_show.rename(columns={"keyword_unigram":"Keyword Unigram",
                                               "value_unigram":"Relevance"})
             df_show['Relevance'] = df_show['Relevance'].apply(lambda x: np.round(float(x),3) if not pd.isna(x) else x)
-            df_show = df_show.sort_values(by=['Relevance'], ascending=False)
+            df_show = df_show.sort_values(by=['Relevance'], ascending=True)
             
             AgGrid(df_show.head(100),
                    data_return_mode='AS_INPUT', 
@@ -990,7 +1022,7 @@ def show_keywords(st, dict_dfs):
             df_show = df_show.rename(columns={"keyword_bigram":"Keyword Bigram",
                                               "value_bigram":"Relevance"})
             df_show['Relevance'] = df_show['Relevance'].apply(lambda x: np.round(float(x),3) if not pd.isna(x) else x)
-            df_show = df_show.sort_values(by=['Relevance'], ascending=False)
+            df_show = df_show.sort_values(by=['Relevance'], ascending=True)
             
             AgGrid(df_show.head(100),
                    data_return_mode='AS_INPUT', 
@@ -1006,7 +1038,7 @@ def show_keywords(st, dict_dfs):
             df_show = df_show.rename(columns={"keyword_trigram":"Keyword Trigram",
                                               "value_trigram":"Relevance"})
             df_show['Relevance'] = df_show['Relevance'].apply(lambda x: np.round(float(x),3) if not pd.isna(x) else x)
-            df_show = df_show.sort_values(by=['Relevance'], ascending=False)
+            df_show = df_show.sort_values(by=['Relevance'], ascending=True)
             
             AgGrid(df_show.head(100),
                    data_return_mode='AS_INPUT', 
@@ -1031,7 +1063,7 @@ def agg_keys_node_data(grupo):
 
 
 def show_keywords_graph(st, dict_dfs, df_article_keywords_all, input_folder_path, folder_graph='graphs', 
-                        name_file="graph_keywords.html", cache_folder_name='summarticles_cache', top_keywords=5, buttons=False):
+                        name_file="graph_keywords.html", cache_folder_name='summarticles_cache', top_keywords=10, buttons=False):
     
     """"""
     
@@ -1044,8 +1076,8 @@ def show_keywords_graph(st, dict_dfs, df_article_keywords_all, input_folder_path
         df_keyword_data = df_article_keywords_all.groupby(by=['keyword'], as_index=False).apply(agg_keys_node_data)
         df_keyword_data = df_keyword_data.sort_values(by=['article_count'], ascending=False).head(top_keywords)
         
-        df_keyword_data['value_sum'] = df_keyword_data['value_sum'].apply(lambda e: round(e,2))
-        df_keyword_data['value_mean'] = df_keyword_data['value_mean'].apply(lambda e: round(e,2))
+        df_keyword_data['value_sum'] = df_keyword_data['value_sum'].apply(lambda e: np.round(e,2))
+        df_keyword_data['value_mean'] = df_keyword_data['value_mean'].apply(lambda e: np.round(e,2))
         dict_dfs['keywords']['graph']['df_keyword_data'] = df_keyword_data
         
         # Selecting edges that contains top keywords
@@ -1290,95 +1322,95 @@ def make_reset_button(st):
             st.experimental_rerun()
             
             
-def clustering_3d(dict_dfs, title_text="Group Articles", n_components=2, algorithm='UMAP'):
+def clustering_3d(dict_dfs, title_text="Group Articles", n_components=3, algorithm='UMAP'):
     
     """"""
     
-    if "clustering_data_3d" not in dict_dfs:
-        
-        dict_dfs["clustering_data_3d"] = {}
-        
-        tmining = text_mining()
-        
-        if "documents_abs" not in dict_dfs["clustering_data_3d"]:
-            dict_dfs["clustering_data_3d"]['documents_abs'] = dict_dfs['df_doc_info']['abstract_prep'].fillna(' ').tolist()
-        # documents_body = dict_dfs['df_doc_info']['body_prep'].fillna(' ').tolist()
-        
-        if "df_tfidf_abstract_abs" not in dict_dfs["clustering_data_3d"]:
-            dict_dfs["clustering_data_3d"]['df_tfidf_abstract_abs'] = tmining.get_df_tfidf(dict_dfs["clustering_data_3d"]['documents_abs'])
-        # df_tfidf_abstract_body = tmining.get_df_tfidf(documents_body)
-        
-        # df_bow_abstract_abs = tmining.get_df_bow(documents_abs)
-        # df_bow_abstract_body = tmining.get_df_bow(documents_body)
-        
+    tmining = text_mining()
+    
+    if "clustering_data" not in dict_dfs:
+        dict_dfs["clustering_data"] = {}
+    
+    if "clustering_data_3d" not in dict_dfs["clustering_data"]:
+        dict_dfs["clustering_data"]["clustering_data_3d"] = {}
+    
+    if "documents_abs" not in dict_dfs["clustering_data"]["clustering_data_3d"]:
+        dict_dfs["clustering_data"]["clustering_data_3d"]['documents_abs'] = dict_dfs['df_doc_info']['abstract_prep'].fillna(' ').tolist()
+    # documents_body = dict_dfs['df_doc_info']['body_prep'].fillna(' ').tolist()
+    
+    if "df_tfidf_abstract_abs" not in dict_dfs["clustering_data"]["clustering_data_3d"]:
+        dict_dfs["clustering_data"]["clustering_data_3d"]['df_tfidf_abstract_abs'] = tmining.get_df_tfidf(dict_dfs["clustering_data"]["clustering_data_3d"]['documents_abs'])
+    # df_tfidf_abstract_body = tmining.get_df_tfidf(documents_body)
+    
+    # df_bow_abstract_abs = tmining.get_df_bow(documents_abs)
+    # df_bow_abstract_body = tmining.get_df_bow(documents_body)
+    if "cluster_label" not in dict_dfs["clustering_data"]:
         cluster_labels = tmining.make_clustering(dict_dfs["clustering_data_3d"]['df_tfidf_abstract_abs'].values,
-                                                 lim_sup=None, 
-                                                 init='k-means++', 
-                                                 n_init=10, 
-                                                 max_iter=30, 
-                                                 tol=1e-4, 
-                                                 random_state=0)
+                                                lim_sup=None, 
+                                                init='k-means++', 
+                                                n_init=10, 
+                                                max_iter=30, 
+                                                tol=1e-4, 
+                                                random_state=0)
+        dict_dfs["clustering_data"]["cluster_label"] = cluster_labels
+    
+    if "cluster_reduce_dim3" not in dict_dfs['clustering_data']:
+        dictRedDim = tmining.reduce_dimensionality(dict_dfs['clustering_data']["clustering_data_3d"]['df_tfidf_abstract_abs'], 
+                                                      y=dict_dfs['clustering_data']['cluster_label'],
+                                                      n_components=n_components)
+        dict_dfs['clustering_data']['cluster_reduce_dim3'] = dictRedDim
+
+    dict_dfs['df_doc_info']['file_name'] = dict_dfs['df_doc_info']['file'].apply(lambda e: os.path.split(e)[-1])
         
-        X, y = tmining.reduce_dimensionality(dict_dfs["clustering_data_3d"]['df_tfidf_abstract_abs'].values, 
-                                             y=cluster_labels,
-                                             n_components=n_components,
-                                             algorithm=algorithm # TSNE e PCA
-                                             ), cluster_labels
+    # Concatenate X and y arrays
+    article_title = dict_dfs['df_doc_head']['title_head'].apply(lambda e: ''.join([str(e)[0:30],'...']) if len(str(e)) >= 30 else str(e)).values.reshape(dict_dfs['df_doc_info']['file'].shape[0],1)
+    file_name = dict_dfs['df_doc_info']['file_name'].values.reshape(dict_dfs['df_doc_info']['file_name'].shape[0],1)
 
-        dict_dfs['df_doc_info']['file_name'] = dict_dfs['df_doc_info']['file'].apply(lambda e: os.path.split(e)[-1])
-            
-        # Concatenate X and y arrays
-        article_title = dict_dfs['df_doc_head']['title_head'].apply(lambda e: ''.join([str(e)[0:30],'...']) if len(str(e)) >= 30 else str(e)).values.reshape(dict_dfs['df_doc_info']['file'].shape[0],1)
-        file_name = dict_dfs['df_doc_info']['file_name'].values.reshape(dict_dfs['df_doc_info']['file_name'].shape[0],1)
+    arr_concat=np.concatenate((dict_dfs['clustering_data']['cluster_reduce_dim3'][algorithm],
+                               dict_dfs["clustering_data"]["cluster_label"].reshape(dict_dfs["clustering_data"]["cluster_label"].shape[0],1),
+                               file_name,
+                               article_title), axis=1)
 
-        arr_concat=np.concatenate((X,
-                                y.reshape(y.shape[0],1),
-                                file_name,
-                                article_title), axis=1)
+    # Create a Pandas dataframe using the above array
+    df=pd.DataFrame(arr_concat, columns=['x', 'y', 'z', 'label', 'file_name', 'title_head'])
+    
+    dict_dfs['cluster_data_table'] = df.loc[:,['file_name', 'title_head','label']].copy()
+    
+    # Convert label data type from float to integer
+    df['label'] = df['label'].astype(int)
+    # Finally, sort the dataframe by label
+    df.sort_values(by='label', axis=0, ascending=True, inplace=True)
+    #--------------------------------------------------------------------------#
+    # Create a 3D graph
+    fig = px.scatter_3d(df, 
+                        x='x',
+                        y='y',
+                        z='z',
+                        color='label',
+                        height=600,
+                        width=750,
+                        custom_data=['file_name','title_head','label','x','y','z'])
 
-        # Create a Pandas dataframe using the above array
-        df=pd.DataFrame(arr_concat, columns=['x', 'y', 'z', 'label', 'file_name', 'title_head'])
+    # Update chart looks
+    fig.update_layout(title_text=title_text,
+                      showlegend=True,
+                      legend=dict(orientation="h", yanchor="top", y=0, xanchor="center", x=0.5))
+
+    labels = ["Article File Name: %{customdata[0]}",
+                "Article Title: %{customdata[1]}",
+                "Grupo: %{customdata[2]}",
+                "X: %{x}",
+                "Y: %{y}",
+                "Z: %{z}"]
+                
+    fig.update_traces(hovertemplate="<br>".join(labels))
+    fig.update_coloraxes(showscale=False)
+
+    # Update marker size
+    # fig.update_traces(marker=dict(size=3, line=dict(color='black', width=0.1)))
+    dict_dfs['clustering_data']["clustering_data_3d"]["fig"] = fig
         
-        dict_dfs['cluster_data_table'] = df.loc[:,['file_name', 'title_head','label']].copy()
-        
-        # Convert label data type from float to integer
-        df['label'] = df['label'].astype(int)
-        # Finally, sort the dataframe by label
-        df.sort_values(by='label', axis=0, ascending=True, inplace=True)
-        #--------------------------------------------------------------------------#
-
-        if "fig" not in dict_dfs["clustering_data_3d"]:
-            
-            # Create a 3D graph
-            fig = px.scatter_3d(df, 
-                                x='x',
-                                y='y',
-                                z='z',
-                                color='label',
-                                height=600,
-                                width=750,
-                                custom_data=['file_name','title_head','label','x','y','z'])
-
-            # Update chart looks
-            fig.update_layout(title_text=title_text,
-                            showlegend=True,
-                            legend=dict(orientation="h", yanchor="top", y=0, xanchor="center", x=0.5))
-
-            labels = ["Article File Name: %{customdata[0]}",
-                      "Article Title: %{customdata[1]}",
-                      "Grupo: %{customdata[2]}",
-                      "X: %{x}",
-                      "Y: %{y}",
-                      "Z: %{z}"]
-                        
-            fig.update_traces(hovertemplate="<br>".join(labels))
-            fig.update_coloraxes(showscale=False)
-
-            # Update marker size
-            # fig.update_traces(marker=dict(size=3, line=dict(color='black', width=0.1)))
-            dict_dfs["clustering_data_3d"]["fig"] = fig
-        
-    st.plotly_chart(dict_dfs["clustering_data_3d"]["fig"], use_container_width=True)
+    st.plotly_chart(dict_dfs['clustering_data']["clustering_data_3d"]["fig"], use_container_width=True)
     
     return dict_dfs
     
@@ -1386,90 +1418,92 @@ def clustering_3d(dict_dfs, title_text="Group Articles", n_components=2, algorit
 def clustering_2d(dict_dfs, title_text="Group Articles", n_components=2, algorithm='UMAP'):
     
     """"""
+    tmining = text_mining()
     
-    if "clustering_data_2d" not in dict_dfs:
-        
-        dict_dfs["clustering_data_2d"] = {}
-        
-        tmining = text_mining()
-        
-        if "documents_abs" not in dict_dfs["clustering_data_2d"]:
-            dict_dfs["clustering_data_2d"]['documents_abs'] = dict_dfs['df_doc_info']['abstract_prep'].fillna(' ').tolist()
-        # documents_body = dict_dfs['df_doc_info']['body_prep'].fillna(' ').tolist()
-        
-        if "df_tfidf_abstract_abs" not in dict_dfs["clustering_data_2d"]:
-            dict_dfs["clustering_data_2d"]['df_tfidf_abstract_abs'] = tmining.get_df_tfidf(dict_dfs["clustering_data_2d"]['documents_abs'])
-        # df_tfidf_abstract_body = tmining.get_df_tfidf(documents_body)
-        
-        # df_bow_abstract_abs = tmining.get_df_bow(documents_abs)
-        # df_bow_abstract_body = tmining.get_df_bow(documents_body)
-        
-        cluster_labels = tmining.make_clustering(dict_dfs["clustering_data_2d"]['df_tfidf_abstract_abs'],
-                                                 lim_sup=None, 
-                                                 init='k-means++', 
-                                                 n_init=10, 
-                                                 max_iter=30, 
-                                                 tol=1e-4, 
-                                                 random_state=0)
-        
-        X, y = tmining.reduce_dimensionality(dict_dfs["clustering_data_2d"]['df_tfidf_abstract_abs'], 
-                                             y=cluster_labels,
-                                             n_components=n_components,
-                                             algorithm=algorithm # TSNE e PCA
-                                             ), cluster_labels
+    if "clustering_data" not in dict_dfs:
+        dict_dfs["clustering_data"] = {}
+    
+    if "clustering_data_2d" not in dict_dfs["clustering_data"]:
+        dict_dfs["clustering_data"]["clustering_data_2d"] = {}
+    
+    if "documents_abs" not in dict_dfs['clustering_data']["clustering_data_2d"]:
+        dict_dfs['clustering_data']["clustering_data_2d"]['documents_abs'] = dict_dfs['df_doc_info']['abstract_prep'].fillna(' ').tolist()
+    # documents_body = dict_dfs['df_doc_info']['body_prep'].fillna(' ').tolist()
+    
+    if "df_tfidf_abstract_abs" not in dict_dfs['clustering_data']["clustering_data_2d"]:
+        dict_dfs['clustering_data']["clustering_data_2d"]['df_tfidf_abstract_abs'] = tmining.get_df_tfidf(dict_dfs['clustering_data']["clustering_data_2d"]['documents_abs'])
+    # df_tfidf_abstract_body = tmining.get_df_tfidf(documents_body)
+    
+    # df_bow_abstract_abs = tmining.get_df_bow(documents_abs)
+    # df_bow_abstract_body = tmining.get_df_bow(documents_body)
+    
+    if "cluster_label" not in dict_dfs["clustering_data"]:
+        cluster_labels = tmining.make_clustering(dict_dfs['clustering_data']["clustering_data_2d"]['df_tfidf_abstract_abs'],
+                                                lim_sup=None, 
+                                                init='k-means++', 
+                                                n_init=10, 
+                                                max_iter=30, 
+                                                tol=1e-4, 
+                                                random_state=0)
+        dict_dfs['clustering_data']['cluster_label'] = cluster_labels
+    
+    if "cluster_reduce_dim" not in dict_dfs['clustering_data']:
+        dictRedDim, y = tmining.reduce_dimensionality(dict_dfs['clustering_data']["clustering_data_2d"]['df_tfidf_abstract_abs'], 
+                                                    y=dict_dfs['clustering_data']['cluster_label'],
+                                                    n_components=n_components
+                                                    ), dict_dfs['clustering_data']['cluster_label']
+        dict_dfs['clustering_data']['cluster_reduce_dim'] = dictRedDim
 
-        dict_dfs['df_doc_info']['file_name'] = dict_dfs['df_doc_info']['file'].apply(lambda e: os.path.split(e)[-1])
-            
-        # Concatenate X and y arrays
-        article_title = dict_dfs['df_doc_head']['title_head'].apply(lambda e: ''.join([str(e)[0:30],'...']) if len(str(e)) >= 30 else str(e)).values.reshape(dict_dfs['df_doc_info']['file'].shape[0],1)
-        file_name = dict_dfs['df_doc_info']['file_name'].values.reshape(dict_dfs['df_doc_info']['file_name'].shape[0],1)
-
-        arr_concat=np.concatenate((X,
-                                   y.reshape(y.shape[0],1),
-                                   file_name,
-                                   article_title), axis=1)
-
-        # Create a Pandas dataframe using the above array
-        df=pd.DataFrame(arr_concat, columns=['x', 'y', 'label', 'file_name', 'title_head'])
+    dict_dfs['df_doc_info']['file_name'] = dict_dfs['df_doc_info']['file'].apply(lambda e: os.path.split(e)[-1])
         
-        dict_dfs['cluster_data_table'] = df.loc[:,['file_name', 'title_head','label']].copy()
+    # Concatenate X and y arrays
+    article_title = dict_dfs['df_doc_head']['title_head'].apply(lambda e: ''.join([str(e)[0:30],'...']) if len(str(e)) >= 30 else str(e)).values.reshape(dict_dfs['df_doc_info']['file'].shape[0],1)
+    file_name = dict_dfs['df_doc_info']['file_name'].values.reshape(dict_dfs['df_doc_info']['file_name'].shape[0],1)
+
+    arr_concat=np.concatenate((dict_dfs['clustering_data']['cluster_reduce_dim'][algorithm],
+                               dict_dfs['clustering_data']['cluster_label'].reshape(dict_dfs['clustering_data']['cluster_label'].shape[0],1),
+                               file_name,
+                               article_title), axis=1)
+
+    # Create a Pandas dataframe using the above array
+    df=pd.DataFrame(arr_concat, columns=['x', 'y', 'label', 'file_name', 'title_head'])
+    
+    dict_dfs['clustering_data']['cluster_data_table'] = df.loc[:,['file_name', 'title_head','label']].copy()
+    
+    # Convert label data type from float to integer
+    df['label'] = df['label'].astype(int)
+    # Finally, sort the dataframe by label
+    df.sort_values(by='label', axis=0, ascending=True, inplace=True)
+    #--------------------------------------------------------------------------#
+
+    # Create a 3D graph
+    fig = px.scatter(df, 
+                        x='x',
+                        y='y',
+                        color='label',
+                        height=550,
+                        width=750,
+                        custom_data=['file_name','title_head','label','x','y'])
+
+    # Update chart looks
+    fig.update_layout(title_text=title_text,
+                        showlegend=True,
+                        legend=dict(orientation="h", yanchor="top", y=0, xanchor="center", x=0.5))
+
+    labels = ["Article File Name: %{customdata[0]}",
+                "Article Title: %{customdata[1]}",
+                "Group: %{customdata[2]}",
+                "X: %{x}",
+                "Y: %{y}"]
+                
+    fig.update_traces(hovertemplate="<br>".join(labels))
+    fig.update_coloraxes(showscale=False)
+
+    # Update marker size
+    # fig.update_traces(marker=dict(size=3, line=dict(color='black', width=0.1)))
+    dict_dfs['clustering_data']["clustering_data_2d"]["fig"] = fig
         
-        # Convert label data type from float to integer
-        df['label'] = df['label'].astype(int)
-        # Finally, sort the dataframe by label
-        df.sort_values(by='label', axis=0, ascending=True, inplace=True)
-        #--------------------------------------------------------------------------#
-
-        if "fig" not in dict_dfs["clustering_data_2d"]:
-            
-            # Create a 3D graph
-            fig = px.scatter(df, 
-                             x='x',
-                             y='y',
-                             color='label',
-                             height=550,
-                             width=750,
-                             custom_data=['file_name','title_head','label','x','y'])
-
-            # Update chart looks
-            fig.update_layout(title_text=title_text,
-                              showlegend=True,
-                              legend=dict(orientation="h", yanchor="top", y=0, xanchor="center", x=0.5))
-
-            labels = ["Article File Name: %{customdata[0]}",
-                      "Article Title: %{customdata[1]}",
-                      "Grupo: %{customdata[2]}",
-                      "X: %{x}",
-                      "Y: %{y}"]
-                        
-            fig.update_traces(hovertemplate="<br>".join(labels))
-            fig.update_coloraxes(showscale=False)
-
-            # Update marker size
-            # fig.update_traces(marker=dict(size=3, line=dict(color='black', width=0.1)))
-            dict_dfs["clustering_data_2d"]["fig"] = fig
-        
-    st.plotly_chart(dict_dfs["clustering_data_2d"]["fig"], use_container_width=True)
+    st.plotly_chart(dict_dfs['clustering_data']["clustering_data_2d"]["fig"], use_container_width=True)
     
     return dict_dfs
 
@@ -1561,13 +1595,15 @@ def article_citation_information(st, dict_dfs):
     import plotly.express as px
 
     fig = px.treemap(df_citation_plot, 
-                     path=[px.Constant(""),'full_name_citation'],
+                     path=['full_name_citation'],
                      values='citation_count',
                      color='number_authors',
                      hover_data=['number_countries'],
                      color_continuous_scale='RdBu',
-                     width=1000,
-                     height=400, maxdepth=1)
+                     width=925,
+                     height=400,
+                     maxdepth=2,
+                     labels={"number_authors":"Number of<br>Authors"})
     
     fig.update_layout(margin = dict(t=0, l=0, r=0, b=0))
     
@@ -1577,7 +1613,8 @@ def article_citation_information(st, dict_dfs):
                "Number of Distinct Countries from Citation: %{customdata[0]}"]
                 
     fig.update_traces(hovertemplate="<br>".join(labels))
-    fig.update_traces(marker_line_width = 4)
+    fig.update_traces(root_color="white")
+    fig.update_traces(marker_line_width=4)
     
     st.plotly_chart(fig)
     
@@ -1744,6 +1781,8 @@ if __name__ == '__main__':
         st.session_state['param_n_sim'] = 100
     if 'param_sim' not in st.session_state:
         st.session_state['param_sim'] = 0.0
+    if 'rb_reddim' not in st.session_state:
+        st.session_state['rb_reddim'] = 'PCA'
         
     # ----------------------------------------------------------------------------
     # Entrance of app
@@ -1891,7 +1930,8 @@ if __name__ == '__main__':
                             st.markdown("""<h3 style="text-align:left;"><b>KeyWords</b></h3>""",unsafe_allow_html=True)
                             
                             with st.expander("How it works?"):
-                                st.write("This is MAGIC!")
+                                st.write("""Below you can see all keywords extract from abstract text over all articles.
+                                            The lower the score, the more relevant the keyword is.""")
                             
                             with st.spinner('📄➞🔤  Extracting KeyWords...'):
                                 st.session_state['dict_dfs'] = generate_keywords(st, st.session_state['dict_dfs'])
@@ -1906,6 +1946,16 @@ if __name__ == '__main__':
                                 
                             if st.session_state['show_keywords_graph_cond']:
                                 with st.spinner('📄➞📄  Making KeyWord Graph...'):
+                                    with st.expander(" ❕ How can I read this graph?"):
+                                        body = """In this graph Summarticles plot Keywords (from Abstract) and Articles.<br>
+                                                  The blue dots are articles, and you can pass cursor over this points and get more information.<br>
+                                                  The colors boxes are keywords, and you can pass cursor over this boxes and get more information.<br><br>
+                                                  The edges conecting blue dots with keyword boxes represent relevance of the keyword for the abstract article
+                                                  and the edge thickness represent the level/value of keyword relevance.<br><br>
+                                                  For now, you only can see the top 10 keywords.<br><br>
+                                                  You can interact with graph, moving blue dots, boxes and edges.<br>
+                                                  You also can zoom-in and zoom-out the graph."""
+                                        st.markdown(body, unsafe_allow_html=True)
                                     st.session_state['dict_dfs'] = show_keywords_graph(st, st.session_state['dict_dfs'], 
                                                                    st.session_state['dict_dfs']['keywords']['df_article_keywords_all'],
                                                                    input_folder_path)
@@ -1918,7 +1968,10 @@ if __name__ == '__main__':
                                 st.markdown("""<h3 style="text-align:left;"><b>Similarity Graph: this graph shows you similarity across articles.</b></h3>""", unsafe_allow_html=True)
 
                                 with st.expander("How it works?"):
-                                    st.write("This is MAGIC!")
+                                    st.write("""Using abstract text from all articles, Summarticles create a TF-IDF matrix and 
+                                                compute cossine similarity cross all articles. 
+                                                In Summarticles cossine similarity range from 0 to 1, closer than 1 means high similarity
+                                                0 is the opposite.""")
                                     
                                 def del_similarity_graph():
                                     del st.session_state['dict_dfs']['similarity_graph']
@@ -1942,38 +1995,44 @@ if __name__ == '__main__':
                                 st.markdown("""<h3 style="text-align:left;"><b>Clustering Articles</b></h3>""", unsafe_allow_html=True)
 
                                 with st.expander("How it works?"):
-                                    st.write("This is MAGIC!")
+                                    st.write("""Using abstract text from all articles, Summarticles create a TF-IDF matrix and clustering the articles.
+                                                For group the data, Summarticles use K-Means and the number of the groups is defined
+                                                by committee vote using Silhouette-Score, Dabies-Bouldin Index and Calinsk-Harabaz Index.""")
                                 
                                 c1, c2 = st.columns([0.5,1])
                                 
                                 with st.container():
-
                                     with c2:
+                                        with st.container():
+                                            st.session_state['rb_reddim'] = st.radio("Select Data Projection Algorithm:",
+                                                                                    ('PCA', 'UMAP', 'MDS', 'TSNE'),
+                                                                                    horizontal=True,
+                                                                                    help="Choose one of these algorithms for groups data projection!")
                                         st.session_state['dict_dfs'] = clustering_2d(st.session_state['dict_dfs'],
-                                                                                    title_text="Group Articles 2D",
-                                                                                    n_components=2,
-                                                                                    algorithm='PCA') # UMAP, TSNE, PCA, MDS
+                                                                                     title_text="Group Articles 2D",
+                                                                                     n_components=2,
+                                                                                     algorithm=st.session_state['rb_reddim']) # UMAP, TSNE, PCA, MDS
                                     with c1:
-                                        df_show = st.session_state['dict_dfs']['cluster_data_table']
+                                        df_show = st.session_state['dict_dfs']['clustering_data']['cluster_data_table']
                                         df_show = df_show.rename(columns={"file_name":"File Name",
                                                                           "title_head":"Title",
                                                                           "label":"Group"})
                                         
                                         AgGrid(df_show,
-                                            data_return_mode='AS_INPUT', 
-                                            # update_mode='MODEL_CHANGED', 
-                                            fit_columns_on_grid_load=False,
-                                            # theme='fresh',
-                                            enable_enterprise_modules=False,
-                                            height=515, 
-                                            width='100%',
-                                            reload_data=True)
+                                               data_return_mode='AS_INPUT', 
+                                               # update_mode='MODEL_CHANGED', 
+                                               fit_columns_on_grid_load=False,
+                                               # theme='fresh',
+                                               enable_enterprise_modules=False,
+                                               height=550, 
+                                               width='100%',
+                                               reload_data=True)
                                 
                                 with st.container():
                                     st.session_state['dict_dfs'] = clustering_3d(st.session_state['dict_dfs'],
                                                                                  title_text="Group Articles 3D",
                                                                                  n_components=3,
-                                                                                 algorithm='PCA') # UMAP, TSNE, PCA, MDS
+                                                                                 algorithm=st.session_state['rb_reddim']) # UMAP, TSNE, PCA, MDS
                      
                     with st.container():
                         with st.spinner('📄➞📄  Part-of-speech and Named Entities...'):
