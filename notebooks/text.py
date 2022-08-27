@@ -302,7 +302,7 @@ class text_mining(object):
                             FILE NAME:{article_file_name}"""
             
             graph.add_node(n_id=str(article_id), 
-                           label=f"Node ID: {str(article_id)}", 
+                           label=f"Node ID: {str(article_id)}\n{article_title}", 
                            borderWidth=1, 
                            borderWidthSelected=2, 
                            #brokenImage="url", 
@@ -323,8 +323,8 @@ class text_mining(object):
         for i,row in matrix.iterrows():
             graph.add_edge(source=str(row[source_column]),
                            to=str(row[to_column]),
-                           value=round(row[value_column],1),
-                           title=str(round(row[value_column],1)))
+                           value=np.round(row[value_column],3),
+                           title="Similarity: " + str(np.round(row[value_column],3)))
                            #width=row['value'],
                            #arrowStrikethrough=False,
                            #physics=False,

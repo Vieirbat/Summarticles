@@ -467,7 +467,7 @@ def show_text_numbers(st, dict_dfs):
             
         with st.expander(" ❕ Information!"):
             body = """Above:<br>These numbers represent informations from all article text together.<br><br>
-                      Below:<br>This graph represent the number of unique words by article cross number of words by article.<br>
+                      Below:<br>This chart represent the number of unique words by article cross number of words by article.<br>
                       Each point represent an article, you can pass cursor over these points and get more information."""
             st.markdown(body, unsafe_allow_html=True)
         
@@ -785,31 +785,63 @@ def similarity_graph(st, dict_dfs, input_folder_path, folder_graph='graphs', nam
         dict_dfs['similarity_graph']['path_folder_graph'] = path_folder_graph
         
     with st.container():
+        
+        df_sim = None
+        df_sim = dict_dfs['similarity_graph']['df_cos_tfidf_sim_filter']
+        df_sim['value'] = df_sim['value'].apply(lambda e: round(e,2))
+        df_sim['doc_a'] = df_sim['doc_a'].apply(lambda e: e[0:4])
+        df_sim['doc_b'] = df_sim['doc_b'].apply(lambda e: e[0:4])
+
+        df_nodes_info = dict_dfs['similarity_graph']['df_nodes']
+        cols = ['article_id','title_head','file_name']
+        df_nodes_info = df_nodes_info.loc[:,cols].copy()
+        df_sim_all = df_sim.merge(df_nodes_info,
+                                  how='left', 
+                                  left_on='doc_a', 
+                                  right_on='article_id')
+        df_sim_all.drop(labels=['article_id'], axis=1, inplace=True)
+        df_sim_all.rename(columns={"doc_a":"ID Article Source",
+                                   "value":"Similarity",
+                                   "doc_b":"ID Article Target",
+                                   "title_head":"Article Title Source", 
+                                   "file_name":"Article File Name Source"}, inplace=True)
+        df_sim_all = df_sim_all.merge(df_nodes_info,
+                                      how='left', 
+                                      left_on='ID Article Target', 
+                                      right_on='article_id')
+        df_sim_all.drop(labels=['article_id'], axis=1, inplace=True)
+        df_sim_all.rename(columns={"title_head":"Article Title Target", 
+                                   "file_name":"Article File Name Target"}, inplace=True)
+                
+        df_sim = df_sim.rename(columns={"value":"Similarity",
+                                        "doc_a":"Article Source",
+                                        "doc_b":"Article Target"})
+        
+        AgGrid(df_sim_all,
+               data_return_mode='AS_INPUT', 
+               fit_columns_on_grid_load=False,
+               enable_enterprise_modules=False,
+               height=350, 
+               width='100%',
+               reload_data=True)
             
-        col1, col2 = st.columns([1,2])
-        with col1:
-            df_sim = None
-            df_sim = dict_dfs['similarity_graph']['df_cos_tfidf_sim_filter']
-            df_sim['value'] = df_sim['value'].apply(lambda e: round(e,2))
-            df_sim['doc_a'] = df_sim['doc_a'].apply(lambda e: e[0:4])
-            df_sim['doc_b'] = df_sim['doc_b'].apply(lambda e: e[0:4])
-            df_sim = df_sim.rename(columns={"value":"Similarity",
-                                            "doc_a":"Article Source",
-                                            "doc_b":"Article Target"})
-            AgGrid(df_sim.head(n_sim),
-                   data_return_mode='AS_INPUT', 
-                   # update_mode='MODEL_CHANGED', 
-                   fit_columns_on_grid_load=False,
-                   # theme='fresh',
-                   enable_enterprise_modules=False,
-                   height=510, 
-                   width='100%',
-                   reload_data=True)
-        with col2:
-            show_graph(dict_dfs['similarity_graph']['sim_graph'],
-                       dict_dfs['similarity_graph']['path_graph'],
-                       dict_dfs['similarity_graph']['path_folder_graph'],
-                       text_spinner='👁‍🗨 Similarity Graph: drawing...')
+        # col1, col2 = st.columns([1,2])
+        # with col1:
+        #     AgGrid(df_sim.head(n_sim),
+        #            data_return_mode='AS_INPUT', 
+        #            # update_mode='MODEL_CHANGED', 
+        #            fit_columns_on_grid_load=False,
+        #            # theme='fresh',
+        #            enable_enterprise_modules=False,
+        #            height=510, 
+        #            width='100%',
+        #            reload_data=True)
+        # with col2:
+        
+        show_graph(dict_dfs['similarity_graph']['sim_graph'],
+                    dict_dfs['similarity_graph']['path_graph'],
+                    dict_dfs['similarity_graph']['path_folder_graph'],
+                    text_spinner='👁‍🗨 Similarity Graph: drawing...')
             
         relations_size = dict_dfs['similarity_graph']['df_cos_tfidf_sim_filter'].shape[0]
         sim_max_val = dict_dfs['similarity_graph']['df_cos_tfidf_sim_filter'].value.max()
@@ -1561,13 +1593,14 @@ def article_citation_information(st, dict_dfs):
     import plotly.express as px
 
     fig = px.treemap(df_citation_plot, 
-                     path=[px.Constant(""),'full_name_citation'],
+                     path=['full_name_citation'],
                      values='citation_count',
                      color='number_authors',
                      hover_data=['number_countries'],
                      color_continuous_scale='RdBu',
                      width=1000,
-                     height=400, maxdepth=1)
+                     height=400,
+                     maxdepth=2)
     
     fig.update_layout(margin = dict(t=0, l=0, r=0, b=0))
     
@@ -1577,7 +1610,8 @@ def article_citation_information(st, dict_dfs):
                "Number of Distinct Countries from Citation: %{customdata[0]}"]
                 
     fig.update_traces(hovertemplate="<br>".join(labels))
-    fig.update_traces(marker_line_width = 4)
+    fig.update_traces(root_color="white")
+    fig.update_traces(marker_line_width=4)
     
     st.plotly_chart(fig)
     
