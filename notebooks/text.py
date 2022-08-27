@@ -442,8 +442,8 @@ class text_mining(object):
             
             graph.add_edge(source=str(row[source_column]),
                            to=str(row[to_column]),
-                           value=round(row[value_column],1),
-                           title=str(row[value_column]))
+                           value=np.round(1/row[value_column],3),
+                           title="Relevance: " + str(np.round(row[value_column],3)))
                            #width=row['value'],
                            #arrowStrikethrough=False,
                            #physics=False,

@@ -629,7 +629,7 @@ def show_keyword_word_cloud(st, dict_dfs,
         
         dict_freq = {}
         for i, row in df_keywords.iterrows():
-            dict_freq[row['keyword']] = row['value']
+            dict_freq[row['keyword']] = 1/row['value']
         
         path_images = os.path.join(input_path, cache_folder_name, folder_images)
         if not os.path.exists(path_images):
@@ -962,13 +962,13 @@ def generate_keywords(st, dict_dfs):
     dict_dfs['keywords']['df_article_keywords_all'] = df_article_keywords_all
 
     df_keywords_unigram = df_keywords_all.groupby(by=['keyword_unigram'], as_index=False)['value_unigram'].sum()
-    df_keywords_unigram.sort_values(by='value_unigram', ascending=False, inplace=True)
+    df_keywords_unigram.sort_values(by='value_unigram', ascending=True, inplace=True)
 
     df_keywords_bigram = df_keywords_all.groupby(by=['keyword_bigram'], as_index=False)['value_bigram'].sum()
-    df_keywords_bigram.sort_values(by='value_bigram', ascending=False, inplace=True)
+    df_keywords_bigram.sort_values(by='value_bigram', ascending=True, inplace=True)
 
     df_keywords_trigram = df_keywords_all.groupby(by=['keyword_trigram'], as_index=False)['value_trigram'].sum()
-    df_keywords_trigram.sort_values(by='value_trigram', ascending=False, inplace=True)
+    df_keywords_trigram.sort_values(by='value_trigram', ascending=True, inplace=True)
 
     df_keywords_all = pd.concat([df_keywords_unigram, df_keywords_bigram, df_keywords_trigram], axis=1)
     df_keywords_all = df_keywords_all.head(200)
@@ -1006,7 +1006,7 @@ def show_keywords(st, dict_dfs):
             df_show = df_show.rename(columns={"keyword_unigram":"Keyword Unigram",
                                               "value_unigram":"Relevance"})
             df_show['Relevance'] = df_show['Relevance'].apply(lambda x: np.round(float(x),3) if not pd.isna(x) else x)
-            df_show = df_show.sort_values(by=['Relevance'], ascending=False)
+            df_show = df_show.sort_values(by=['Relevance'], ascending=True)
             
             AgGrid(df_show.head(100),
                    data_return_mode='AS_INPUT', 
@@ -1022,7 +1022,7 @@ def show_keywords(st, dict_dfs):
             df_show = df_show.rename(columns={"keyword_bigram":"Keyword Bigram",
                                               "value_bigram":"Relevance"})
             df_show['Relevance'] = df_show['Relevance'].apply(lambda x: np.round(float(x),3) if not pd.isna(x) else x)
-            df_show = df_show.sort_values(by=['Relevance'], ascending=False)
+            df_show = df_show.sort_values(by=['Relevance'], ascending=True)
             
             AgGrid(df_show.head(100),
                    data_return_mode='AS_INPUT', 
@@ -1038,7 +1038,7 @@ def show_keywords(st, dict_dfs):
             df_show = df_show.rename(columns={"keyword_trigram":"Keyword Trigram",
                                               "value_trigram":"Relevance"})
             df_show['Relevance'] = df_show['Relevance'].apply(lambda x: np.round(float(x),3) if not pd.isna(x) else x)
-            df_show = df_show.sort_values(by=['Relevance'], ascending=False)
+            df_show = df_show.sort_values(by=['Relevance'], ascending=True)
             
             AgGrid(df_show.head(100),
                    data_return_mode='AS_INPUT', 
@@ -1063,7 +1063,7 @@ def agg_keys_node_data(grupo):
 
 
 def show_keywords_graph(st, dict_dfs, df_article_keywords_all, input_folder_path, folder_graph='graphs', 
-                        name_file="graph_keywords.html", cache_folder_name='summarticles_cache', top_keywords=5, buttons=False):
+                        name_file="graph_keywords.html", cache_folder_name='summarticles_cache', top_keywords=10, buttons=False):
     
     """"""
     
@@ -1076,8 +1076,8 @@ def show_keywords_graph(st, dict_dfs, df_article_keywords_all, input_folder_path
         df_keyword_data = df_article_keywords_all.groupby(by=['keyword'], as_index=False).apply(agg_keys_node_data)
         df_keyword_data = df_keyword_data.sort_values(by=['article_count'], ascending=False).head(top_keywords)
         
-        df_keyword_data['value_sum'] = df_keyword_data['value_sum'].apply(lambda e: round(e,2))
-        df_keyword_data['value_mean'] = df_keyword_data['value_mean'].apply(lambda e: round(e,2))
+        df_keyword_data['value_sum'] = df_keyword_data['value_sum'].apply(lambda e: np.round(e,2))
+        df_keyword_data['value_mean'] = df_keyword_data['value_mean'].apply(lambda e: np.round(e,2))
         dict_dfs['keywords']['graph']['df_keyword_data'] = df_keyword_data
         
         # Selecting edges that contains top keywords
@@ -1930,7 +1930,8 @@ if __name__ == '__main__':
                             st.markdown("""<h3 style="text-align:left;"><b>KeyWords</b></h3>""",unsafe_allow_html=True)
                             
                             with st.expander("How it works?"):
-                                st.write("This is MAGIC!")
+                                st.write("""Below you can see all keywords extract from abstract text over all articles.
+                                            The lower the score, the more relevant the keyword is.""")
                             
                             with st.spinner('📄➞🔤  Extracting KeyWords...'):
                                 st.session_state['dict_dfs'] = generate_keywords(st, st.session_state['dict_dfs'])
@@ -1945,6 +1946,16 @@ if __name__ == '__main__':
                                 
                             if st.session_state['show_keywords_graph_cond']:
                                 with st.spinner('📄➞📄  Making KeyWord Graph...'):
+                                    with st.expander(" ❕ How can I read this graph?"):
+                                        body = """In this graph Summarticles plot Keywords (from Abstract) and Articles.<br>
+                                                  The blue dots are articles, and you can pass cursor over this points and get more information.<br>
+                                                  The colors boxes are keywords, and you can pass cursor over this boxes and get more information.<br><br>
+                                                  The edges conecting blue dots with keyword boxes represent relevance of the keyword for the abstract article
+                                                  and the edge thickness represent the level/value of keyword relevance.<br><br>
+                                                  For now, you only can see the top 10 keywords.<br><br>
+                                                  You can interact with graph, moving blue dots, boxes and edges.<br>
+                                                  You also can zoom-in and zoom-out the graph."""
+                                        st.markdown(body, unsafe_allow_html=True)
                                     st.session_state['dict_dfs'] = show_keywords_graph(st, st.session_state['dict_dfs'], 
                                                                    st.session_state['dict_dfs']['keywords']['df_article_keywords_all'],
                                                                    input_folder_path)
