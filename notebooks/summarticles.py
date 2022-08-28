@@ -1625,7 +1625,37 @@ def article_citation_information(st, dict_dfs):
         st.markdown(body, unsafe_allow_html=True)
     
     return dict_dfs
+
+
+def years_plot_article(st, dict_dfs):
     
+    import plotly.express as px
+
+    df_doc_head = dict_dfs['df_doc_head']
+    df_doc_info = dict_dfs['df_doc_info'].loc[:,getColumnsWithData(dict_dfs['df_doc_info'])]
+    df_doc_info_head = df_doc_info.join(df_doc_head, how='left')
+    df_doc_info_head.date_head = df_doc_info_head.date_head.apply(lambda e: pd.to_datetime(e))
+    df_doc_info_head['year'] = df_doc_info_head.date_head.apply(lambda e: e if pd.isna(e) else int(e.year))
+    df_doc_info_head.year.fillna('Null Value', inplace=True)
+    data_year = df_doc_info_head.year.value_counts()
+    df_year = pd.DataFrame({'year':data_year.index, 
+                            'article_count':data_year.values})
+
+    fig = px.pie(df_year, 
+                values='article_count', 
+                names='year',
+                title='Number of Articles by Year',
+                hover_data=['year'], 
+                labels={'values':'Percentage',
+                        'year':'Year of Article',
+                        'article_count':'Number of Articles'},
+                hole=.5)
+
+    fig.update_traces(textposition='inside', textinfo='percent+label')
+    fig.update_layout(showlegend=False)
+    st.plotly_chart(fig)
+    # fig.show()
+
 
 def plot_maps(st, dict_dfs):
     """Plot folium maps."""
@@ -1653,15 +1683,15 @@ def plot_maps(st, dict_dfs):
     
     _, col1, _ = st.columns([0.75,3,0.1])
     with st.container():
-        # with col1:
-            # map = folium.Map(location=[25.552354,14.814465], zoom_start=1.5)
-            # heat_points = []
-            # for i,row in df_country_agg.iterrows():
-            #     heat_points.append([row['Latitude'], row['Longitude'], row['count']])
-            #     folium.Marker([row['Latitude'], row['Longitude']],
-            #                 popup="<i>Number of Authors {0}<i>".format(row['count']),
-            #                 tooltip=f"Number of Authors {row['count']}").add_to(map)
-            #     st_point_map = st_folium(map)
+    #     # with col1:
+    #         # map = folium.Map(location=[25.552354,14.814465], zoom_start=1.5)
+    #         # heat_points = []
+    #         # for i,row in df_country_agg.iterrows():
+    #         #     heat_points.append([row['Latitude'], row['Longitude'], row['count']])
+    #         #     folium.Marker([row['Latitude'], row['Longitude']],
+    #         #                 popup="<i>Number of Authors {0}<i>".format(row['count']),
+    #         #                 tooltip=f"Number of Authors {row['count']}").add_to(map)
+    #         #     st_point_map = st_folium(map)
         with col1:
             map = folium.Map(location=[25.552354,14.814465], zoom_start=1)
             heat_points = []
@@ -1915,7 +1945,11 @@ if __name__ == '__main__':
                                 st.markdown("""<hr style="height:1px;border:none;color:#F1F1F1;background-color:#F1F1F1;" /> """, unsafe_allow_html=True)
                                 st.markdown("""<h3 style="text-align:left;"><b>Authors Information</b></h3>""", unsafe_allow_html=True)
                                 st.session_state['dict_dfs'] = article_authors_information(st, st.session_state['dict_dfs'])
-                                st.session_state['dict_dfs'] = plot_maps(st, st.session_state['dict_dfs'])
+                                st.session_state['dict_dfs'] = plot_maps(st, st.session_state['dict_dfs'])                                
+                                c1, c2 = st.columns([4,6])
+                                with c1:
+                                    years_plot_article(st, st.session_state['dict_dfs'])
+
                                 
                         with st.container():
                             with st.spinner('📄➞📄  Citation Information...'):
