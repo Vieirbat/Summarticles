@@ -1641,7 +1641,9 @@ def years_plot_article(st, dict_dfs):
     df_year = pd.DataFrame({'year':data_year.index, 
                             'article_count':data_year.values})
 
-    fig = px.pie(df_year, 
+    fig = px.pie(df_year,
+                height=500,
+                width=500,
                 values='article_count', 
                 names='year',
                 title='Number of Articles by Year',
@@ -1780,8 +1782,108 @@ def article_authors_information(st, dict_dfs):
         # fig.show()
         
     return dict_dfs
+
+
+def table_author_contrib(st, dict_dfs):
+    """"""
+
+    from itertools import permutations, combinations
+
+    if "authors_contrib" not in dict_dfs:
+        
+        dict_dfs["authors_contrib"] = {}
+    
+        df_articles = dict_dfs['df_doc_authors'].reset_index()
+        list_colab = []
+        for article_id in df_articles.article_id.unique():
+            df_aux = df_articles.loc[df_articles.article_id==article_id].copy()
+            list_authors = df_aux.full_name_author.to_list()
+            
+            list_permut = []
+            if len(list_authors) >= 2:
+                for i in list(range(2,3,1)):
+                    list_permut += list(permutations(list_authors,i))
+            
+            list_colab += list_permut
+
+        colab = pd.value_counts(list_colab)
+
+        list_colab = []
+        for i, tup in enumerate(colab.index):
+            dictColab = {}
+            source, target = tup
+            dictColab['source'] = source
+            dictColab['target'] = target
+            dictColab['value'] = colab[i]
+            list_colab.append(dictColab)
+
+        df_colab = pd.DataFrame(list_colab)
+        df_colab = df_colab.loc[(df_colab.source!=df_colab.target)].copy()
+        df_colab = df_colab.sort_values(by=['value'], ascending=False)
+
+        filter_comb = ~df_colab[['source', 'target']].apply(frozenset, axis=1).duplicated()
+        df_colab = df_colab.loc[filter_comb]
+        
+        dict_dfs["authors_contrib"]["df_colab"] = df_colab
+
+        # matrix_colab = df_colab.pivot_table(columns=['target'], index=['source'], values=["value"])
+        # matrix_colab = matrix_colab.fillna(0)
+    
+    AgGrid(dict_dfs["authors_contrib"]["df_colab"].head(30),
+            data_return_mode='AS_INPUT', 
+            fit_columns_on_grid_load=False,
+            enable_enterprise_modules=False,
+            height=400, 
+            width='100%',
+            reload_data=True)
+
+    return dict_dfs
+
+
+def plot_top_contrib(st, dict_dfs):
+    """"""
+    
+    import holoviews as hv # '1.15.0'
+    from holoviews import opts, dim 
+    from bokeh.sampledata.les_mis import data
+    hv.extension('bokeh') # '2.4.3'
+    
+    if "authors_contrib_plot" not in dict_dfs['authors_contrib']:
+
+        df_source = dict_dfs["authors_contrib"]["df_colab"].loc[:,['source','value']].rename(columns={'source':'name'})
+        df_target = dict_dfs["authors_contrib"]["df_colab"].loc[:,['target','value']].rename(columns={'target':'name'})
+        df_nodes = pd.concat([df_source, df_target])
+        df_nodes = df_nodes.drop_duplicates()
+        df_nodes = df_nodes.reset_index()
+        
+        sample = dict_dfs["authors_contrib"]["df_colab"].head(10)
+
+        names = list(set(sample["source"].tolist() + sample["target"].tolist()))
+        df_names = hv.Dataset(pd.DataFrame(names, columns=["name"]))
+
+        nodes = hv.Dataset(df_nodes, 'index')
+
+        chord = hv.Chord((sample, df_names))
+        
+        dict_dfs['authors_contrib']["authors_contrib_plot"] = chord
     
     
+    dict_dfs['authors_contrib']["authors_contrib_plot"].opts(
+        opts.Chord(height=700,
+                    width=700,
+                    title="Top Authors Work Together",
+                    cmap='Category20',
+                    edge_cmap='Category20',
+                    edge_color="source", 
+                    labels='name',
+                    node_color="name",
+                    node_size=20, 
+                    edge_alpha=0.8))
+    
+    st.bokeh_chart(hv.render(dict_dfs['authors_contrib']["authors_contrib_plot"], backend='bokeh'))
+        
+    return dict_dfs
+
 
 ###############################################################################################
 # ---------------------------------------------------------------------------------------------
@@ -1946,10 +2048,15 @@ if __name__ == '__main__':
                                 st.markdown("""<h3 style="text-align:left;"><b>Authors Information</b></h3>""", unsafe_allow_html=True)
                                 st.session_state['dict_dfs'] = article_authors_information(st, st.session_state['dict_dfs'])
                                 st.session_state['dict_dfs'] = plot_maps(st, st.session_state['dict_dfs'])                                
-                                c1, c2 = st.columns([4,6])
+                                c1, _, c2 = st.columns([0.5,0.08,0.42])
                                 with c1:
                                     years_plot_article(st, st.session_state['dict_dfs'])
-
+                                with c2:
+                                    st.markdown("""<br><b>Authors Work Together Table</b>""", unsafe_allow_html=True)
+                                    st.session_state['dict_dfs'] = table_author_contrib(st, st.session_state['dict_dfs'])
+                                _, c1, _ = st.columns([0.1,0.6,0.2])
+                                with c1:
+                                    st.session_state['dict_dfs'] = plot_top_contrib(st, st.session_state['dict_dfs'])
                                 
                         with st.container():
                             with st.spinner('📄➞📄  Citation Information...'):
