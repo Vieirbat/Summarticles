@@ -247,7 +247,7 @@ def make_head(st):
     st.set_page_config(
         page_title="Summarticles",
         page_icon="📑", # https://www.freecodecamp.org/news/all-emojis-emoji-list-for-copy-and-paste/, https://share.streamlit.io/streamlit/emoji-shortcodes
-        layout="wide", # centered
+        layout="wide", # centered wide
         initial_sidebar_state="collapsed", #collapsed #auto #expanded
         menu_items={"About":"https://github.com/Vieirbat/PGC",
                     "Get help":"https://github.com/Vieirbat/PGC",
