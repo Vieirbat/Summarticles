@@ -247,7 +247,7 @@ def make_head(st):
     st.set_page_config(
         page_title="Summarticles",
         page_icon="📑", # https://www.freecodecamp.org/news/all-emojis-emoji-list-for-copy-and-paste/, https://share.streamlit.io/streamlit/emoji-shortcodes
-        layout="wide", # centered
+        layout="wide", # centered wide
         initial_sidebar_state="collapsed", #collapsed #auto #expanded
         menu_items={"About":"https://github.com/Vieirbat/PGC",
                     "Get help":"https://github.com/Vieirbat/PGC",
@@ -884,9 +884,9 @@ def text_preparation(st, dict_dfs, input_folder_path):
     return dict_dfs
 
 
-def generate_keywords(st, dict_dfs):
+def generate_keywords(st, dict_dfs, num_keywords=20):
     
-    """"""
+    """Keywords tables."""
     
     if 'keywords' not in dict_dfs:
         
@@ -902,13 +902,13 @@ def generate_keywords(st, dict_dfs):
 
         list_keywordsdf = []
         list_keywordsdf_article = []
-        for i, row in docs.head(20).iterrows():
+        for i, row in docs.iterrows():
             
             doc = str(row[text_column])
             id = row[id_column]
             
             # keywords_unigram = kw_model.extract_keywords(doc, keyphrase_ngram_range=(1, 1), stop_words='english', highlight=False, top_n=10)
-            kw_extractor  = yake.KeywordExtractor(lan='en', n=1, dedupLim=0.9, dedupFunc='seqm', windowsSize=1, top='20', features=None)
+            kw_extractor  = yake.KeywordExtractor(lan='en', n=1, dedupLim=0.9, dedupFunc='seqm', windowsSize=1, top=num_keywords, features=None)
             keywords_unigram = kw_extractor.extract_keywords(doc)
             if len(keywords_unigram):
                 df_unigram = pd.DataFrame([{'keyword':v[0],'value':v[1]} for v in keywords_unigram])
@@ -916,7 +916,7 @@ def generate_keywords(st, dict_dfs):
                 df_unigram = pd.DataFrame([], columns=['keyword','value'])
 
             # keywords_bigram = kw_model.extract_keywords(doc, keyphrase_ngram_range=(2, 2), stop_words='english', highlight=False, top_n=10)
-            kw_extractor  = yake.KeywordExtractor(lan='en', n=2, dedupLim=0.9, dedupFunc='seqm', windowsSize=1, top='20', features=None)
+            kw_extractor  = yake.KeywordExtractor(lan='en', n=2, dedupLim=0.9, dedupFunc='seqm', windowsSize=1, top=num_keywords, features=None)
             keywords_bigram = kw_extractor.extract_keywords(doc)
             if len(keywords_bigram):
                 df_bigram = pd.DataFrame([{'keyword':v[0],'value':v[1]} for v in keywords_bigram])
@@ -924,7 +924,7 @@ def generate_keywords(st, dict_dfs):
                 df_bigram = pd.DataFrame([], columns=['keyword','value'])
 
             # keywords_trigam = kw_model.extract_keywords(doc, keyphrase_ngram_range=(3, 3), stop_words='english', highlight=False, top_n=10)
-            kw_extractor  = yake.KeywordExtractor(lan='en', n=3, dedupLim=0.9, dedupFunc='seqm', windowsSize=1, top='20', features=None)
+            kw_extractor  = yake.KeywordExtractor(lan='en', n=3, dedupLim=0.9, dedupFunc='seqm', windowsSize=1, top=num_keywords, features=None)
             keywords_trigam = kw_extractor.extract_keywords(doc)
             if len(keywords_trigam):
                 df_trigram = pd.DataFrame([{'keyword':v[0],'value':v[1]} for v in keywords_trigam])
@@ -1625,7 +1625,39 @@ def article_citation_information(st, dict_dfs):
         st.markdown(body, unsafe_allow_html=True)
     
     return dict_dfs
+
+
+def years_plot_article(st, dict_dfs):
     
+    import plotly.express as px
+
+    df_doc_head = dict_dfs['df_doc_head']
+    df_doc_info = dict_dfs['df_doc_info'].loc[:,getColumnsWithData(dict_dfs['df_doc_info'])]
+    df_doc_info_head = df_doc_info.join(df_doc_head, how='left')
+    df_doc_info_head.date_head = df_doc_info_head.date_head.apply(lambda e: pd.to_datetime(e))
+    df_doc_info_head['year'] = df_doc_info_head.date_head.apply(lambda e: e if pd.isna(e) else int(e.year))
+    df_doc_info_head.year.fillna('Null Value', inplace=True)
+    data_year = df_doc_info_head.year.value_counts()
+    df_year = pd.DataFrame({'year':data_year.index, 
+                            'article_count':data_year.values})
+
+    fig = px.pie(df_year,
+                height=500,
+                width=500,
+                values='article_count', 
+                names='year',
+                title='Number of Articles by Year',
+                hover_data=['year'], 
+                labels={'values':'Percentage',
+                        'year':'Year of Article',
+                        'article_count':'Number of Articles'},
+                hole=.5)
+
+    fig.update_traces(textposition='inside', textinfo='percent+label')
+    fig.update_layout(showlegend=False)
+    st.plotly_chart(fig)
+    # fig.show()
+
 
 def plot_maps(st, dict_dfs):
     """Plot folium maps."""
@@ -1653,15 +1685,15 @@ def plot_maps(st, dict_dfs):
     
     _, col1, _ = st.columns([0.75,3,0.1])
     with st.container():
-        # with col1:
-            # map = folium.Map(location=[25.552354,14.814465], zoom_start=1.5)
-            # heat_points = []
-            # for i,row in df_country_agg.iterrows():
-            #     heat_points.append([row['Latitude'], row['Longitude'], row['count']])
-            #     folium.Marker([row['Latitude'], row['Longitude']],
-            #                 popup="<i>Number of Authors {0}<i>".format(row['count']),
-            #                 tooltip=f"Number of Authors {row['count']}").add_to(map)
-            #     st_point_map = st_folium(map)
+    #     # with col1:
+    #         # map = folium.Map(location=[25.552354,14.814465], zoom_start=1.5)
+    #         # heat_points = []
+    #         # for i,row in df_country_agg.iterrows():
+    #         #     heat_points.append([row['Latitude'], row['Longitude'], row['count']])
+    #         #     folium.Marker([row['Latitude'], row['Longitude']],
+    #         #                 popup="<i>Number of Authors {0}<i>".format(row['count']),
+    #         #                 tooltip=f"Number of Authors {row['count']}").add_to(map)
+    #         #     st_point_map = st_folium(map)
         with col1:
             map = folium.Map(location=[25.552354,14.814465], zoom_start=1)
             heat_points = []
@@ -1750,8 +1782,108 @@ def article_authors_information(st, dict_dfs):
         # fig.show()
         
     return dict_dfs
+
+
+def table_author_contrib(st, dict_dfs):
+    """"""
+
+    from itertools import permutations, combinations
+
+    if "authors_contrib" not in dict_dfs:
+        
+        dict_dfs["authors_contrib"] = {}
+    
+        df_articles = dict_dfs['df_doc_authors'].reset_index()
+        list_colab = []
+        for article_id in df_articles.article_id.unique():
+            df_aux = df_articles.loc[df_articles.article_id==article_id].copy()
+            list_authors = df_aux.full_name_author.to_list()
+            
+            list_permut = []
+            if len(list_authors) >= 2:
+                for i in list(range(2,3,1)):
+                    list_permut += list(permutations(list_authors,i))
+            
+            list_colab += list_permut
+
+        colab = pd.value_counts(list_colab)
+
+        list_colab = []
+        for i, tup in enumerate(colab.index):
+            dictColab = {}
+            source, target = tup
+            dictColab['source'] = source
+            dictColab['target'] = target
+            dictColab['value'] = colab[i]
+            list_colab.append(dictColab)
+
+        df_colab = pd.DataFrame(list_colab)
+        df_colab = df_colab.loc[(df_colab.source!=df_colab.target)].copy()
+        df_colab = df_colab.sort_values(by=['value'], ascending=False)
+
+        filter_comb = ~df_colab[['source', 'target']].apply(frozenset, axis=1).duplicated()
+        df_colab = df_colab.loc[filter_comb]
+        
+        dict_dfs["authors_contrib"]["df_colab"] = df_colab
+
+        # matrix_colab = df_colab.pivot_table(columns=['target'], index=['source'], values=["value"])
+        # matrix_colab = matrix_colab.fillna(0)
+    
+    AgGrid(dict_dfs["authors_contrib"]["df_colab"].head(30),
+            data_return_mode='AS_INPUT', 
+            fit_columns_on_grid_load=False,
+            enable_enterprise_modules=False,
+            height=400, 
+            width='100%',
+            reload_data=True)
+
+    return dict_dfs
+
+
+def plot_top_contrib(st, dict_dfs):
+    """"""
+    
+    import holoviews as hv # '1.15.0'
+    from holoviews import opts, dim 
+    from bokeh.sampledata.les_mis import data
+    hv.extension('bokeh') # '2.4.3'
+    
+    if "authors_contrib_plot" not in dict_dfs['authors_contrib']:
+
+        df_source = dict_dfs["authors_contrib"]["df_colab"].loc[:,['source','value']].rename(columns={'source':'name'})
+        df_target = dict_dfs["authors_contrib"]["df_colab"].loc[:,['target','value']].rename(columns={'target':'name'})
+        df_nodes = pd.concat([df_source, df_target])
+        df_nodes = df_nodes.drop_duplicates()
+        df_nodes = df_nodes.reset_index()
+        
+        sample = dict_dfs["authors_contrib"]["df_colab"].head(10)
+
+        names = list(set(sample["source"].tolist() + sample["target"].tolist()))
+        df_names = hv.Dataset(pd.DataFrame(names, columns=["name"]))
+
+        nodes = hv.Dataset(df_nodes, 'index')
+
+        chord = hv.Chord((sample, df_names))
+        
+        dict_dfs['authors_contrib']["authors_contrib_plot"] = chord
     
     
+    dict_dfs['authors_contrib']["authors_contrib_plot"].opts(
+        opts.Chord(height=700,
+                    width=700,
+                    title="Top Authors Work Together",
+                    cmap='Category20',
+                    edge_cmap='Category20',
+                    edge_color="source", 
+                    labels='name',
+                    node_color="name",
+                    node_size=20, 
+                    edge_alpha=0.8))
+    
+    st.bokeh_chart(hv.render(dict_dfs['authors_contrib']["authors_contrib_plot"], backend='bokeh'))
+        
+    return dict_dfs
+
 
 ###############################################################################################
 # ---------------------------------------------------------------------------------------------
@@ -1915,7 +2047,16 @@ if __name__ == '__main__':
                                 st.markdown("""<hr style="height:1px;border:none;color:#F1F1F1;background-color:#F1F1F1;" /> """, unsafe_allow_html=True)
                                 st.markdown("""<h3 style="text-align:left;"><b>Authors Information</b></h3>""", unsafe_allow_html=True)
                                 st.session_state['dict_dfs'] = article_authors_information(st, st.session_state['dict_dfs'])
-                                st.session_state['dict_dfs'] = plot_maps(st, st.session_state['dict_dfs'])
+                                st.session_state['dict_dfs'] = plot_maps(st, st.session_state['dict_dfs'])                                
+                                c1, _, c2 = st.columns([0.5,0.08,0.42])
+                                with c1:
+                                    years_plot_article(st, st.session_state['dict_dfs'])
+                                with c2:
+                                    st.markdown("""<br><b>Authors Work Together Table</b>""", unsafe_allow_html=True)
+                                    st.session_state['dict_dfs'] = table_author_contrib(st, st.session_state['dict_dfs'])
+                                _, c1, _ = st.columns([0.1,0.6,0.2])
+                                with c1:
+                                    st.session_state['dict_dfs'] = plot_top_contrib(st, st.session_state['dict_dfs'])
                                 
                         with st.container():
                             with st.spinner('📄➞📄  Citation Information...'):

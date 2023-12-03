@@ -399,10 +399,10 @@ class xmltei_to_dataframe(object):
         try:
             
             dict_dataframes = {'df_doc_info':[],
-                            'df_doc_head':[],
-                            'df_doc_authors':[],
-                            'df_doc_citations':[],
-                            'df_doc_authors_citations':[]}
+                                'df_doc_head':[],
+                                'df_doc_authors':[],
+                                'df_doc_citations':[],
+                                'df_doc_authors_citations':[]}
             dict_erros = {}
             
             if bath_process_result or len(bath_process_result):
