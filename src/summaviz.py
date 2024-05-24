@@ -3,6 +3,8 @@ import pandas as pd
 import os
 import plotly.express as px
 
+
+
 import shutil
 
 # import spacy
@@ -12,11 +14,10 @@ from st_aggrid import AgGrid
 
 import holoviews as hv # '1.15.0'
 from holoviews import opts, dim 
-from bokeh.sampledata.les_mis import data
 
 import streamlit.components.v1 as components
 
-hv.extension('bokeh') # '2.4.3'
+# hv.extension('bokeh') # '2.4.3'
 
 
 from streamlit_folium import st_folium, folium_static
@@ -386,9 +387,9 @@ def clustering_2d(st, dict_dfs, tmining, title_text="Group Articles", n_componen
     
     if "cluster_reduce_dim" not in dict_dfs['clustering_data']:
         dictRedDim, y = tmining.reduce_dimensionality(dict_dfs['clustering_data']["clustering_data_2d"]['df_tfidf_abstract_abs'], 
-                                                    y=dict_dfs['clustering_data']['cluster_label'],
-                                                    n_components=n_components
-                                                    ), dict_dfs['clustering_data']['cluster_label']
+                                                      y=dict_dfs['clustering_data']['cluster_label'],
+                                                      n_components=n_components
+                                                      ), dict_dfs['clustering_data']['cluster_label']
         dict_dfs['clustering_data']['cluster_reduce_dim'] = dictRedDim
 
     dict_dfs['df_doc_info']['file_name'] = dict_dfs['df_doc_info']['file'].apply(lambda e: os.path.split(e)[-1])
@@ -449,8 +450,8 @@ def show_graph(st, graph, path_graph, path_folder_graph, text_spinner='👁‍�
     
     """"""
     
-    path = os.path.dirname(os.getcwd())
-    path_graph_depend = os.path.join(path,'notebooks','graph','pyvis','templates','dependencies')
+    path = os.getcwd()
+    path_graph_depend = os.path.join(path,'graph','pyvis','templates','dependencies')
     path_depend_dst = os.path.join(path_folder_graph,'dependencies')
     
     if not os.path.exists(path_depend_dst):

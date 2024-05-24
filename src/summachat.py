@@ -2,6 +2,7 @@
 # O streamlit chat é um plugin do Streamlit para criar chats
 # Já vem com uma coleção de utilitários para chat no streamlit
 # https://github.com/AI-Yash/st-chat
+
 from streamlit_chat import message
 
 # ------------------------------------------------------------------------------------------------------
@@ -46,7 +47,7 @@ from langchain.embeddings import HuggingFaceEmbeddings
 # llama-cpp-python é uma ligação Python para llama.cpp .
 # Ele suporta inferência para muitos modelos de LLMs, que podem ser acessados ​​em Hugging Face .
 
-from langchain.llms import LlamaCpp
+from langchain_community.llms import LlamaCpp # pip install langchain-community --upgrade
 
 # --------------------------------------------------------------------------------------------------------
 # Este divisor de texto é o recomendado para texto genérico. É parametrizado por uma lista de caracteres. 
@@ -76,7 +77,7 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 # Isso é útil porque significa que podemos pensar no texto no espaço vetorial e fazer coisas como pesquisa semântica,
 # onde procuramos trechos de texto mais semelhantes no espaço vetorial.
 
-from langchain.vectorstores import FAISS
+from langchain_community.vectorstores import FAISS
 
 # --------------------------------------------------------------------------------------------------------
 # A maioria dos aplicativos LLM possui uma interface conversacional. 
@@ -91,9 +92,11 @@ from langchain.vectorstores import FAISS
 
 from langchain.memory import ConversationBufferMemory
 
+from langchain_core.documents.base import Document
+
 # --------------------------------------------------------------------------------------------------------
 # A biblioteca abaixo é para ler dados de pdfs
-from langchain.document_loaders import PyPDFLoader
+# from langchain.document_loaders import PyPDFLoader
 
 # OS é uma biblioteca para utilização de recursos do SO
 import os
@@ -108,7 +111,7 @@ def conversation_chat(query, chain, history):
     return result["answer"]
 
 
-def display_chat_history(chain, st):
+def display_chat_history(st, chain):
     reply_container = st.container()
     container = st.container()
 
@@ -147,3 +150,44 @@ def create_conversational_chain(vector_store, llm):
                                                  retriever=vector_store.as_retriever(search_kwargs={"k": 2}),
                                                  memory=memory)
     return chain
+
+
+def load_llm_model(model_paph="llama-2-7b-chat.Q2_K.gguf"):
+    
+    llm = LlamaCpp(streaming=True,
+                   model_path=model_paph, # "llama-2-7b-chat.Q5_K_S.gguf", #"mistral-7b-instruct-v0.1.Q4_K_M.gguf",
+                   temperature=0.7,
+                   tfs=0.95,
+                   top_p=1, 
+                   verbose=True,
+                   n_ctx=10240,
+                   top_k=0)
+    
+    return llm
+
+
+def make_vector_store(docs):
+    
+    article_data = tuple(zip(docs['df_doc_info']['abstract'], docs['df_doc_info']['body']))
+    article_text = []
+    for i, texts in article_data:
+        # make document for langchain
+        doc_str = ' '.join(texts)
+        doc = Document(page_content=doc_str)
+        article_text.append(doc)
+    
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=10000, chunk_overlap=20)
+    text_chunks = text_splitter.split_documents(article_text)
+
+    # Create embeddings
+    # model_id = "sentence-transformers/multi-qa-MiniLM-L6-cos-v1"  
+    # model_id = "sentence-transformers/all-MiniLM-L6-v2"
+    
+    model_id = "sentence-transformers/paraphrase-MiniLM-L3-v2"
+    embeddings = HuggingFaceEmbeddings(model_name=model_id, 
+                                       model_kwargs={'device': 'cpu'})
+
+    # Create vector store
+    vector_store = FAISS.from_documents(text_chunks, embedding=embeddings)
+    
+    return vector_store

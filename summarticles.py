@@ -3,17 +3,19 @@ import sys
 
 sys.path.insert(0,os.path.dirname(os.getcwd()))
 sys.path.insert(0,os.path.join(os.getcwd(),'grobid'))
+sys.path.insert(0,os.path.join(os.getcwd(),'src'))
 sys.path.insert(0,os.getcwd())
 
 from grobid import grobid_client
 from grobid_to_dataframe import grobid_cli, xmltei_to_dataframe
-from text import text_prep, text_mining, text_viz
+from text import *
+# from text import text_prep, text_mining, text_viz
 
 import tkinter as tk
 
 import streamlit as st
 
-import networkx as nx
+# import networkx as nx
 import matplotlib.pyplot as plt
 from graph.pyvis.network import Network
 
@@ -21,9 +23,18 @@ from summautils import *
 from summaetl import *
 from summacomponents import *
 from summaviz import *
-# from summachat import *
+from summachat import *
 
-from st_aggrid import AgGrid
+from st_aggrid import AgGrid # pip install streamlit-aggrid
+
+# pip install pandas
+# pip install numpy
+# pip install streamlit-folium
+# pyvis
+# plotly
+# pip install --force-reinstall --no-deps holoviews==1.15.0
+# pip install --force-reinstall --no-deps bokeh==2.4.1
+# pip install streamlit-chat
 
 
 # --------------------------------------------------------------------------------------------------------
@@ -33,9 +44,11 @@ from st_aggrid import AgGrid
 # docker run -t --rm --init -p 8080:8070 -p 8081:8071 lfoppiano/grobid:0.6.2
 
 path = os.path.dirname(os.getcwd())
+path = os.getcwd()
+print(path)
 global input_path
 
-gcli = grobid_client.GrobidClient(config_path=os.path.join(path,"grobid/config.json"))
+gcli = grobid_client.GrobidClient(config_path=os.path.join(path,"grobid","config.json"))
 
 
 
@@ -298,8 +311,9 @@ if __name__ == '__main__':
                                     st.markdown("""<br><b>Authors Work Together Table</b>""", unsafe_allow_html=True)
                                     st.session_state['dict_dfs'] = table_author_contrib(st, st.session_state['dict_dfs'])
                                 _, c1, _ = st.columns([0.1,0.6,0.2])
-                                with c1:
-                                    st.session_state['dict_dfs'] = plot_top_contrib(st, st.session_state['dict_dfs'])
+                                
+                                # with c1:
+                                #     st.session_state['dict_dfs'] = plot_top_contrib(st, st.session_state['dict_dfs'])
                                 
                         with st.container():
                             with st.spinner('📄➞📄  Citation Information...'):
@@ -386,7 +400,7 @@ if __name__ == '__main__':
                                     with c2:
                                         with st.container():
                                             st.session_state['rb_reddim'] = st.radio("Select Data Projection Algorithm:",
-                                                                                    ('PCA', 'UMAP', 'MDS', 'TSNE'),
+                                                                                    ('PCA', 'UMAP', 'MDS'), #, 'TSNE'),
                                                                                     horizontal=True,
                                                                                     help="Choose one of these algorithms for groups data projection!")
                                         st.session_state['dict_dfs'] = clustering_2d(st, st.session_state['dict_dfs'], 
@@ -454,15 +468,38 @@ if __name__ == '__main__':
                         
                     #     display_chat_history(chain)
                     
+                    with st.container():
+                        
+                        with st.spinner('📄➞📄  Loading SummaChat...'):
+                            
+                            st.markdown("""<hr style="height:1px;border:none;color:#F1F1F1;background-color:#F1F1F1;" /> """, unsafe_allow_html=True)
+                            st.markdown("""<h3 style="text-align:left;"><b>SummaChat</b></h3>""", unsafe_allow_html=True)
+                            
+                            with st.expander("How it works?"):
+                                st.write("""Using abstract deep learning with LLMs.""")
+                                
+                            with st.container():
+                                
+                                with st.spinner('📄➞📄  Creating Vector Store...'):
+                                    vector_store = make_vector_store(st.session_state['dict_dfs'])
+                                
+                                with st.spinner('📄➞📄  Loading LLM Model...'):
+                                    model_file_name = "llama-2-7b-chat.Q2_K.gguf"
+                                    path_llm = os.path.join(path,"models",model_file_name)
+                                    llm_model = load_llm_model(model_paph=path_llm)
+                                
+                                chain = create_conversational_chain(vector_store, llm_model)
+                                display_chat_history(st, chain)
+                    
                                 
     if st.session_state['dict_dfs'] and st.session_state['save_execution']:
                              
-        write_previous_execution(st, st.session_state['dict_dfs'], 
-                                 st.session_state['input_path'],
-                                 file_name="report_summarticles",
-                                 ext_file='summa',
-                                 cache_folder_name='summarticles_cache', 
-                                 folder_execs='summa_files')
+        # write_previous_execution(st, st.session_state['dict_dfs'], 
+        #                          st.session_state['input_path'],
+        #                          file_name="report_summarticles",
+        #                          ext_file='summa',
+        #                          cache_folder_name='summarticles_cache', 
+        #                          folder_execs='summa_files')
         
         st.session_state['save_execution'] = False
         
