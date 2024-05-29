@@ -93,8 +93,4 @@ target/
 
 .gguf
 
-<<<<<<< HEAD
 *.gguf
-=======
-*.gguf
->>>>>>> 7b465ce9bd38a932db4e29aa4716e69b46852107
