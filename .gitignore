@@ -92,3 +92,5 @@ target/
 .pdf
 
 .gguf
+
+*.gguf
