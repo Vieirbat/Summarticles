@@ -1,9 +1,15 @@
-import nltk
-import re
 import os
 import sys
+
+sys.path.insert(0,os.path.dirname(os.getcwd()))
+sys.path.insert(0,os.path.join(os.getcwd(),'grobid'))
+sys.path.insert(0,os.getcwd())
+
+import nltk
+import re
 import pandas as pd
 import numpy as np
+
 #import spacy
 #import corenlp
 #import textblob
@@ -17,18 +23,14 @@ import random
 
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
-from sklearn.cluster import KMeans, MiniBatchKMeans, AgglomerativeClustering, DBSCAN, OPTICS
+from sklearn.cluster import KMeans # MiniBatchKMeans, AgglomerativeClustering, DBSCAN, OPTICS
 from sklearn.metrics import silhouette_score, calinski_harabasz_score, davies_bouldin_score
-from umap import UMAP
+from umap import UMAP # pip install umap-learn
 from sklearn.manifold import TSNE
 from sklearn.decomposition import PCA
 from sklearn.manifold import MDS
 
 from graph.pyvis.network import Network
-
-sys.path.insert(0,os.path.dirname(os.getcwd()))
-sys.path.insert(0,os.path.join(os.getcwd(),'grobid'))
-sys.path.insert(0,os.getcwd())
 
 # nltk.download('punkt')
 # nltk.download('stopwords')
@@ -167,7 +169,7 @@ class text_mining(object):
         obj_bow = obj_bow.fit(raw_documents=documents_list)
         bow_matrix = obj_bow.transform(documents_list)
         bow_matrix = bow_matrix.todense()
-        df_bow = pd.DataFrame(bow_matrix, columns=obj_bow.get_feature_names())
+        df_bow = pd.DataFrame(bow_matrix, columns=obj_bow.get_feature_names_out())
         
         return df_bow
 
@@ -200,7 +202,7 @@ class text_mining(object):
         obj_tfidf = obj_tfidf.fit(raw_documents=documents_list)
         tfidf_matrix = obj_tfidf.transform(documents_list)
         tfidf_matrix = tfidf_matrix.todense()
-        df_tfidf = pd.DataFrame(tfidf_matrix, columns=obj_tfidf.get_feature_names())
+        df_tfidf = pd.DataFrame(tfidf_matrix, columns=obj_tfidf.get_feature_names_out())
         
         return df_tfidf
     
@@ -532,10 +534,10 @@ class text_mining(object):
 
         dictReduceDim = {}
     
-        # TSNE
-        objTSNE = TSNE(n_components=n_components, init='random')
-        X_reduce = objTSNE.fit_transform(X)
-        dictReduceDim['TSNE'] = X_reduce
+        # # TSNE
+        # objTSNE = TSNE(n_components=n_components, init='random')
+        # X_reduce = objTSNE.fit_transform(X)
+        # dictReduceDim['TSNE'] = X_reduce
         
         # PCA
         objPCA = PCA(n_components=n_components, random_state =0)
