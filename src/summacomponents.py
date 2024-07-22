@@ -4,6 +4,9 @@ import pandas as pd
 import os
 import re
 import nltk
+
+nltk.download('stopwords')
+
 import plotly.express as px
 from tkinter import filedialog
 
@@ -94,7 +97,7 @@ def show_macro_numbers(st, dict_dfs):
 def show_text_numbers(st, dict_dfs, tprep):
     
     """"""
-    
+    print(dict_dfs.keys())
     if not checkey(dict_dfs,'show_text_numbers'):
     
         dict_dfs['show_text_numbers'] = {}
@@ -117,6 +120,8 @@ def show_text_numbers(st, dict_dfs, tprep):
         else:
             documents_body = dict_dfs['show_text_numbers']['documents_body']
     
+    print(dict_dfs.keys())
+    print(dict_dfs['show_text_numbers']['documents_all_text'][0][0:50])
     # ------------------------------------------------------------------------
     # Making stats
     
@@ -139,6 +144,8 @@ def show_text_numbers(st, dict_dfs, tprep):
         dict_agg_stats['num_max_words'] = df_articles_stats['num_words'].max()
 
         # num_words_unique
+        print('PALAVRAS ÚNICAS',df_articles_stats['num_words_unique'])
+        print('PALAVRAS ÚNICAS',df_articles_stats['num_words_unique'].sum())
         dict_agg_stats['num_total_words_unique'] = df_articles_stats['num_words_unique'].sum()
         dict_agg_stats['num_mean_words_unique'] = df_articles_stats['num_words_unique'].mean()
         dict_agg_stats['num_min_words_unique'] = df_articles_stats['num_words_unique'].min()
@@ -222,6 +229,7 @@ def show_text_numbers(st, dict_dfs, tprep):
             col1.metric("🔠 Total Words", str(dict_agg_stats['num_total_words']))
             col1.metric("🔢 Mean Words per Article", str(round(dict_agg_stats['num_mean_words'],1)))
         with col2:
+            print('PRINT AQUI: ',str(dict_agg_stats['num_total_words_unique']))
             col2.metric("🆕 Total Unique Words", str(dict_agg_stats['num_total_words_unique']))
             col2.metric("🔢 Mean Unique Words per Article", str(round(dict_agg_stats['num_mean_words_unique'],1)))
         with col3:

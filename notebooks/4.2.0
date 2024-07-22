@@ -1,0 +1,20 @@
+Collecting nbformat
+  Obtaining dependency information for nbformat from https://files.pythonhosted.org/packages/a9/82/0340caa499416c78e5d8f5f05947ae4bc3cba53c9f038ab6e9ed964e22f1/nbformat-5.10.4-py3-none-any.whl.metadata
+  Downloading nbformat-5.10.4-py3-none-any.whl.metadata (3.6 kB)
+Collecting fastjsonschema>=2.15 (from nbformat)
+  Obtaining dependency information for fastjsonschema>=2.15 from https://files.pythonhosted.org/packages/6d/ca/086311cdfc017ec964b2436fe0c98c1f4efcb7e4c328956a22456e497655/fastjsonschema-2.20.0-py3-none-any.whl.metadata
+  Downloading fastjsonschema-2.20.0-py3-none-any.whl.metadata (2.1 kB)
+Requirement already satisfied: jsonschema>=2.6 in c:\users\danie\appdata\local\programs\python\python312\lib\site-packages (from nbformat) (4.21.1)
+Requirement already satisfied: jupyter-core!=5.0.*,>=4.12 in c:\users\danie\appdata\roaming\python\python312\site-packages (from nbformat) (5.7.2)
+Requirement already satisfied: traitlets>=5.1 in c:\users\danie\appdata\local\programs\python\python312\lib\site-packages (from nbformat) (5.14.3)
+Requirement already satisfied: attrs>=22.2.0 in c:\users\danie\appdata\local\programs\python\python312\lib\site-packages (from jsonschema>=2.6->nbformat) (23.2.0)
+Requirement already satisfied: jsonschema-specifications>=2023.03.6 in c:\users\danie\appdata\local\programs\python\python312\lib\site-packages (from jsonschema>=2.6->nbformat) (2023.12.1)
+Requirement already satisfied: referencing>=0.28.4 in c:\users\danie\appdata\local\programs\python\python312\lib\site-packages (from jsonschema>=2.6->nbformat) (0.34.0)
+Requirement already satisfied: rpds-py>=0.7.1 in c:\users\danie\appdata\local\programs\python\python312\lib\site-packages (from jsonschema>=2.6->nbformat) (0.18.0)
+Requirement already satisfied: platformdirs>=2.5 in c:\users\danie\appdata\roaming\python\python312\site-packages (from jupyter-core!=5.0.*,>=4.12->nbformat) (4.2.2)
+Requirement already satisfied: pywin32>=300 in c:\users\danie\appdata\roaming\python\python312\site-packages (from jupyter-core!=5.0.*,>=4.12->nbformat) (306)
+Downloading nbformat-5.10.4-py3-none-any.whl (78 kB)
+   ---------------------------------------- 0.0/78.5 kB ? eta -:--:--   ---------- ----------------------------- 20.5/78.5 kB 640.0 kB/s eta 0:00:01   ------------------------------- -------- 61.4/78.5 kB 812.7 kB/s eta 0:00:01   ---------------------------------------- 78.5/78.5 kB 874.5 kB/s eta 0:00:00
+Downloading fastjsonschema-2.20.0-py3-none-any.whl (23 kB)
+Installing collected packages: fastjsonschema, nbformat
+Successfully installed fastjsonschema-2.20.0 nbformat-5.10.4

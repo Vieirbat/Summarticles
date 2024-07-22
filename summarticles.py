@@ -48,8 +48,8 @@ path = os.getcwd()
 print(path)
 global input_path
 
-gcli = grobid_client.GrobidClient(config_path=os.path.join(path,"grobid","config.json"))
 
+gcli = grobid_client.GrobidClient(config_path=os.path.join(path,"grobid","config.json"))
 
 
 def batch_process_path(path_input_path, n_workers=10, check_cache=True, cache_folder_name='summarticles_cache', config_path="./grobid/config.json"):
@@ -468,28 +468,30 @@ if __name__ == '__main__':
                         
                     #     display_chat_history(chain)
                     
-                    with st.container():
+                    # --------------------------------------------------------------------------------
+                    # SummaChat
+                    # with st.container():
                         
-                        with st.spinner('📄➞📄  Loading SummaChat...'):
+                    #     with st.spinner('📄➞📄  Loading SummaChat...'):
                             
-                            st.markdown("""<hr style="height:1px;border:none;color:#F1F1F1;background-color:#F1F1F1;" /> """, unsafe_allow_html=True)
-                            st.markdown("""<h3 style="text-align:left;"><b>SummaChat</b></h3>""", unsafe_allow_html=True)
+                    #         st.markdown("""<hr style="height:1px;border:none;color:#F1F1F1;background-color:#F1F1F1;" /> """, unsafe_allow_html=True)
+                    #         st.markdown("""<h3 style="text-align:left;"><b>SummaChat</b></h3>""", unsafe_allow_html=True)
                             
-                            with st.expander("How it works?"):
-                                st.write("""Using abstract deep learning with LLMs.""")
+                    #         with st.expander("How it works?"):
+                    #             st.write("""Using abstract deep learning with LLMs.""")
                                 
-                            with st.container():
+                    #         with st.container():
                                 
-                                with st.spinner('📄➞📄  Creating Vector Store...'):
-                                    vector_store = make_vector_store(st.session_state['dict_dfs'])
+                    #             with st.spinner('📄➞📄  Creating Vector Store...'):
+                    #                 vector_store = make_vector_store(st.session_state['dict_dfs'])
                                 
-                                with st.spinner('📄➞📄  Loading LLM Model...'):
-                                    model_file_name = "llama-2-7b-chat.Q2_K.gguf"
-                                    path_llm = os.path.join(path,"models",model_file_name)
-                                    llm_model = load_llm_model(model_paph=path_llm)
+                    #             with st.spinner('📄➞📄  Loading LLM Model...'):
+                    #                 model_file_name = "llama-2-7b-chat.Q2_K.gguf"
+                    #                 path_llm = os.path.join(path,"models",model_file_name)
+                    #                 llm_model = load_llm_model(model_paph=path_llm)
                                 
-                                chain = create_conversational_chain(vector_store, llm_model)
-                                display_chat_history(st, chain)
+                    #             chain = create_conversational_chain(vector_store, llm_model)
+                    #             display_chat_history(st, chain)
                     
                                 
     if st.session_state['dict_dfs'] and st.session_state['save_execution']:

@@ -644,19 +644,20 @@ def plot_maps(st, dict_dfs, path):
     
     df_doc_authors = dict_dfs['df_doc_authors'].loc[:,getColumnsWithData(dict_dfs['df_doc_authors'])]
     
-    path_geo = os.path.join(path,'data','external')
+    path_geo = os.path.join(path,'data','0_external')
     country_latlong = pd.read_csv(os.path.join(path_geo,'countries_lat_long.csv'), sep=';', decimal='.')
-    shapes_correct = pd.read_csv(os.path.join(path_geo,'shapes_correct.csv'), encoding='latin-1',sep=';', decimal='.')
-
 
     df_country_agg = df_doc_authors.groupby(by=['country_author'], as_index=False, dropna=True)['full_name_author'].count()
-    dictCorrectShapes = {e[0]:e[1] for e in zip(shapes_correct.convert, shapes_correct.name)}
+
+    shapes_correct = pd.read_csv(os.path.join(path_geo,'countries_correct.csv'), sep=';', decimal='.')
+    dictCorrectShapes = {e[0]:e[1] for e in zip(shapes_correct.country_name, shapes_correct.country_target)}
     df_country_agg.country_author = df_country_agg.country_author.apply(lambda e: dictCorrectShapes.get(e,e))
-    df_country_agg = df_country_agg.groupby(by=['country_author'], as_index=False)['full_name_author'].sum()
-    df_country_agg = df_country_agg.rename(columns={'country_author':'Country',
-                                                'full_name_author':'count'})
     
-    df_country_agg = df_country_agg.merge(country_latlong, how='left', on=['Country'])
+    df_country_agg = df_country_agg.rename(columns={'country_author':'country',
+                                                    'full_name_author':'count'})
+    
+    df_country_agg = df_country_agg.groupby(by=['country'], as_index=False)['count'].sum()
+    df_country_agg = df_country_agg.merge(country_latlong, how='left', on='country')
     df_country_agg = df_country_agg.dropna()
     
     _, col1, _ = st.columns([0.75,3,0.1])
@@ -674,7 +675,7 @@ def plot_maps(st, dict_dfs, path):
             map = folium.Map(location=[25.552354,14.814465], zoom_start=1)
             heat_points = []
             for i,row in df_country_agg.iterrows():
-                heat_points.append([row['Latitude'], row['Longitude'], row['count']])
+                heat_points.append([row['latitude'], row['longitude'], row['count']])
             HeatMap(heat_points, radius=40, blur=20).add_to(map)
             st_heat_map = folium_static(map, width=600, height=400)
     
