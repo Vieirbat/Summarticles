@@ -189,8 +189,9 @@ def show_text_numbers(st, dict_dfs, tprep):
     
     # Unigram
     if not checkey(dict_dfs['show_text_numbers'],'words_freq'):
-        words_freq = pd.value_counts(token_text)
-        words_freq = pd.DataFrame(words_freq,columns=['frequency'])
+        words_freq = pd.Series(token_text)
+        words_freq = words_freq.value_counts()
+        words_freq = pd.DataFrame(words_freq).rename(columns={'count':'frequency'})
         words_freq.index.name = 'unigram'
         words_freq = words_freq.reset_index()
         dict_agg_stats['num_total_words_unique'] = len(list(set(words_freq.unigram.tolist())))
@@ -202,8 +203,8 @@ def show_text_numbers(st, dict_dfs, tprep):
     # Bigram - this code can be in the prep/mining class on the text.py
     if not checkey(dict_dfs['show_text_numbers'],'df_bigram'):
         list_bigrams = list(nltk.bigrams(token_text))
-        bigram_freq = pd.value_counts(list_bigrams)
-        df_bigram = pd.DataFrame(bigram_freq, columns=['frequency'])
+        bigram_freq = pd.Series(list_bigrams).value_counts()
+        df_bigram = pd.DataFrame(bigram_freq).rename(columns={'count':'frequency'})
         df_bigram.index.name = 'bigram'
         df_bigram = df_bigram.reset_index()
         df_bigram.bigram = df_bigram.bigram.apply(f_reg)
@@ -214,8 +215,8 @@ def show_text_numbers(st, dict_dfs, tprep):
     # Trigram - this code can be in the prep/mining class on the text.py
     if not checkey(dict_dfs['show_text_numbers'],'df_trigram'):
         list_trigam = list(nltk.trigrams(token_text))
-        trigam_freq = pd.value_counts(list_trigam)
-        df_trigram = pd.DataFrame(trigam_freq, columns=['frequency'])
+        trigam_freq = pd.Series(list_trigam).value_counts()
+        df_trigram = pd.DataFrame(trigam_freq).rename(columns={'count':'frequency'})
         df_trigram.index.name = 'trigram'
         df_trigram = df_trigram.reset_index()
         df_trigram.trigram = df_trigram.trigram.apply(f_reg)
@@ -316,9 +317,8 @@ def make_sidebar(st):
         clear_all = st.button("🛑 Clear all memory and execution!", key="clear_all")
         if clear_all:
             st.session_state = {}
-            st.experimental_memo.clear()
-            st.experimental_singleton.clear()
-            st.experimental_rerun()
+            st.cache_data.clear()
+            st.rerun()
 
 
 def make_run_button(st):
@@ -495,8 +495,9 @@ def table_author_contrib(st, dict_dfs):
 
 
 def input_path_success_message(st, input_folder_path):
-    st.success(f"✔️ **In this folder path we found: {str(len(files_path(input_folder_path)))} files!** Folder path: {str(input_folder_path)}")
-    
+    files_count = len(files_path(input_folder_path))
+    st.success(f"✔️ **In this folder path we found: {str(files_count)} files!** Folder path: {str(input_folder_path)}")
+    return files_count
     
 def generate_keywords(st, dict_dfs, num_keywords=20):
     
@@ -690,9 +691,8 @@ def make_reset_button(st):
         clear_all = st.button("🔄 Reset execution!", key="reset_exec")
         if clear_all:
             st.session_state = {}
-            st.experimental_memo.clear()
-            st.experimental_singleton.clear()
-            st.experimental_rerun()
+            st.cache_data.clear()
+            st.rerun()
             
             
 def write_previous_execution(st, object, input_path, cache_folder_name='summarticles_cache', folder_execs='summa_files', file_name="report_summarticles", ext_file='summa'):

@@ -502,6 +502,8 @@ def similarity_graph(st, dict_dfs, input_folder_path, tmining, folder_graph='gra
         df_cos_tfidf_sim_filter = cossine_similarity_data(st, dict_dfs, tmining, column, n_sim, percentil,
                                                           sim_value_min, sim_value_max)
         
+        print("Saindo da cossine_similarity_data: ", df_cos_tfidf_sim_filter.shape)
+        
         dict_dfs['similarity_graph']['df_cos_tfidf_sim_filter'] = df_cos_tfidf_sim_filter
     
         df_nodes = nodes_data(st, dict_dfs, df_cos_tfidf_sim_filter)

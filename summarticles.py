@@ -36,6 +36,27 @@ from st_aggrid import AgGrid # pip install streamlit-aggrid
 # pip install --force-reinstall --no-deps bokeh==2.4.1
 # pip install streamlit-chat
 
+# python -m nltk.downloader punkt_tab
+# python -m nltk.downloader wordnet
+
+# https://stackoverflow.com/questions/77267346/error-while-installing-python-package-llama-cpp-python
+
+# sudo apt update
+# sudo apt upgrade
+# sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+# sudo apt update
+# sudo apt install gcc-11 g++-11
+
+# yum install scl-utils 
+# yum install centos-release-scl
+# # find devtoolset-11
+# yum list all --enablerepo='centos-sclo-rh' | grep "devtoolset"
+
+# yum install -y devtoolset-11-toolchain
+
+# sudo dnf install gcc
+# sudo dnf install g++
+
 
 # --------------------------------------------------------------------------------------------------------
 # --------------------------------------------------------------------------------------------------------
@@ -231,7 +252,7 @@ if __name__ == '__main__':
     
     if st.session_state['path_check'] and not st.session_state['previous_exec_check']:
         
-        input_path_success_message(st, st.session_state['input_path'])
+        files_count = input_path_success_message(st, st.session_state['input_path'])
     
         with st.spinner('⚙️ Check if there are another executions in the cache!'):
             
@@ -303,7 +324,7 @@ if __name__ == '__main__':
                                 st.markdown("""<hr style="height:1px;border:none;color:#F1F1F1;background-color:#F1F1F1;" /> """, unsafe_allow_html=True)
                                 st.markdown("""<h3 style="text-align:left;"><b>Authors Information</b></h3>""", unsafe_allow_html=True)
                                 st.session_state['dict_dfs'] = article_authors_information(st, st.session_state['dict_dfs'])
-                                st.session_state['dict_dfs'] = plot_maps(st, st.session_state['dict_dfs'], path)                                
+                                # st.session_state['dict_dfs'] = plot_maps(st, st.session_state['dict_dfs'], path)                                
                                 c1, _, c2 = st.columns([0.5,0.08,0.42])
                                 with c1:
                                     years_plot_article(st, st.session_state['dict_dfs'])
@@ -400,7 +421,7 @@ if __name__ == '__main__':
                                     with c2:
                                         with st.container():
                                             st.session_state['rb_reddim'] = st.radio("Select Data Projection Algorithm:",
-                                                                                    ('PCA', 'UMAP', 'MDS'), #, 'TSNE'),
+                                                                                    ('PCA', 'MDS'), # 'UMAP', 'TSNE'),
                                                                                     horizontal=True,
                                                                                     help="Choose one of these algorithms for groups data projection!")
                                         st.session_state['dict_dfs'] = clustering_2d(st, st.session_state['dict_dfs'], 
@@ -496,12 +517,12 @@ if __name__ == '__main__':
                                 
     if st.session_state['dict_dfs'] and st.session_state['save_execution']:
                              
-        # write_previous_execution(st, st.session_state['dict_dfs'], 
-        #                          st.session_state['input_path'],
-        #                          file_name="report_summarticles",
-        #                          ext_file='summa',
-        #                          cache_folder_name='summarticles_cache', 
-        #                          folder_execs='summa_files')
+        write_previous_execution(st, st.session_state['dict_dfs'], 
+                                 st.session_state['input_path'],
+                                 file_name="report_summarticles",
+                                 ext_file='summa',
+                                 cache_folder_name='summarticles_cache', 
+                                 folder_execs='summa_files')
         
         st.session_state['save_execution'] = False
         
