@@ -693,8 +693,8 @@ def make_reset_button(st):
             st.session_state = {}
             st.cache_data.clear()
             st.rerun()
-            
-            
+
+
 def write_previous_execution(st, object, input_path, cache_folder_name='summarticles_cache', folder_execs='summa_files', file_name="report_summarticles", ext_file='summa'):
     """"""
     path = os.path.join(input_path, cache_folder_name, folder_execs)

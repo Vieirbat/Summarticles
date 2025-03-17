@@ -104,7 +104,6 @@ import os
 # Para gerar arquivos e diretórios temporários
 import tempfile
 
-
 def conversation_chat(query, chain, history):
     result = chain({"question": query, "chat_history": history})
     history.append((query, result["answer"]))
@@ -112,10 +111,12 @@ def conversation_chat(query, chain, history):
 
 
 def display_chat_history(st, chain):
+
     reply_container = st.container()
     container = st.container()
 
     with container:
+
         with st.form(key='my_form', clear_on_submit=True):
             user_input = st.text_input("Question:", placeholder="Ask about your Article PDF", key='input')
             submit_button = st.form_submit_button(label='Send')
@@ -134,7 +135,25 @@ def display_chat_history(st, chain):
                 message(st.session_state["generated"][i], key=str(i), avatar_style="bottts-neutral")
 
 
-def create_conversational_chain(vector_store, llm):
+def display_chat_history_openai(st, client):
+
+    with st.chat_message("assistant"):
+
+        messages = [{"role": m["role"], "content": m["content"]} for m in st.session_state['messages']]
+
+        stream = client.chat.completions.create(
+            model=st.session_state["openai_model"],
+            messages=messages,
+            stream=True
+        )
+
+        response = st.write_stream(stream)
+        
+    st.session_state['messages'].append({"role": "assistant", "content": response})
+
+
+def create_conversational_chain(vector_store, llm, model="local"):
+
     # Create llm
     # Carregando LLM
     # llm = LlamaCpp(streaming = True,
@@ -146,9 +165,11 @@ def create_conversational_chain(vector_store, llm):
     
     memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
 
-    chain = ConversationalRetrievalChain.from_llm(llm=llm, chain_type='stuff',
-                                                 retriever=vector_store.as_retriever(search_kwargs={"k": 2}),
-                                                 memory=memory)
+    if model == "local":
+        chain = ConversationalRetrievalChain.from_llm(llm=llm, chain_type='stuff',
+                                                      retriever=vector_store.as_retriever(search_kwargs={"k": 2}),
+                                                      memory=memory)
+
     return chain
 
 
@@ -170,13 +191,14 @@ def make_vector_store(docs):
     
     article_data = tuple(zip(docs['df_doc_info']['abstract'], docs['df_doc_info']['body']))
     article_text = []
+    
     for i, texts in article_data:
         # make document for langchain
         doc_str = ' '.join(texts)
         doc = Document(page_content=doc_str)
         article_text.append(doc)
     
-    text_splitter = RecursiveCharacterTextSplitter(chunk_size=10000, chunk_overlap=20)
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=10000, chunk_overlap=50)
     text_chunks = text_splitter.split_documents(article_text)
 
     # Create embeddings
