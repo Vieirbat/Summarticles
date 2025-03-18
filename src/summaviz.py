@@ -288,68 +288,84 @@ def article_authors_information(st, dict_dfs):
         st.markdown(body, unsafe_allow_html=True)
     
     # DataSets and Preparation
-    df_doc_info = dict_dfs['df_doc_info'].loc[:,getColumnsWithData(dict_dfs['df_doc_info'])]
-    df_doc_head = dict_dfs['df_doc_head'].loc[:,getColumnsWithData(dict_dfs['df_doc_head'])]
+    # df_doc_info = dict_dfs['df_doc_info'].loc[:,getColumnsWithData(dict_dfs['df_doc_info'])]
+    # df_doc_head = dict_dfs['df_doc_head'].loc[:,getColumnsWithData(dict_dfs['df_doc_head'])]
     df_doc_authors = dict_dfs['df_doc_authors'].loc[:,getColumnsWithData(dict_dfs['df_doc_authors'])]
-    df_doc_info_head = df_doc_info.join(df_doc_head, how='left')
+    # df_doc_info_head = df_doc_info.join(df_doc_head, how='left')
     
-    list_delete_authors = ['A R T I C L E I N F O', np.nan, 'Null', 'NaN','nan', 'null', '', ' ']
-    filter_delete_authors = ~(df_doc_authors.full_name_author.isin(list_delete_authors))
-    df_doc_authors = df_doc_authors.loc[filter_delete_authors].copy()
-    
-    # ---------------------------------------------------------------------------
-    # Top Authors
-    top_authors = df_doc_authors.full_name_author.value_counts()
-    df_top_authors = pd.DataFrame({'Full Name':top_authors.index,
-                                'Number of Articles':top_authors.values.tolist()})
-    
-    top_authors = df_top_authors.nlargest(20,'Number of Articles')
-    top_authors = top_authors.sort_values('Number of Articles',ascending=True)
-    fig_authors = px.bar(top_authors,
-                         title='Top 20 Number of Articles by Authors',
-                         y='Full Name',
-                         x='Number of Articles',
-                         color='Number of Articles',
-                         width=400, 
-                         height=600,
-                         text='Number of Articles')
-    fig_authors.update(layout_coloraxis_showscale=False)
-    # fig_authors.update_traces(showlegend=False)
-    # fig_authors.update_traces(marker_showscale=False)
-    fig_authors.update_xaxes(visible=False)
-    fig_authors.update_layout(yaxis_title=None, xaxis_title=True)
+    print(df_doc_authors.shape)
+    print(df_doc_authors)
+    print(df_doc_authors.columns.tolist())
 
-    # ---------------------------------------------------------------------------
-    # Authors by Location
-    
-    columns_select = ['country_author','settlement_author', 'institution_author']
-    df_sun_agg = df_doc_authors.groupby(by=columns_select, as_index=False, dropna=False)['full_name_author'].count()
-    df_sun_agg = df_sun_agg.fillna("Null Value")
-    df_sun_agg.rename(columns={'country_author':'Author Country',
-                               'settlement_author':'Author Settlement',
-                               'institution_author':'Author Institution',
-                               'full_name_author':'Number of Authors'},
-                      inplace=True)
-    
-    df_sun_agg['Percentage'] = (df_sun_agg['Number of Authors']/df_sun_agg['Number of Authors'].sum())
-    df_sun_agg['Percentage'] = df_sun_agg['Percentage'].apply(lambda e: int(100*np.round(float(e),2)))
-    
-    fig_authors_loc = px.sunburst(df_sun_agg,
-                                  title='Number of Authors by Location',
-                                  width=550, 
-                                  height=600,
-                                  path=['Author Country',
-                                        'Author Settlement',
-                                        'Author Institution'],
-                                  hover_data=['Percentage'],
-                                  values='Number of Authors')
-                                  # values='Percentage')
+    if df_doc_authors.shape[0] and df_doc_authors.shape[1]:
 
-    col0 , _,col1 = st.columns([0.25,2,3])
-    with col0:
-        st.plotly_chart(fig_authors)
-    with col1:
-        st.plotly_chart(fig_authors_loc)
+        list_delete_authors = ['A R T I C L E I N F O', np.nan, 'Null', 'NaN','nan', 'null', '', ' ']
+        filter_delete_authors = ~(df_doc_authors.full_name_author.isin(list_delete_authors))
+        df_doc_authors = df_doc_authors.loc[filter_delete_authors].copy()
+        
+        # ---------------------------------------------------------------------------
+        # Top Authors
+        top_authors = df_doc_authors.full_name_author.value_counts()
+        df_top_authors = pd.DataFrame({'Full Name':top_authors.index,
+                                       'Number of Articles':top_authors.values.tolist()})
+        
+        top_authors = df_top_authors.nlargest(20,'Number of Articles')
+        top_authors = top_authors.sort_values('Number of Articles',ascending=True)
+        fig_authors = px.bar(top_authors,
+                            title='Top 20 Number of Articles by Authors',
+                            y='Full Name',
+                            x='Number of Articles',
+                            color='Number of Articles',
+                            width=400, 
+                            height=600,
+                            text='Number of Articles')
+        fig_authors.update(layout_coloraxis_showscale=False)
+        # fig_authors.update_traces(showlegend=False)
+        # fig_authors.update_traces(marker_showscale=False)
+        fig_authors.update_xaxes(visible=False)
+        fig_authors.update_layout(yaxis_title=None, xaxis_title=True)
+
+        # ---------------------------------------------------------------------------
+        # Authors by Location
+        
+        columns_select = ['country_author','settlement_author', 'institution_author']
+
+        if 'country_author' not in df_doc_authors.columns:
+            df_doc_authors['country_author'] = 'Null Value'
+        if 'settlement_author' not in df_doc_authors.columns:
+            df_doc_authors['settlement_author'] = 'Null Value'
+        if 'institution_author' not in df_doc_authors.columns:
+            df_doc_authors['institution_author'] = 'Null Value'
+
+        df_sun_agg = df_doc_authors.groupby(by=columns_select, as_index=False, dropna=False)['full_name_author'].count()
+        df_sun_agg = df_sun_agg.fillna("Null Value")
+        df_sun_agg.rename(columns={'country_author':'Author Country',
+                                    'settlement_author':'Author Settlement',
+                                    'institution_author':'Author Institution',
+                                    'full_name_author':'Number of Authors'},
+                        inplace=True)
+        
+        df_sun_agg['Percentage'] = (df_sun_agg['Number of Authors']/df_sun_agg['Number of Authors'].sum())
+        df_sun_agg['Percentage'] = df_sun_agg['Percentage'].apply(lambda e: int(100*np.round(float(e),2)))
+        
+        fig_authors_loc = px.sunburst(df_sun_agg,
+                                    title='Number of Authors by Location',
+                                    width=550, 
+                                    height=600,
+                                    path=['Author Country',
+                                          'Author Settlement',
+                                          'Author Institution'],
+                                    hover_data=['Percentage'],
+                                    values='Number of Authors')
+                                    # values='Percentage')
+
+        col0 , _,col1 = st.columns([0.25,2,3])
+        with col0:
+            st.plotly_chart(fig_authors)
+        with col1:
+            st.plotly_chart(fig_authors_loc)
+    else:
+        st.warning("No data available for this section!")
         
     return dict_dfs
 
@@ -642,19 +658,17 @@ def article_citation_information(st, dict_dfs):
 
 
 def plot_maps(st, dict_dfs, path):
+
     """Plot folium maps."""
     
     df_doc_authors = dict_dfs['df_doc_authors'].loc[:,getColumnsWithData(dict_dfs['df_doc_authors'])]
-    
-    path_geo = os.path.join(path,'data','0_external')
-    country_latlong = pd.read_csv(os.path.join(path_geo,'countries_lat_long.csv'), sep=';', decimal='.')
-
     df_country_agg = df_doc_authors.groupby(by=['country_author'], as_index=False, dropna=True)['full_name_author'].count()
+    df_country_agg['country_author'] = df_country_agg['country_author'].apply(lambda e: str(e).lower().strip())
 
-    shapes_correct = pd.read_csv(os.path.join(path_geo,'countries_correct.csv'), sep=';', decimal='.')
-    dictCorrectShapes = {e[0]:e[1] for e in zip(shapes_correct.country_name, shapes_correct.country_target)}
-    df_country_agg.country_author = df_country_agg.country_author.apply(lambda e: dictCorrectShapes.get(e,e))
-    
+    path_geo = os.path.join(path,'data','0_external')
+    country_latlong = pd.read_csv(os.path.join(path_geo,'countries_lat_long.csv'), sep=',', decimal='.')
+    country_latlong['country'] = country_latlong['country'].apply(lambda e: e.lower().strip())
+
     df_country_agg = df_country_agg.rename(columns={'country_author':'country',
                                                     'full_name_author':'count'})
     
@@ -662,24 +676,15 @@ def plot_maps(st, dict_dfs, path):
     df_country_agg = df_country_agg.merge(country_latlong, how='left', on='country')
     df_country_agg = df_country_agg.dropna()
     
-    _, col1, _ = st.columns([0.75,3,0.1])
+    _, col1, _ = st.columns([0.25,3,0.01])
     with st.container():
-    #     # with col1:
-    #         # map = folium.Map(location=[25.552354,14.814465], zoom_start=1.5)
-    #         # heat_points = []
-    #         # for i,row in df_country_agg.iterrows():
-    #         #     heat_points.append([row['Latitude'], row['Longitude'], row['count']])
-    #         #     folium.Marker([row['Latitude'], row['Longitude']],
-    #         #                 popup="<i>Number of Authors {0}<i>".format(row['count']),
-    #         #                 tooltip=f"Number of Authors {row['count']}").add_to(map)
-    #         #     st_point_map = st_folium(map)
         with col1:
             map = folium.Map(location=[25.552354,14.814465], zoom_start=1)
             heat_points = []
             for i,row in df_country_agg.iterrows():
                 heat_points.append([row['latitude'], row['longitude'], row['count']])
             HeatMap(heat_points, radius=40, blur=20).add_to(map)
-            st_heat_map = folium_static(map, width=600, height=400)
+            st_heat_map = folium_static(map)
     
     return dict_dfs
 

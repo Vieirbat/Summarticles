@@ -25,7 +25,7 @@ from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.cluster import KMeans # MiniBatchKMeans, AgglomerativeClustering, DBSCAN, OPTICS
 from sklearn.metrics import silhouette_score, calinski_harabasz_score, davies_bouldin_score
-from umap import UMAP # pip install umap-learn
+# from umap import UMAP # pip install umap-learn
 from sklearn.manifold import TSNE
 from sklearn.decomposition import PCA
 from sklearn.manifold import MDS

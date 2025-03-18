@@ -357,7 +357,7 @@ if __name__ == '__main__':
                                 st.markdown("""<hr style="height:1px;border:none;color:#F1F1F1;background-color:#F1F1F1;" /> """, unsafe_allow_html=True)
                                 st.markdown("""<h3 style="text-align:left;"><b>Authors Information</b></h3>""", unsafe_allow_html=True)
                                 st.session_state['dict_dfs'] = article_authors_information(st, st.session_state['dict_dfs'])
-                                # st.session_state['dict_dfs'] = plot_maps(st, st.session_state['dict_dfs'], path)                                
+                                st.session_state['dict_dfs'] = plot_maps(st, st.session_state['dict_dfs'], path)                                
                                 c1, _, c2 = st.columns([0.5,0.08,0.42])
                                 with c1:
                                     years_plot_article(st, st.session_state['dict_dfs'])
