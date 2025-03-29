@@ -95,6 +95,15 @@ from langchain.memory import ConversationBufferMemory
 from langchain_core.documents.base import Document
 
 # --------------------------------------------------------------------------------------------------------
+# Deepseek 
+
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_core.vectorstores import InMemoryVectorStore
+from langchain_ollama import OllamaEmbeddings
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_ollama.llms import OllamaLLM
+
+# --------------------------------------------------------------------------------------------------------
 # A biblioteca abaixo é para ler dados de pdfs
 # from langchain.document_loaders import PyPDFLoader
 
@@ -198,7 +207,7 @@ def make_vector_store(docs):
         doc = Document(page_content=doc_str)
         article_text.append(doc)
     
-    text_splitter = RecursiveCharacterTextSplitter(chunk_size=10000, chunk_overlap=50)
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=10000, chunk_overlap=200)
     text_chunks = text_splitter.split_documents(article_text)
 
     # Create embeddings
