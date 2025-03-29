@@ -103,6 +103,9 @@ from langchain_ollama import OllamaEmbeddings
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_ollama.llms import OllamaLLM
 
+import openai
+from openai import OpenAI
+
 # --------------------------------------------------------------------------------------------------------
 # A biblioteca abaixo é para ler dados de pdfs
 # from langchain.document_loaders import PyPDFLoader
@@ -222,3 +225,252 @@ def make_vector_store(docs):
     vector_store = FAISS.from_documents(text_chunks, embedding=embeddings)
     
     return vector_store
+
+# ------------------------------------------------------------------------------------------------------------------------
+# Using Llama CCP
+
+    # with st.spinner('📄➞📄  Creating Vector Store...'):
+    #     vector_store = make_vector_store(st.session_state['dict_dfs'])
+    
+    # with st.spinner('📄➞📄  Loading LLM Model...'):
+    #     model_file_name = "llama-2-7b-chat.Q2_K.gguf"
+    #     path_llm = os.path.join(path,"models",model_file_name)
+    #     llm_model = load_llm_model(model_paph=path_llm)
+    
+    # chain = create_conversational_chain(vector_store, llm_model)
+    # display_chat_history(st, chain)
+
+# ------------------------------------------------------------------------------------------------------------------------
+# Ollama use below
+
+def get_template():
+
+    template = """
+        You are an assistant for question-answering tasks. 
+        Use the following articles text data of retrieved context to answer the question. 
+        If you don't know the answer, just say that you don't know. 
+        Use three sentences maximum and keep the answer concise.
+        Question: {question} 
+        Context: {context} 
+        Answer:
+    """
+
+    return template
+
+
+def get_articles_information(list_documents):
+    article_text = []  
+    for text in list_documents:
+        doc = Document(page_content=text)
+        article_text.append(doc)
+
+    return article_text
+
+
+def split_text(documents):
+    text_splitter = RecursiveCharacterTextSplitter(
+        chunk_size=1000,
+        chunk_overlap=200,
+        add_start_index=True
+    )
+
+    return text_splitter.split_documents(documents)
+
+
+def create_vector_store(documents, model_name="llama3.2:1b"):
+    embeddings = OllamaEmbeddings(model=model_name)
+    vector_store = InMemoryVectorStore(embeddings)
+    chunked_documents = split_text(documents)
+    vector_store.add_documents(chunked_documents)
+
+    return vector_store
+
+
+def rag(st, query, template, vector_store, model):
+
+    related_documents = vector_store.similarity_search(query)
+
+    context = "\n\n".join([doc.page_content for doc in related_documents])
+    prompt = ChatPromptTemplate.from_template(template)
+    chain = prompt | model
+
+    with st.spinner('📄➞📄  Generating a response...'):
+        answer = chain.invoke({"question": query, "context": context})
+
+    return answer
+
+
+def get_model(model_name='llama3.2:1b'):
+    model = OllamaLLM(model=model_name)
+    return model
+
+
+def summachat_ollama(st, model_type='llamma', model_name='llama3.2:1b'):
+
+    if not st.session_state['summachat'].get('template', ''):
+        st.session_state['summachat']['template'] = get_template()
+
+    if not st.session_state['summachat'].get('article_text', []):
+        article_data = st.session_state['dict_dfs']['df_doc_info']['abstract']
+        st.session_state['summachat']['article_text'] = get_articles_information(article_data)
+
+    if not st.session_state['summachat'][f'local_{model_type}'].get('vector_store', False):
+        with st.spinner('📄➞📄  Creating Vector Store...'):
+            vector_store = create_vector_store(st.session_state['summachat']['article_text'], model_name=model_name)
+            st.session_state['summachat'][f'local_{model_type}']['vector_store'] = vector_store
+
+    if not st.session_state['summachat'][f'local_{model_type}'].get('model', False):
+        with st.spinner('📄➞📄  Loading LLM Model...'):
+            model = get_model(model_name)
+            st.session_state['summachat'][f'local_{model_type}']['model'] = model
+
+    question = st.chat_input()
+    if question:
+
+        st.chat_message('user').write(question)
+
+        answer = rag(st, question, st.session_state['summachat']['template'],
+                     st.session_state['summachat'][f'local_{model_type}']['vector_store'],
+                     st.session_state['summachat'][f'local_{model_type}']['model'])
+
+        answer = answer.split('</think>')[-1] if model_type=='deepseek' else answer
+        st.chat_message("assistant").write(answer)
+
+
+def summachat_api(st, model_type="openai"):
+
+    # try:
+
+    if model_type=="openai":
+        client = OpenAI(api_key=st.session_state['summachat'][f'api_key_{model_type}'])
+    elif model_type=="deepseek":
+        client = OpenAI(base_url="https://api.deepseek.com",
+                        api_key=st.session_state['summachat'][f'api_key_{model_type}'])
+
+    with st.container():
+
+        if not st.session_state['summachat'].get('article_text', []):
+            article_data = st.session_state['dict_dfs']['df_doc_info']['abstract']
+            st.session_state['summachat']['article_text_list'] = article_data
+        
+        if not st.session_state['summachat'].get('context', False):
+            context = 'Article Context: ' + '\n\n'.join(st.session_state['summachat']['article_text_list'])
+            st.session_state['summachat']['context'] = context
+
+        if not st.session_state['summachat'].get('api_prompt', False):
+
+            api_prompt = """You are an assistant for question-answering tasks. 
+                            Use the following articles text data of retrieved context to answer the question. 
+                            If you don't know the answer, just say that you don't know. 
+                            Use three sentences maximum and keep the answer concise.
+                            Context: {context}"""
+
+            st.session_state['summachat']['api_prompt'] = api_prompt
+
+        display_messages(st, st.session_state['summachat']['messages'])
+
+        if prompt := st.chat_input("Ask to your article files, what do you want to know?"):
+
+            # Add user message to chat history
+            st.session_state['summachat']['messages'].append({"role": "user", "content": prompt})
+
+            # Display user message in chat message container
+            with st.chat_message("user"):
+                st.markdown(prompt)
+
+            with st.chat_message("assistant"):
+
+                with st.spinner('📄➞📄 Generating a response...'):
+
+                    m0 = [{"role": "system",
+                           "content": st.session_state['summachat']['api_prompt'].format(context=st.session_state['summachat']['context'])}]
+                    messages = m0 + [{"role": m["role"], "content": m["content"]} for m in st.session_state['summachat']['messages']]
+
+                    stream = client.chat.completions.create(
+                        model=st.session_state['summachat'][f"{model_type}_model"],
+                        messages=messages,
+                        stream=True
+                    )
+                    
+                    response = st.write_stream(stream)
+                    
+                    st.session_state['summachat']['messages'].append({"role": "assistant", "content": response})
+
+    # except Exception as error:
+    #     st.session_state[f'api_key_{model_type}'] = ''
+    #     st.session_state['messages'] = []
+    #     st.error(error)
+
+
+def display_messages(st, messages):
+    if len(messages):
+        for message in messages:
+            with st.chat_message(message["role"]):
+                st.markdown(message["content"])
+
+
+def summachat_variables(st):
+
+    # For SummaChat
+    if 'summachat' not in st.session_state:
+        st.session_state['summachat'] = {}
+
+    if 'local_deepseek' not in st.session_state['summachat']:
+        st.session_state['summachat']['local_deepseek'] = {}
+
+    if 'local_llamma' not in st.session_state['summachat']:
+        st.session_state['summachat']['local_llamma'] = {}
+
+    if 'template' not in st.session_state['summachat']:
+        st.session_state['summachat']['template'] = ''
+
+    if 'article_text' not in st.session_state['summachat']:
+        st.session_state['summachat']['article_text'] = []
+
+    if 'article_text_list' not in st.session_state['summachat']:
+        st.session_state['summachat']['article_text_list'] = []
+
+    if 'vector_store' not in st.session_state['summachat']['local_deepseek']:
+        st.session_state['summachat']['local_deepseek']['vector_store'] = []
+
+    if 'model' not in st.session_state['summachat']['local_deepseek']:
+        st.session_state['summachat']['local_deepseek']['model'] = []
+
+    if 'vector_store' not in st.session_state['summachat']['local_llamma']:
+        st.session_state['summachat']['local_llamma']['vector_store'] = []
+
+    if 'model' not in st.session_state['summachat']['local_llamma']:
+        st.session_state['summachat']['local_llamma']['model'] = []
+
+    if 'api_prompt' not in st.session_state['summachat']:
+        st.session_state['summachat']['api_prompt'] = ''
+
+    if 'context' not in st.session_state['summachat']:
+        st.session_state['summachat']['context'] = ''
+
+    if 'history' not in st.session_state['summachat']:
+        st.session_state['summachat']['history'] = []
+
+    if 'generated' not in st.session_state['summachat']:
+        st.session_state['summachat']['generated'] = ["Welcome to SummaChat, how can I help you? 🤖"]
+
+    if 'past' not in st.session_state['summachat']:
+        st.session_state['summachat']['past'] = ["Hi!"]
+
+    if 'api_key_openai' not in st.session_state['summachat']:
+        st.session_state['summachat']['api_key_openai'] = ''
+
+    if 'api_key_deepseek' not in st.session_state['summachat']:
+        st.session_state['summachat']['api_key_deepseek'] = ''
+
+    if 'rb_modelchat' not in st.session_state['summachat']:
+        st.session_state['summachat']['rb_modelchat'] = 'Disable SummaChat'
+
+    if "openai_model" not in st.session_state['summachat']:
+        st.session_state['summachat']["openai_model"] = "gpt-4o-mini"
+
+    if "deepseek_model" not in st.session_state['summachat']:
+        st.session_state['summachat']["deepseek_model"] = "deepseek-chat"
+
+    if "messages" not in st.session_state['summachat']:
+        st.session_state['summachat']['messages'] = []

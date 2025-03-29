@@ -30,11 +30,6 @@ from summachat import *
 
 from st_aggrid import AgGrid # pip install streamlit-aggrid
 
-import openai
-from openai import OpenAI
-
-
-
 # --------------------------------------------------------------------------------------------------------
 # Deepseek 
 
@@ -90,17 +85,6 @@ global input_path
 
 gcli = grobid_client.GrobidClient(config_path=os.path.join(path,"grobid","config.json"))
 
-# Modal function to get API_KEY information
-@st.dialog("Whats is the API Key?")
-def modal_api_key(st, model, type="openai"):
-    st.write(f"What is your API Key for {model}")
-    api_key = st.text_input("Put your API Key in this field end click on 'Submit' ") 
-    if st.button("Save"):
-        st.session_state[f'api_key_{type}'] = api_key
-        # openai.api_key = st.session_state['api_key']
-        # openai.Model.list()
-        st.success("✅ API KEY saved! Close the modal, click on ❌.")
-        st.rerun()
 
 def batch_process_path(path_input_path, n_workers=10, check_cache=True, cache_folder_name='summarticles_cache', config_path="./grobid/config.json"):
     
@@ -177,26 +161,35 @@ def tk_configs():
 
 def reset_summa_chat(st):
 
-    st.session_state['history'] = []
-    st.session_state['generated'] = ["Welcome to SummaChat, how can I help you? 🤖"]
-    st.session_state['past'] = ["Hi!"]
+    st.session_state['summachat']['history'] = []
+    st.session_state['summachat']['generated'] = ["Welcome to SummaChat, how can I help you? 🤖"]
+    st.session_state['summachat']['past'] = ["Hi!"]
+    st.session_state['summachat']['messages'] = []
     
 
 
 def checkey(dic, key):
     """"""
     return True if key in dic else False
-
-
-def split_text(documents):
-    text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=1000,
-        chunk_overlap=200,
-        add_start_index=True
-    )
-
-    return text_splitter.split_documents(documents)
             
+
+# Modal function to get API_KEY information
+@st.dialog("Whats is the API Key?")
+def modal_api_key(st, model, type="openai"):
+
+    st.session_state['summachat'][f'api_key_openai'] = st.session_state['summachat'][f'api_key_openai'] = ''
+    st.write(f"What is your API Key for {model}")
+    api_key = st.text_input("Put your API Key in this field end click on 'Submit' ")
+
+    st.session_state['summachat']['messages'] = []
+
+    if st.button("Save"):
+        st.session_state['summachat'][f'api_key_{type}'] = api_key
+        # openai.api_key = st.session_state['api_key']
+        # openai.Model.list()
+        st.success("✅ API KEY saved! Close the modal, click on ❌.")
+        st.rerun()
+
 
 ###############################################################################################
 # ---------------------------------------------------------------------------------------------
@@ -230,41 +223,7 @@ if __name__ == '__main__':
     if 'rb_reddim' not in st.session_state:
         st.session_state['rb_reddim'] = 'PCA'
     
-    # For SummaChat
-    if 'summachat' not in st.session_state:
-        st.session_state['summachat'] = {}
-    if 'local_deepseek' not in st.session_state['summachat']:
-        st.session_state['summachat']['local_deepseek'] = {}
-    if 'local_llamma' not in st.session_state['summachat']:
-        st.session_state['summachat']['local_llamma'] = {}
-    if 'template' not in st.session_state['summachat']:
-        st.session_state['summachat']['template'] = ''
-    if 'article_text' not in st.session_state['summachat']:
-        st.session_state['summachat']['article_text'] = []
-    if 'vector_store' not in st.session_state['summachat']['local_deepseek']:
-        st.session_state['summachat']['local_deepseek']['vector_store'] = []
-    if 'model' not in st.session_state['summachat']['local_deepseek']:
-        st.session_state['summachat']['local_deepseek']['model'] = []
-    if 'vector_store' not in st.session_state['summachat']['local_llamma']:
-        st.session_state['summachat']['local_llamma']['vector_store'] = []
-    if 'model' not in st.session_state['summachat']['local_llamma']:
-        st.session_state['summachat']['local_llamma']['model'] = []
-    if 'history' not in st.session_state:
-        st.session_state['history'] = []
-    if 'generated' not in st.session_state:
-        st.session_state['generated'] = ["Welcome to SummaChat, how can I help you? 🤖"]
-    if 'past' not in st.session_state:
-        st.session_state['past'] = ["Hi!"]
-    if 'api_key_openai' not in st.session_state:
-        st.session_state['api_key_openai'] = ''
-    if 'api_key_deepseek' not in st.session_state:
-        st.session_state['api_key_deepseek'] = ''
-    if 'rb_modelchat' not in st.session_state:
-        st.session_state['rb_modelchat'] = 'Disable SummaChat'
-    if "openai_model" not in st.session_state:
-        st.session_state["openai_model"] = "gpt-4o-mini"
-    if "messages" not in st.session_state:
-        st.session_state['messages'] = []
+    summachat_variables(st)
 
     # ----------------------------------------------------------------------------
     # Entrance of app
@@ -550,71 +509,17 @@ if __name__ == '__main__':
 
                             with st.container():
 
-                                st.session_state['rb_modelchat'] = st.radio("Summachat Model:",
+                                st.session_state['summachat']['rb_modelchat'] = st.radio("Summachat Model:",
                                                                             ('Disable SummaChat','Local Llamma (slow)', 'Local DeepSeek (slow)', 'Open AI API', 'DeepSeek API'),
                                                                             horizontal=True,
                                                                             help="Choose one of these models to talk with your documents!")
                                 # ---------------------------------------------------------------------
                                 # Local Llamma selection
-                                if st.session_state['rb_modelchat']=="Local Llamma (slow)":
+                                # ollama pull llama3.2:1b
 
-                                    # with st.spinner('📄➞📄  Creating Vector Store...'):
-                                    #     vector_store = make_vector_store(st.session_state['dict_dfs'])
-                                    
-                                    # with st.spinner('📄➞📄  Loading LLM Model...'):
-                                    #     model_file_name = "llama-2-7b-chat.Q2_K.gguf"
-                                    #     path_llm = os.path.join(path,"models",model_file_name)
-                                    #     llm_model = load_llm_model(model_paph=path_llm)
-                                    
-                                    # chain = create_conversational_chain(vector_store, llm_model)
-                                    # display_chat_history(st, chain)
-
-                                    if not st.session_state['summachat'].get('template', ''):
-                                        st.session_state['summachat']['template'] = """
-                                        You are an assistant for question-answering tasks. 
-                                        Use the following articles text data of retrieved context to answer the question. 
-                                        If you don't know the answer, just say that you don't know. 
-                                        Use three sentences maximum and keep the answer concise.
-                                        Question: {question} 
-                                        Context: {context} 
-                                        Answer:
-                                        """
-
-                                    if not st.session_state['summachat'].get('article_text', []):
-                                        article_data = st.session_state['dict_dfs']['df_doc_info']['abstract']
-                                        article_text = []  
-                                        for text in article_data:
-                                            doc = Document(page_content=text)
-                                            article_text.append(doc)
-                                        st.session_state['summachat']['article_text'] = article_text
-
-                                    if not st.session_state['summachat']['local_llamma'].get('vector_store', False):
-                                        model_name = "llama3.2:1b"
-                                        with st.spinner('📄➞📄  Creating Vector Store...'):
-                                            embeddings = OllamaEmbeddings(model=model_name)
-                                            vector_store = InMemoryVectorStore(embeddings)
-                                            chunked_documents = split_text(article_text)
-                                            vector_store.add_documents(chunked_documents)
-                                            st.session_state['summachat']['local_llamma']['vector_store'] = vector_store
-
-                                    if not st.session_state['summachat']['local_llamma'].get('model', False):
-                                        with st.spinner('📄➞📄  Loading LLM Model...'):
-                                            model = OllamaLLM(model=model_name)
-                                            st.session_state['summachat']['local_llamma']['model'] = model
-
-                                    question = st.chat_input()
-                                    if question:
-                                        st.chat_message("user").write(question)
-                                        related_documents = st.session_state['summachat']['local_llamma']['vector_store'].similarity_search(question)
-
-                                        context = "\n\n".join([doc.page_content for doc in related_documents])
-                                        prompt = ChatPromptTemplate.from_template(st.session_state['summachat']['template'])
-                                        chain = prompt | st.session_state['summachat']['local_llamma']['model']
-
-                                        with st.spinner('📄➞📄  Generating a response...'):
-                                            answer = chain.invoke({"question": question, "context": context})
-
-                                        st.chat_message("assistant").write(answer)
+                                if st.session_state['summachat']['rb_modelchat']=="Local Llamma (slow)":
+                                    reset_summa_chat(st)
+                                    summachat_ollama(st, model_type='llamma', model_name='llama3.2:1b')
 
                                 # ---------------------------------------------------------------------
                                 # Local DeepSeek selection
@@ -622,173 +527,31 @@ if __name__ == '__main__':
                                 # ollama pull deepseek-r1:1.5b
                                 # setx /M PATH "%PATH%;C:\Users\Vierbat\AppData\Local\Programs\Ollama"
 
-                                elif st.session_state['rb_modelchat']=="Local DeepSeek (slow)":
-                                    
-
-                                    if not st.session_state['summachat']['local_deepseek'].get('template', ''):
-                                        st.session_state['summachat']['local_deepseek']['template'] = """
-                                        You are an assistant for question-answering tasks. 
-                                        Use the following articles text data of retrieved context to answer the question. 
-                                        If you don't know the answer, just say that you don't know. 
-                                        Use three sentences maximum and keep the answer concise.
-                                        Question: {question} 
-                                        Context: {context} 
-                                        Answer:
-                                        """
-
-                                    if not st.session_state['summachat']['local_deepseek'].get('article_text', []):
-                                        article_data = st.session_state['dict_dfs']['df_doc_info']['abstract']
-                                        article_text = []  
-                                        for text in article_data:
-                                            doc = Document(page_content=text)
-                                            article_text.append(doc)
-                                        st.session_state['summachat']['article_text'] = article_text
-
-                                    if not st.session_state['summachat']['local_deepseek'].get('vector_store', False):
-                                        model_name = "deepseek-r1:1.5b"
-                                        with st.spinner('📄➞📄  Creating Vector Store...'):
-                                            embeddings = OllamaEmbeddings(model=model_name)
-                                            vector_store = InMemoryVectorStore(embeddings)
-                                            chunked_documents = split_text(article_text)
-                                            vector_store.add_documents(chunked_documents)
-                                            st.session_state['summachat']['local_deepseek']['vector_store'] = vector_store
-
-                                    if not st.session_state['summachat']['local_deepseek'].get('model', False):
-                                        with st.spinner('📄➞📄  Loading LLM Model...'):
-                                            model = OllamaLLM(model=model_name)
-                                            st.session_state['summachat']['local_deepseek']['model'] = model
-
-                                    question = st.chat_input()
-                                    if question:
-                                        st.chat_message("user").write(question)
-                                        related_documents = st.session_state['summachat']['local_deepseek']['vector_store'].similarity_search(question)
-
-                                        context = "\n\n".join([doc.page_content for doc in related_documents])
-                                        prompt = ChatPromptTemplate.from_template(st.session_state['summachat']['template'])
-                                        chain = prompt | st.session_state['summachat']['local_deepseek']['model']
-
-                                        with st.spinner('📄➞📄  Generating a response...'):
-                                            answer = chain.invoke({"question": question, "context": context})
-
-                                        st.chat_message("assistant").write(answer.split('</think>')[-1])
+                                elif st.session_state['summachat']['rb_modelchat']=="Local DeepSeek (slow)":
+                                    reset_summa_chat(st)
+                                    summachat_ollama(st, model_type='deepseek', model_name='deepseek-r1:1.5b')
 
                                 # -----------------------------------------------------------------------------
                                 # OPEN AI ChatGPT selection
-                                elif st.session_state['rb_modelchat']=='Open AI API':
-                                    
-                                    if not len(st.session_state['api_key_openai']):
-
-                                        st.session_state['api_key_deepseek'] = ''
-
-                                        modal_api_key(st, st.session_state['rb_modelchat'], "openai")
-
-                                        st.session_state['messages'] = []
-
-                                        if len(st.session_state['messages']):
-                                            for message in st.session_state['messages']:
-                                                with st.chat_message(message["role"]):
-                                                    st.markdown(message["content"])
-
+                                elif st.session_state['summachat']['rb_modelchat']=='Open AI API':
+                                    model_type = 'openai'
+                                    if not len(st.session_state['summachat'][f'api_key_{model_type}']):
+                                        reset_summa_chat(st)
+                                        modal_api_key(st, st.session_state['summachat']['rb_modelchat'], model_type)
+                                        display_messages(st, st.session_state['summachat']['messages'])
                                     else:
-                                        try:
-
-                                            client = OpenAI(api_key=st.session_state['api_key_openai'])
-
-                                            with st.container():
-
-                                                if len(st.session_state['messages']):
-                                                    for message in st.session_state['messages']:
-                                                        with st.chat_message(message["role"]):
-                                                            st.markdown(message["content"])
-
-                                                if prompt := st.chat_input("What is up?"):
-
-                                                    # Add user message to chat history
-                                                    st.session_state['messages'].append({"role": "user", "content": prompt})
-
-                                                    # Display user message in chat message container
-                                                    with st.chat_message("user"):
-                                                        st.markdown(prompt)
-
-                                                    with st.chat_message("assistant"):
-
-                                                        with st.spinner('📄➞📄 Generating a response...'):
-
-                                                            m0 = [{"role": "system", "content": "You're a helpful assistant"}]
-                                                            messages = m0 + [{"role": m["role"], "content": m["content"]} for m in st.session_state['messages']]
-
-                                                            stream = client.chat.completions.create(
-                                                                model=st.session_state["openai_model"],
-                                                                messages=messages,
-                                                                stream=True
-                                                            )
-                                                            
-                                                            response = st.write_stream(stream)
-                                                            
-                                                            st.session_state['messages'].append({"role": "assistant", "content": response})
-
-                                        except Exception as error:
-                                            st.session_state['api_key_openai'] = ''
-                                            st.session_state['messages'] = []
-                                            st.error(error)
+                                        summachat_api(st, model_type=model_type)
 
                                 # -----------------------------------------------------------------------------
                                 # DeepSeek selection
-                                elif st.session_state['rb_modelchat']=='DeepSeek API':
-
-                                    if not len(st.session_state['api_key_deepseek']):
-                                        
-                                        st.session_state['api_key_openai'] = ''
-
-                                        modal_api_key(st, st.session_state['rb_modelchat'], "deepseek")
-
-                                        st.session_state['messages'] = []
-
-                                        if len(st.session_state['messages']):
-                                            for message in st.session_state['messages']:
-                                                with st.chat_message(message["role"]):
-                                                    st.markdown(message["content"])
+                                elif st.session_state['summachat']['rb_modelchat']=='DeepSeek API':
+                                    model_type = 'deepseek'
+                                    if not len(st.session_state['summachat'][f'api_key_{model_type}']):
+                                        reset_summa_chat(st)
+                                        modal_api_key(st, st.session_state['summachat']['rb_modelchat'], model_type)
+                                        display_messages(st, st.session_state['summachat']['messages'])
                                     else:
-                                        try:
-
-                                            client = OpenAI(base_url="https://api.deepseek.com", api_key=st.session_state['api_key_deepseek'])
-
-                                            with st.container():
-
-                                                if len(st.session_state['messages']):
-                                                    for message in st.session_state['messages']:
-                                                        with st.chat_message(message["role"]):
-                                                            st.markdown(message["content"])
-
-                                                if prompt := st.chat_input("What is up?"):
-
-                                                    # Add user message to chat history
-                                                    st.session_state['messages'].append({"role": "user", "content": prompt})
-
-                                                    # Display user message in chat message container
-                                                    with st.chat_message("user"):
-                                                        st.markdown(prompt)
-
-                                                    with st.chat_message("assistant"):
-                                                        
-                                                        with st.spinner('📄➞📄 Generating a response...'):
-                                                            
-                                                            m0 = [{"role": "system", "content": "You're a helpful assistant"}]
-                                                            messages = m0 + [{"role": m["role"], "content": m["content"]} for m in st.session_state['messages']]
-
-                                                            stream = client.chat.completions.create(
-                                                                model="deepseek-chat",
-                                                                messages=messages,
-                                                                stream=True
-                                                            )
-                                                            
-                                                            response = st.write_stream(stream)
-                                                            st.session_state['messages'].append({"role": "assistant", "content": response})
-
-                                        except Exception as error:
-                                            st.session_state['api_key_deepseek'] = ''
-                                            st.session_state['messages'] = []
-                                            st.error(error)
+                                        summachat_api(st, model_type=model_type)
 
                                 else:
                                     reset_summa_chat(st)
