@@ -235,14 +235,20 @@ if __name__ == '__main__':
         st.session_state['summachat'] = {}
     if 'local_deepseek' not in st.session_state['summachat']:
         st.session_state['summachat']['local_deepseek'] = {}
-    if 'template' not in st.session_state['summachat']['local_deepseek']:
-        st.session_state['summachat']['local_deepseek']['template'] = ''
-    if 'article_text' not in st.session_state['summachat']['local_deepseek']:
-        st.session_state['summachat']['local_deepseek']['article_text'] = []
+    if 'local_llamma' not in st.session_state['summachat']:
+        st.session_state['summachat']['local_llamma'] = {}
+    if 'template' not in st.session_state['summachat']:
+        st.session_state['summachat']['template'] = ''
+    if 'article_text' not in st.session_state['summachat']:
+        st.session_state['summachat']['article_text'] = []
     if 'vector_store' not in st.session_state['summachat']['local_deepseek']:
         st.session_state['summachat']['local_deepseek']['vector_store'] = []
-    if 'vector_store' not in st.session_state['summachat']['local_deepseek']:
-        st.session_state['summachat']['local_deepseek']['vector_store'] = []
+    if 'model' not in st.session_state['summachat']['local_deepseek']:
+        st.session_state['summachat']['local_deepseek']['model'] = []
+    if 'vector_store' not in st.session_state['summachat']['local_llamma']:
+        st.session_state['summachat']['local_llamma']['vector_store'] = []
+    if 'model' not in st.session_state['summachat']['local_llamma']:
+        st.session_state['summachat']['local_llamma']['model'] = []
     if 'history' not in st.session_state:
         st.session_state['history'] = []
     if 'generated' not in st.session_state:
@@ -552,16 +558,63 @@ if __name__ == '__main__':
                                 # Local Llamma selection
                                 if st.session_state['rb_modelchat']=="Local Llamma (slow)":
 
-                                    with st.spinner('📄➞📄  Creating Vector Store...'):
-                                        vector_store = make_vector_store(st.session_state['dict_dfs'])
+                                    # with st.spinner('📄➞📄  Creating Vector Store...'):
+                                    #     vector_store = make_vector_store(st.session_state['dict_dfs'])
                                     
-                                    with st.spinner('📄➞📄  Loading LLM Model...'):
-                                        model_file_name = "llama-2-7b-chat.Q2_K.gguf"
-                                        path_llm = os.path.join(path,"models",model_file_name)
-                                        llm_model = load_llm_model(model_paph=path_llm)
+                                    # with st.spinner('📄➞📄  Loading LLM Model...'):
+                                    #     model_file_name = "llama-2-7b-chat.Q2_K.gguf"
+                                    #     path_llm = os.path.join(path,"models",model_file_name)
+                                    #     llm_model = load_llm_model(model_paph=path_llm)
                                     
-                                    chain = create_conversational_chain(vector_store, llm_model)
-                                    display_chat_history(st, chain)
+                                    # chain = create_conversational_chain(vector_store, llm_model)
+                                    # display_chat_history(st, chain)
+
+                                    if not st.session_state['summachat'].get('template', ''):
+                                        st.session_state['summachat']['template'] = """
+                                        You are an assistant for question-answering tasks. 
+                                        Use the following articles text data of retrieved context to answer the question. 
+                                        If you don't know the answer, just say that you don't know. 
+                                        Use three sentences maximum and keep the answer concise.
+                                        Question: {question} 
+                                        Context: {context} 
+                                        Answer:
+                                        """
+
+                                    if not st.session_state['summachat'].get('article_text', []):
+                                        article_data = st.session_state['dict_dfs']['df_doc_info']['abstract']
+                                        article_text = []  
+                                        for text in article_data:
+                                            doc = Document(page_content=text)
+                                            article_text.append(doc)
+                                        st.session_state['summachat']['article_text'] = article_text
+
+                                    if not st.session_state['summachat']['local_llamma'].get('vector_store', False):
+                                        model_name = "llama3.2:1b"
+                                        with st.spinner('📄➞📄  Creating Vector Store...'):
+                                            embeddings = OllamaEmbeddings(model=model_name)
+                                            vector_store = InMemoryVectorStore(embeddings)
+                                            chunked_documents = split_text(article_text)
+                                            vector_store.add_documents(chunked_documents)
+                                            st.session_state['summachat']['local_llamma']['vector_store'] = vector_store
+
+                                    if not st.session_state['summachat']['local_llamma'].get('model', False):
+                                        with st.spinner('📄➞📄  Loading LLM Model...'):
+                                            model = OllamaLLM(model=model_name)
+                                            st.session_state['summachat']['local_llamma']['model'] = model
+
+                                    question = st.chat_input()
+                                    if question:
+                                        st.chat_message("user").write(question)
+                                        related_documents = st.session_state['summachat']['local_llamma']['vector_store'].similarity_search(question)
+
+                                        context = "\n\n".join([doc.page_content for doc in related_documents])
+                                        prompt = ChatPromptTemplate.from_template(st.session_state['summachat']['template'])
+                                        chain = prompt | st.session_state['summachat']['local_llamma']['model']
+
+                                        with st.spinner('📄➞📄  Generating a response...'):
+                                            answer = chain.invoke({"question": question, "context": context})
+
+                                        st.chat_message("assistant").write(answer)
 
                                 # ---------------------------------------------------------------------
                                 # Local DeepSeek selection
@@ -569,7 +622,7 @@ if __name__ == '__main__':
                                 # ollama pull deepseek-r1:1.5b
                                 # setx /M PATH "%PATH%;C:\Users\Vierbat\AppData\Local\Programs\Ollama"
 
-                                if st.session_state['rb_modelchat']=="Local DeepSeek (slow)":
+                                elif st.session_state['rb_modelchat']=="Local DeepSeek (slow)":
                                     
 
                                     if not st.session_state['summachat']['local_deepseek'].get('template', ''):
@@ -584,14 +637,12 @@ if __name__ == '__main__':
                                         """
 
                                     if not st.session_state['summachat']['local_deepseek'].get('article_text', []):
-                                        article_data = st.session_state['dict_dfs']['df_doc_info']['abstract'] # tuple(zip(st.session_state['dict_dfs']['df_doc_info']['abstract']) # , st.session_state['dict_dfs']['df_doc_info']['body']))
+                                        article_data = st.session_state['dict_dfs']['df_doc_info']['abstract']
                                         article_text = []  
                                         for text in article_data:
-                                            # make document for langchain
-                                            # doc_str = ' '.join(texts)
                                             doc = Document(page_content=text)
                                             article_text.append(doc)
-                                        st.session_state['summachat']['local_deepseek']['article_text'] = article_text
+                                        st.session_state['summachat']['article_text'] = article_text
 
                                     if not st.session_state['summachat']['local_deepseek'].get('vector_store', False):
                                         model_name = "deepseek-r1:1.5b"
@@ -613,7 +664,7 @@ if __name__ == '__main__':
                                         related_documents = st.session_state['summachat']['local_deepseek']['vector_store'].similarity_search(question)
 
                                         context = "\n\n".join([doc.page_content for doc in related_documents])
-                                        prompt = ChatPromptTemplate.from_template(st.session_state['summachat']['local_deepseek']['template'])
+                                        prompt = ChatPromptTemplate.from_template(st.session_state['summachat']['template'])
                                         chain = prompt | st.session_state['summachat']['local_deepseek']['model']
 
                                         with st.spinner('📄➞📄  Generating a response...'):
