@@ -77,6 +77,9 @@ from langchain_ollama.llms import OllamaLLM
 # docker run -t --rm --init -p 8080:8070 -p 8081:8071 --memory="9g" lfoppiano/grobid:0.7.0
 # docker run -t --rm --init -p 8080:8070 -p 8081:8071 lfoppiano/grobid:0.6.2
 
+# docker run -p 8501:8501 summarticles
+# docker build . -t summarticles -f .\Dockerfile
+
 path = os.path.dirname(os.getcwd())
 path = os.getcwd()
 print(path)
