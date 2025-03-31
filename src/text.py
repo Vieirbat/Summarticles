@@ -474,7 +474,8 @@ class text_mining(object):
                         tol=1e-4, 
                         random_state=0):
         
-        lim_sup = range(2,int(X.shape[0]**0.5)+1) if lim_sup == None else lim_sup
+        lim_sup = range(2,int(X.shape[0]**0.5)+2) if lim_sup == None else lim_sup
+        print(lim_sup)
         list_result = []
 
         for c in lim_sup:

@@ -222,6 +222,8 @@ if __name__ == '__main__':
         st.session_state['param_sim'] = 0.0
     if 'rb_reddim' not in st.session_state:
         st.session_state['rb_reddim'] = 'PCA'
+    if 'files_count' not in st.session_state:
+        st.session_state['files_count'] = 0
     
     summachat_variables(st)
 
@@ -285,6 +287,7 @@ if __name__ == '__main__':
     if st.session_state['path_check'] and not st.session_state['previous_exec_check']:
         
         files_count = input_path_success_message(st, st.session_state['input_path'])
+        st.session_state['files_count'] = files_count
     
         with st.spinner('⚙️ Check if there are another executions in the cache!'):
             
@@ -319,6 +322,9 @@ if __name__ == '__main__':
                 if not len(st.session_state['dict_dfs'].keys()) or not st.session_state['dict_dfs']['df_doc_info'].shape[0]:
                     st.error("❓ There is no information to extract from articles in the specified path! Please, choose another file path.")
                 else:
+                    if st.session_state['files_count'] < 3:
+                        st.warning("⚠️ Maybe some features don't work because there are few documentos...")
+
                     with st.container():
                         with st.spinner('🔢📊 Generating articles macro numbers...'):
                             st.markdown("""<hr style="height:10px;border:none;color:#333;background-color:#333;" /> """, unsafe_allow_html=True)
@@ -414,29 +420,33 @@ if __name__ == '__main__':
                                                                                        text_mining())
                                     
                     with st.container():
-                        if st.session_state['show_similaritygraph']:
-                            with st.spinner('📄➞📄  Making Similarity Graph...'):
-                                
-                                st.markdown("""<hr style="height:1px;border:none;color:#F1F1F1;background-color:#F1F1F1;" /> """, unsafe_allow_html=True)
-                                st.markdown("""<h3 style="text-align:left;"><b>Similarity Graph: this graph shows you similarity across articles.</b></h3>""", unsafe_allow_html=True)
+                            if st.session_state['show_similaritygraph']:
+                                with st.spinner('📄➞📄  Making Similarity Graph...'):
+                                    
+                                    st.markdown("""<hr style="height:1px;border:none;color:#F1F1F1;background-color:#F1F1F1;" /> """, unsafe_allow_html=True)
+                                    st.markdown("""<h3 style="text-align:left;"><b>Similarity Graph: this graph shows you similarity across articles.</b></h3>""", unsafe_allow_html=True)
 
-                                with st.expander("How it works?"):
-                                    st.write("""Using abstract text from all articles, Summarticles create a TF-IDF matrix and 
-                                                compute cossine similarity cross all articles. 
-                                                In Summarticles cossine similarity range from 0 to 1, closer than 1 means high similarity
-                                                0 is the opposite.""")
-                                    
-                                def del_similarity_graph():
-                                    del st.session_state['dict_dfs']['similarity_graph']
-                                    
-                                st.session_state['dict_dfs'], rel_size, sim_size = similarity_graph(st, st.session_state['dict_dfs'],
-                                                                                                    input_folder_path, text_mining(),
-                                                                                                    percentil="75%",
-                                                                                                    n_sim=st.session_state['param_n_sim'],
-                                                                                                    cache_folder_name='summarticles_cache')
+                                    with st.expander("How it works?"):
+                                        st.write("""Using abstract text from all articles, Summarticles create a TF-IDF matrix and 
+                                                    compute cossine similarity cross all articles. 
+                                                    In Summarticles cossine similarity range from 0 to 1, closer than 1 means high similarity
+                                                    0 is the opposite.""")
+
+                                    if st.session_state['files_count'] < 2:
+                                        st.warning("⚠️ You need more documents (>=2) to see the similarity between them...")
+                                    else:
+                                        def del_similarity_graph():
+                                            del st.session_state['dict_dfs']['similarity_graph']
+                                            
+                                        st.session_state['dict_dfs'], rel_size, sim_size = similarity_graph(st, st.session_state['dict_dfs'],
+                                                                                                            input_folder_path, text_mining(),
+                                                                                                            percentil="75%",
+                                                                                                            n_sim=st.session_state['param_n_sim'],
+                                                                                                            cache_folder_name='summarticles_cache')
                                     
                     with st.container():
                         if st.session_state['show_clustering']:
+
                             with st.spinner('📄➞📄  Making Clustering...'):
                                 
                                 st.markdown("""<hr style="height:1px;border:none;color:#F1F1F1;background-color:#F1F1F1;" /> """, unsafe_allow_html=True)
@@ -447,45 +457,48 @@ if __name__ == '__main__':
                                                 For group the data, Summarticles use K-Means and the number of the groups is defined
                                                 by committee vote using Silhouette-Score, Dabies-Bouldin Index and Calinsk-Harabaz Index.""")
                                 
-                                c1, c2 = st.columns([0.5,1])
-                                
-                                with st.container():
-                                    with c2:
-                                        with st.container():
-                                            st.session_state['rb_reddim'] = st.radio("Select Data Projection Algorithm:",
-                                                                                    ('PCA', 'MDS'), # 'UMAP', 'TSNE'),
-                                                                                    horizontal=True,
-                                                                                    help="Choose one of these algorithms for groups data projection!")
+                                if st.session_state['files_count'] < 3:
+                                    st.warning("⚠️ You need more documents (>=3) to see the clustering feature...")
+                                else:
+                                    c1, c2 = st.columns([0.5,1])
+                                    
+                                    with st.container():
+                                        with c2:
+                                            with st.container():
+                                                st.session_state['rb_reddim'] = st.radio("Select Data Projection Algorithm:",
+                                                                                        ('PCA', 'MDS'), # 'UMAP', 'TSNE'),
+                                                                                        horizontal=True,
+                                                                                        help="Choose one of these algorithms for groups data projection!")
 
-                                        st.session_state['dict_dfs'] = clustering_2d(st, st.session_state['dict_dfs'], 
-                                                                                     text_mining(),
-                                                                                     title_text="Group Articles 2D",
-                                                                                     n_components=2,
-                                                                                     algorithm=st.session_state['rb_reddim']) # UMAP, TSNE, PCA, MDS
-                                    with c1:
-                                        df_show = st.session_state['dict_dfs']['clustering_data']['cluster_data_table']
-                                        df_show = df_show.rename(columns={"file_name":"File Name",
-                                                                          "title_head":"Title",
-                                                                          "label":"Group"})
-                                        
-                                        AgGrid(df_show,
-                                               data_return_mode='AS_INPUT', 
-                                               # update_mode='MODEL_CHANGED', 
-                                               fit_columns_on_grid_load=False,
-                                               # theme='fresh',
-                                               enable_enterprise_modules=False,
-                                               height=550, 
-                                               width='100%',
-                                               reload_data=True)
-                                
-                                with st.container():
-                                    st.session_state['dict_dfs'] = clustering_3d(st, 
-                                                                                 st.session_state['dict_dfs'],
-                                                                                 text_mining(),
-                                                                                 title_text="Group Articles 3D",
-                                                                                 n_components=3,
-                                                                                 algorithm=st.session_state['rb_reddim']) # UMAP, TSNE, PCA, MDS
-                     
+                                            st.session_state['dict_dfs'] = clustering_2d(st, st.session_state['dict_dfs'], 
+                                                                                        text_mining(),
+                                                                                        title_text="Group Articles 2D",
+                                                                                        n_components=2,
+                                                                                        algorithm=st.session_state['rb_reddim']) # UMAP, TSNE, PCA, MDS
+                                        with c1:
+                                            df_show = st.session_state['dict_dfs']['clustering_data']['cluster_data_table']
+                                            df_show = df_show.rename(columns={"file_name":"File Name",
+                                                                            "title_head":"Title",
+                                                                            "label":"Group"})
+                                            
+                                            AgGrid(df_show,
+                                                data_return_mode='AS_INPUT', 
+                                                # update_mode='MODEL_CHANGED', 
+                                                fit_columns_on_grid_load=False,
+                                                # theme='fresh',
+                                                enable_enterprise_modules=False,
+                                                height=550, 
+                                                width='100%',
+                                                reload_data=True)
+                                    
+                                    with st.container():
+                                        st.session_state['dict_dfs'] = clustering_3d(st, 
+                                                                                    st.session_state['dict_dfs'],
+                                                                                    text_mining(),
+                                                                                    title_text="Group Articles 3D",
+                                                                                    n_components=3,
+                                                                                    algorithm=st.session_state['rb_reddim']) # UMAP, TSNE, PCA, MDS
+                        
 
                     # with st.container():
                     #     with st.spinner('📄➞📄  Part-of-speech and Named Entities...'):
