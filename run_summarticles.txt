@@ -1,0 +1,18 @@
+- Instale o Docker;
+- Execute o Docker;
+- Abra um terminal;
+- Execute o comando: docker run -t --rm --init -p 8080:8070 -p 8081:8071 lfoppiano/grobid:0.7.0
+
+- Instale Ollama;
+- Execute o Ollama;
+
+- Instale o Python versão 3.12;
+
+- Baixe o repositório de código;
+- Extraia o repositório de código;
+- Abra um terminal;
+- Navegue até a pasta de repositório;
+- Crie um ambiente virtual para execução de Suumarticles:
+	- python -m venv summa
+	- .\summa\Scripts\activate
+	- pip install --no-cache-dir -r PGC/requirements.txt

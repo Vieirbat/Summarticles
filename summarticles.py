@@ -133,6 +133,8 @@ def run_batch_process(st, path_input, cache_folder_name='summarticles_cache', n_
         
         dict_dfs, dict_errors = get_dataframes(result_batch, xmltei_to_dataframe())
 
+        print(dict_dfs['df_doc_info'])
+
         if save_xmltei:
             gcli.save_xmltei_files(result_batch, input_folder_path, cache_folder_name=cache_folder_name)
 

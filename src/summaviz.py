@@ -662,6 +662,11 @@ def plot_maps(st, dict_dfs, path):
     """Plot folium maps."""
     
     df_doc_authors = dict_dfs['df_doc_authors'].loc[:,getColumnsWithData(dict_dfs['df_doc_authors'])]
+
+    if 'country_author' not in df_doc_authors.columns:
+        df_doc_authors['country_author'] = 'Null Value'
+        st.warning("No country information available for authors!")
+        
     df_country_agg = df_doc_authors.groupby(by=['country_author'], as_index=False, dropna=True)['full_name_author'].count()
     df_country_agg['country_author'] = df_country_agg['country_author'].apply(lambda e: str(e).lower().strip())
 
