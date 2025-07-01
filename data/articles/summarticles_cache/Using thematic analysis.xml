@@ -1,0 +1,1486 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xml:space="preserve" xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 https://raw.githubusercontent.com/kermitt2/grobid/master/grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main" xml:id="_6Tebxe5">Using thematic analysis in psychology</title>
+			</titleStmt>
+			<publicationStmt>
+				<publisher/>
+				<availability status="unknown"><licence/></availability>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<title level="a" type="main" xml:id="_9PDM4SE">Using thematic analysis in psychology</title>
+					</analytic>
+					<monogr>
+						<imprint>
+							<date/>
+						</imprint>
+					</monogr>
+					<idno type="MD5">7984A1603E8C222CCE1D8AA576ED9962</idno>
+					<idno type="DOI">10.1191/1478088706qp063oa</idno>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<encodingDesc>
+			<appInfo>
+				<application version="0.7.0" ident="GROBID" when="2025-07-01T21:40+0000">
+					<desc>GROBID - A machine learning software for extracting information from scholarly documents</desc>
+					<ref target="https://github.com/kermitt2/grobid"/>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<profileDesc>
+			<textClass>
+				<keywords>
+					<term xml:id="_gWPfMTJ">thematic analysis</term>
+					<term xml:id="_wBTzZvk">qualitative psychology</term>
+					<term xml:id="_MsFK4vV">patterns</term>
+					<term xml:id="_UXcsc75">epistemology</term>
+					<term xml:id="_UvMxrTm">flexibility</term>
+				</keywords>
+			</textClass>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0" xml:id="_WY2VNwe"><p xml:id="_pGSNuP2"><s xml:id="_Bs9pXw2">Thematic analysis is a poorly demarcated, rarely-acknowledged, yet widely-used qualitative analytic method within psychology.</s><s xml:id="_WZBXgB3">In this paper, we argue that it offers an accessible and theoretically-flexible approach to analysing qualitative data.</s><s xml:id="_nf2a4Sc">We outline what thematic analysis is, locating it in relation to other qualitative analytic methods that search for themes or patterns, and in relation to different epistemological and ontological positions.</s><s xml:id="_pwpZHTQ">We then provide clear guidelines to those wanting to start thematic analysis, or conduct it in a more deliberate and rigorous way, and consider potential pitfalls in conducting thematic analysis.</s><s xml:id="_qK9m7vU">Finally, we outline the disadvantages and advantages of thematic analysis.</s><s xml:id="_BwMxUuN">We conclude by advocating thematic analysis as a useful and flexible method for qualitative research in and beyond psychology.</s></p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head xml:id="_qgsNYYC">Author Biographical Notes</head><p xml:id="_hnFcCVJ"><s xml:id="_V5jJx6v">Virginia Braun is a senior lecturer in the Department of Psychology at The University of Auckland, where she teaches, supervises and conducts qualitative research.</s><s xml:id="_dtEpXeU">Her research interests are primarily focused around women"s health, gendered bodies, and sex and sexuality, and the intersections between these areas.</s><s xml:id="_WK4vna9">She is currently working on projects related to 'sex in long-term relationships', 'female genital cosmetic surgery', and "the social context of STI transmission".</s></p><p xml:id="_hvp7Cfr"><s xml:id="_EXqatMm">Victoria Clarke is a senior lecture in social psychology at the University of the West of England.</s><s xml:id="_ApNmkUW">She has published a number of papers on lesbian and gay parenting, and co-edited two special issues of Feminism &amp; Psychology on Marriage (with Sara-Jane Finlay &amp; Sue Wilkinson).</s><s xml:id="_bfCtJn4">She is currently conducting ESRC-funded research on same sex relationships (with Carol Burgoyne &amp; Maree Burns) and co-editing (with Elizabeth Peel) a book LGBT psychology (Out in Psychology, Wiley).</s></p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head xml:id="_C79Vrfg">Using thematic analysis in psychology</head><p xml:id="_tdW5KqX"><s xml:id="_NuzeyQW">Thematic analysis is a poorly demarcated and rarely-acknowledged, yet widely-used qualitative analytic method (see <ref type="bibr" target="#b5">Boyatzis, 1998;</ref><ref type="bibr" target="#b51">Roulston, 2001)</ref> within and beyond psychology.</s><s xml:id="_dzGkuUx">In this paper, we aim to fill what we, as researchers and teachers in qualitative psychology, have experienced as a current gap: the absence of a paper which adequately outlines the theory, application, and evaluation of thematic analysis, and one which does so in a way accessible to students and those not particularly familiar with qualitative research. <ref type="bibr">1</ref></s><s xml:id="_KmkusGd">That is, we aim to write a paper which will be useful as both a teaching and research tool in qualitative psychology.</s><s xml:id="_rxBep3p">Therefore, in this paper we discuss theory and method for thematic analysis, and clarify the similarities and differences between different approaches that share features in common with a thematic approach.</s></p><p xml:id="_qvpXN4Q"><s xml:id="_Q5heMhc">Qualitative approaches are incredibly diverse, complex and nuanced <ref type="bibr" target="#b31">(Holloway &amp; Todres, 2003)</ref>, and thematic analysis should be seen as a foundational method for qualitative analysis.</s><s xml:id="_zjPSRkq">It is the first qualitative method of analysis that researchers should learn, as it provides core skills that will be useful for conducting many other forms of qualitative analysis.</s><s xml:id="_uJryWpd">Indeed, <ref type="bibr">Holloway and Todres (2003: 347)</ref> identify "thematizing meanings" as one of a few shared generic skills across qualitative analysis. <ref type="bibr">2</ref></s><s xml:id="_mPuYK4g">For this reason, <ref type="bibr" target="#b5">Boyatzis (1998)</ref> characterises it not as a specific method but as a tool to use across different methods.</s><s xml:id="_xkf34rC">Similarly, <ref type="bibr" target="#b53">Ryan and Bernard (2000)</ref> locate thematic coding as a process performed within "major" analytic traditions (such as grounded theory), rather than a specific approach in its own right.</s><s xml:id="_MTUkFnE">We argue thematic analysis should be considered a method in its own right.</s></p><p xml:id="_VsKR7RP"><s xml:id="_Sx9k4UY">One of the benefits of thematic analysis is its flexibility.</s><s xml:id="_NCmZPRm">Qualitative analytic methods can be roughly divided into two camps.</s><s xml:id="_CEj4xdX">Within the first, there are those tied to, or stemming from, a particular theoretical or epistemological position.</s><s xml:id="_fGbHU97">For some of these -such as conversation analysis ([CA] e.g., <ref type="bibr" target="#b34">Hutchby &amp; Wooffitt, 1998)</ref> and interpretative phenomenological analysis ([IPA] e.g., <ref type="bibr" target="#b60">Smith &amp; Osborn, 2003)</ref> there is (as yet) relatively limited variability in how the method is applied, within that framework.</s><s xml:id="_vTh6Bkg">In essence, one recipe guides analysis.</s><s xml:id="_vnGSANQ">For others of thesesuch as grounded theory (e.g., <ref type="bibr" target="#b29">Glaser, 1992;</ref><ref type="bibr" target="#b62">Strauss &amp; Corbin, 1998)</ref>, discourse analysis ([DA] e.g., Burman <ref type="bibr">&amp; Parker, 1993;</ref><ref type="bibr" target="#b47">Potter &amp; Wetherell, 1987;</ref><ref type="bibr" target="#b70">Willig, 2003)</ref> or narrative analysis (e.g., <ref type="bibr" target="#b42">Murray, 2003;</ref><ref type="bibr" target="#b50">Riessman, 1993)</ref> there are different manifestations of the method, from within the broad theoretical framework.</s><s xml:id="_9PSzshr">Second, there are methods that are essentially independent of theory and epistemology, and can be applied across a range of theoretical and epistemological approaches.</s></p><p xml:id="_AQJyHQF"><s xml:id="_M5TQjPV">Although often (implicitly) framed as a realist/experiential method (e.g., <ref type="bibr" target="#b1">Aronson, 1994;</ref><ref type="bibr" target="#b51">Roulston, 2001)</ref>, thematic analysis is actually firmly in the second camp, and is compatible with both essentialist and constructionist paradigms within psychology (we discuss this later).</s><s xml:id="_W7wqJNA">Through its theoretical freedom, thematic analysis provides a flexible and useful research tool, which can potentially provide a rich and detailed, yet complex account of data.</s></p><p xml:id="_zW6fMuf"><s xml:id="_KEMAxCx">Given the advantages of the flexibility of thematic analysis, it is important that we are clear that we are not trying to limit this flexibility.</s><s xml:id="_SVyM8j3">However, an absence of clear and concise guidelines around thematic analysis means that the "anything goes" critique of qualitative research <ref type="bibr" target="#b0">(Antaki, Billig, Edwards, &amp; Potter, 2002)</ref> may well apply in some instances.</s><s xml:id="_ax2JMmQ">With this paper, we hope to strike a balance between demarcating thematic analysis clearlyi.e., explaining what it is, and how you do it -and ensuring flexibility in relation to how it is used, so that it does not become limited and constrained, and lose one of its key advantages.</s><s xml:id="_88rwHhh">Indeed, a clear demarcation of this method will be useful to ensure that those who use thematic analysis can make active choices about the particular form of analysis they are engaged in.</s><s xml:id="_bddeFbB">Therefore, this paper seeks to celebrate the flexibility of the method, and provide a vocabulary and "recipe" for people to start doing thematic analysis in a way that is theoretically and methodologically sound. <ref type="bibr">3</ref></s><s xml:id="_gtW3F2N">As we will show, what is important is that as well as applying a method to data, researchers make their (epistemological and other) assumptions explicit <ref type="bibr" target="#b31">(Holloway &amp; Todres, 2003)</ref>.</s><s xml:id="_6Ca7XVk">Qualitative psychologists need to be clear about what they are doing and why, and include the often-omitted "how" they did their analysis in their reports <ref type="bibr" target="#b3">(Attride-Stirling, 2001)</ref>.</s></p><p xml:id="_a7srZnj"><s xml:id="_e9tPYgN">In this paper we outline: what thematic analysis is; a 6-phase guide to doing thematic analysis; potential pitfalls to avoid when doing thematic analysis; what makes good thematic analysis; and advantages and disadvantages of thematic analysis.</s><s xml:id="_wfsV7HK">Throughout, we provide examples from the research literature, and our own research.</s><s xml:id="_7g9Dmuk">By providing examples we show the types of research questions and topics that thematic analysis can be used to study.</s></p><p xml:id="_48CJfaW"><s xml:id="_t8u6aDb">Before we begin, we need to define a few of the terms used throughout the paper.</s><s xml:id="_48vq4k9">Data corpus refers to all data collected for a particular research project, while data set refers to all the data 6 from the corpus that is being used for a particular analysis.</s><s xml:id="_s6d7RQt">There are two main ways of choosing your data set (which approach you take depends on whether you are coming to the data with a specific question or not -see "a number of decisions" below).</s><s xml:id="_DXGFcd4">First, your data set may consist of many or all individual data items within your data corpus.</s><s xml:id="_x5znDZS">So, for example, in a project on female genital cosmetic surgery, Virginia"s data corpus consists of interviews with surgeons, media items on the topic, and surgeon websites.</s><s xml:id="_Rhqy5gN">For any particular analysis, her data set might just be the surgeon interviews, just the websites <ref type="bibr" target="#b7">(Braun, 2005b)</ref>, or it might combine surgeon data with some media data (e.g., <ref type="bibr" target="#b6">Braun, 2005a)</ref>.</s><s xml:id="_R4YUc7v">Second, your data set might be identified by a particular analytic interest in some topic in the data, and your data set then becomes all instances in the corpus where that topic is referred to.</s><s xml:id="_G65By7s">So in Virginia"s example, if she was interested in how "sexual pleasure" was talked about, her data set would consist of all instances across the entire data corpus that had some relevance to sexual pleasure.</s><s xml:id="_HRSqFXX">These two approaches might sometimes be combined to produce the data set.</s><s xml:id="_Bqpab3g">Data item is used to refer to each individual piece of data collected, which together make up the data set or corpus.</s><s xml:id="_y5jzhjt">A data item in this instance would be an individual surgeon interview, a television documentary, or one particular website.</s><s xml:id="_ZtnpE5W">Finally, data extract refers to an individual coded chunk of data, which has been identified within, and extracted from, a data item.</s><s xml:id="_2FhDA9f">There will be many of these, taken from throughout the entire data set, and only a selection of these extracts will feature in the final analysis.</s></p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head xml:id="_YCzMqF5">What is thematic analysis?</head><p xml:id="_FBwcZqw"><s xml:id="_2sKfDEU">Thematic analysis is a method for identifying, analysing, and reporting patterns (themes) within data.</s><s xml:id="_uBWUVY7">It minimally organises and describes your data set in (rich) detail.</s><s xml:id="_e25edRk">However, it also often goes further than this, and interprets various aspects of the research topic <ref type="bibr" target="#b5">(Boyatzis, 1998)</ref>.</s><s xml:id="_hEkaZpC">The range of different possible thematic analyses will further be highlighted in relation to a number of decisions regarding it as a method (see below).</s></p><p xml:id="_NMWzwmX"><s xml:id="_tmM5sPh">Thematic analysis is widely used, but there is no clear agreement about what thematic analysis is and how you go about doing it (see <ref type="bibr" target="#b3">Attride-Stirling, 2001;</ref><ref type="bibr" target="#b5">Boyatzis, 1998;</ref><ref type="bibr">Tuckett, 2005, for other examples)</ref>.</s><s xml:id="_Mm574nV">It can be seen as a very poorly "branded" method, in that it does not appear to exist as a "named" analysis in the same way that other methods do (e.g., narrative analysis, grounded theory).</s></p><p xml:id="_xRW4yrF"><s xml:id="_HE3N4rV">In this sense, it is often not explicitly claimed as the method of analysis, when, in actuality, we argue that a lot of analysis is essentially thematic -but is either claimed as something else (such as discourse analysis, or even content analysis (e.g., <ref type="bibr" target="#b40">Meehan, Vermeer, &amp; Windsor, 2000)</ref>) or not identified as any particular method at allfor example, data were "subjected to qualitative analysis for commonly recurring themes" <ref type="bibr">(Braun &amp; Wilkinson, 2003: 30</ref>).</s><s xml:id="_PYNeeWv">If we do not know how people went about analysing their data, or what assumptions informed their analysis, it is difficult to evaluate their research, and to compare and/or synthesise it with other studies on that topic, and it can impede other researchers carrying out related projects in the future <ref type="bibr" target="#b3">(Attride-Stirling, 2001)</ref>.</s><s xml:id="_YsaNdc4">For these reasons alone, clarity around process and practice of method is vital.</s><s xml:id="_vppgYAm">We hope that this paper will lead to more clarity around thematic analysis.</s></p><p xml:id="_4rbp7WK"><s xml:id="_jmbxWxk">Relatedly, insufficient detail is often given to reporting the process and detail of analysis <ref type="bibr" target="#b3">(Attride-Stirling, 2001)</ref>.</s><s xml:id="_FYcmceM">It is not uncommon to read of themes "emerging" from the data (although this issue is not limited to thematic analysis).</s><s xml:id="_5gCshHC">For example, <ref type="bibr">Singer and Hunter"s (1999: 67</ref>) thematic discourse analysis of women"s experiences of early menopause identified that "several themes emerged" during the analysis.</s><s xml:id="_5e76JcA"><ref type="bibr">Rubin and Rubin (1995: 226)</ref> claim that analysis is exciting because "you discover themes and concepts embedded throughout your interviews".</s><s xml:id="_23gXGkW">An account of themes "emerging" or being "discovered" is a passive account of the process of analysis, and it denies the active role the researcher always plays in identifying patterns/themes, selecting which are of interest, and reporting them to the readers <ref type="bibr" target="#b63">(Taylor &amp; Ussher, 2001</ref>). <ref type="bibr">4</ref></s><s xml:id="_pu6ecQp">The language of "themes emerging": Can be misinterpreted to mean that themes "reside" in the data, and if we just look hard enough they will "emerge" like Venus on the half shell.</s><s xml:id="_zEyG2s7">If themes "reside" anywhere, they reside in our heads from our thinking about our data and creating links as we understand them.</s><s xml:id="_w9hFQD9"><ref type="bibr">(Ely, Vinz, Downing, &amp; Anzul, 1997: 205-6)</ref> It is important at this point for us to acknowledge our own theoretical positions and values in relation to qualitative research.</s><s xml:id="_wrNjFWs">We do not subscribe to a naïve realist view of qualitative research where the researcher can simply "give voice" (see <ref type="bibr" target="#b26">Fine, 2002)</ref> to their participants.</s><s xml:id="_JdHCbFm">As <ref type="bibr">Fine (2002: 218)</ref> argues, even a "giving voice" approach "involves carving out unacknowledged pieces of narrative evidence that we select, edit, and deploy to border our arguments".</s><s xml:id="_XpkgvKq">However, nor do we think there is one ideal theoretical framework for conducting qualitative research, or indeed one ideal method.</s><s xml:id="_Ghegf7T">What is important is that the theoretical framework and methods match what the researcher wants to know, and that they acknowledge these decisions, and recognise them as decisions.</s></p><p xml:id="_pt7sS5n"><s xml:id="_hFzufQz">Thematic analysis differs from other analytic methods that seek to describe patterns across qualitative datasuch as "thematic" discourse analysis, thematic decomposition analysis, IPA and grounded theory. <ref type="bibr">5</ref></s><s xml:id="_ak2kuJQ">Both IPA and grounded theory seek patterns in the data, but are theoretically bounded.</s><s xml:id="_pzTQr4p">IPA is wed to a phenomenological epistemology <ref type="bibr" target="#b59">(Smith, Jarman, &amp; Osborn, 1999;</ref><ref type="bibr" target="#b60">Smith &amp; Osborn, 2003)</ref>, which gives experience primacy <ref type="bibr" target="#b31">(Holloway &amp; Todres, 2003)</ref>, and is about understanding people"s everyday experience of reality, in great detail, so as to gain an understanding of the phenomenon in question <ref type="bibr" target="#b39">(McLeod, 2001)</ref>.</s><s xml:id="_hnk25dw">To complicate matters, grounded theory comes in different versions <ref type="bibr" target="#b15">(Charmaz, 2002)</ref>.</s><s xml:id="_efErpBQ">Regardless, the goal of a grounded theory analysis is to generate a plausibleand useful -theory of the phenomena that is grounded in the data <ref type="bibr" target="#b39">(McLeod, 2001)</ref>.</s><s xml:id="_UCEXGmy">However, in our experience, grounded theory seems increasingly to be used in a way that is essentially grounded theory "lite" -as a set of procedures for coding data very much akin to thematic analysis.</s><s xml:id="_wdmRavR">Such analyses do not appear to fully subscribe to the theoretical commitments of a "full-fat" grounded theory, which requires analysis to be directed towards theory development <ref type="bibr" target="#b31">(Holloway &amp; Todres, 2003)</ref>.</s><s xml:id="_FagAQzk">We argue, therefore, that a "named and claimed" thematic analysis means researchers need not subscribe to the implicit theoretical commitments of grounded theory if they do not wish to produce a fully worked-up grounded-theory analysis.</s></p><p xml:id="_R5ryG6d"><s xml:id="_9ftTabS">The term thematic discourse analysis is used to refer to a wide range of pattern-type analysis of data, ranging from thematic analysis within a social constructionist epistemology (i.e., where patterns are identified as socially produced, but no discursive analysis is conducted), to forms of analysis very much akin to the interpretative repertoire form of DA <ref type="bibr" target="#b16">(Clarke, 2005)</ref>.</s><s xml:id="_6wrKDUG">Thematic decomposition analysis (e.g., <ref type="bibr" target="#b61">Stenner, 1993;</ref><ref type="bibr" target="#b66">Ussher &amp; Mooney-Somers, 2000)</ref> is a specifically-named form of "thematic" discourse analysis which identifies patterns (themes, stories) within data, and theorises language as constitutive of meaning and meaning as social.</s></p><p xml:id="_UZc629g"><s xml:id="_92JScRA">These different methods share a search for certain themes or patterns across an (entire) data set, rather than within a data item, such as an individual interview or interviews from one person, as in the case of biographical or case-study forms of analysis such as narrative analysis (e.g., <ref type="bibr" target="#b42">Murray, 2003;</ref><ref type="bibr" target="#b50">Riessman, 1993)</ref>.</s><s xml:id="_ApNXYSP">In this sense they more or less overlap with thematic analysis.</s><s xml:id="_4E9BBYx">As thematic analysis does not require the detailed theoretical and technological knowledge of approaches such as grounded theory and DA, it can offer a more accessible form of analysis, particularly for those early in a qualitative research career.</s></p><p xml:id="_pFPCN7n"><s xml:id="_XmSsxb5">In contrast to IPA or grounded theory (and other methods like narrative, discourse or CA), thematic analysis is not wed to any pre-existing theoretical framework, and so it can be used within different theoretical frameworks (although not all), and can be used to do different things within them.</s></p><p xml:id="_d7TNVGh"><s xml:id="_aV4W33Q">Thematic analysis can be an essentialist or realist method, which reports experiences, meanings and the reality of participants, or it can be a constructionist method, which examines the ways in which events, realities, meanings, experiences and so on are the effects of a range of discourses operating within society.</s><s xml:id="_AcWRGff">It can also be a "contextualist" method, sitting between the two poles of essentialism and constructionism, and characterised by theories such as critical realism (e.g., <ref type="bibr" target="#b69">Willig, 1999)</ref>, which acknowledge the ways individuals make meaning of their experience, and, in turn, the ways the broader social context impinges on those meanings, while retaining focus on the material and other limits of "reality".</s><s xml:id="_e6Cg4XJ">Therefore, thematic analysis can be a method which works both to reflect reality, and to unpick or unravel the surface of "reality".</s><s xml:id="_ffTemxz">However, it is important that the theoretical position of a thematic analysis is made clear, as this is all too often left unspoken (and is then typically a realist account).</s><s xml:id="_wvfPrm9">Any theoretical framework carries with it a number of assumptions about the nature of the data, what they represent in terms of the "the world", "reality", and so forth.</s><s xml:id="_2dQqyks">A good thematic analysis will make this transparent.</s></p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head xml:id="_UgrTeXq">A number of decisions</head><p xml:id="_68fqsqn"><s xml:id="_wTKtTee">Thematic analysis involves a number of choices which are often not made explicit (or are certainly typically not discussed in the method section of papers), but which need explicitly to be considered and discussed.</s><s xml:id="_BGqrKus">In practice, these questions should be considered before analysis (and sometimes even collection) of the data begins, and there needs to be an ongoing reflexive dialogue on the part of the researcher or researchers with regards to these issues, throughout the analytic process.</s><s xml:id="_A6vTutM">The method section of <ref type="bibr">Taylor and Ussher"s (2001)</ref> thematic discourse analysis of S&amp;M provides a good example of research which presents this process explicitly; the method section of <ref type="bibr" target="#b10">Braun &amp; Wilkinson (2003)</ref> does not.</s></p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head xml:id="_RXNkTY7">What counts as a theme?</head><p xml:id="_XYdJQTR"><s xml:id="_V5vMwUt">A theme captures something important about the data in relation to the research question, and represents some level of patterned response or meaning within the data set.</s><s xml:id="_jP4EBdZ">An important question to address in terms of coding is what counts as a pattern/theme, or what "size" does a theme need to be?</s><s xml:id="_FgPAfck">This is a question of prevalence both in terms of space within each data item, and prevalence across the entire data set.</s><s xml:id="_EQSTzdW">Ideally there will be a number of instances of the theme across the data set, but more instances do not necessarily mean the theme itself is more crucial.</s><s xml:id="_8Ndqtsg">As this is qualitative analysis, there is no hard-and-fast answer to the question of what proportion of your data set needs to display evidence of the theme for it to be considered a theme.</s><s xml:id="_mcFBVsm">It is not the case that if it was present in 50% of one"s data items, it would be a theme, but if it was present only in 47%, then it would not be.</s><s xml:id="_Nja3A4E">Nor is it the case that a theme is only something that many data items give considerable attention to, rather than a sentence or two.</s><s xml:id="_N9A2dmf">A theme might be given considerable space in some data items, and little or none in others, or it might appear in relatively little of the data set.</s><s xml:id="_fhcBS8U">So researcher judgement is necessary to determine what a theme is.</s><s xml:id="_bWfftqb">Our initial guidance around this is that you need to retain some flexibility, and rigid rules really do not work.</s><s xml:id="_vEcrkkn">(The question of prevalence gets revisited in relation to themes and sub-themes, as the refinement of analysis [see later] will often result in overall themes, and sub-themes within those.)</s><s xml:id="_WT8qPD4">Furthermore, the "keyness" of a theme is not necessarily dependent on quantifiable measuresbut in terms of whether it captures something important in relation to the overall research question.</s></p><p xml:id="_m4EKB6g"><s xml:id="_hwSj68b">For example, in Victoria"s research on representations of lesbians and gay parents on 26 talk shows <ref type="bibr" target="#b18">(Clarke &amp; Kitzinger, 2004)</ref>, she identified six "key" themes.</s><s xml:id="_dpJVAd5">These six themes were not necessarily the most prevalent themes across the data setthey appeared in between 2 and 22 of the 26 talk shows -but together they captured an important element of the way in which lesbians and gay men "normalise" their families in talk show debates.</s><s xml:id="_kpnDBTA">In this instance, her thematic analysis was driven by this particular analytic question.</s><s xml:id="_7Xfe7y2">How she "measured" prevalence is relevant, as prevalence can be determined in a number of different ways.</s><s xml:id="_3Qq7n3S">Prevalence was counted at the level of the data item (i.e., did a theme appear anywhere in each individual talk show).</s><s xml:id="_phUWr6X">Alternatively, it could have been counted in terms of the number of different speakers who articulated the theme, across the entire data set, or each individual occurrence of the theme across the entire data set (which raises complex questions about where an 'instance' begins and ends within an extended sequence of talk, see <ref type="bibr" target="#b50">Riessman, 1993)</ref>.</s><s xml:id="_ctksVsX">Because prevalence was not crucial to the analysis presented, Victoria chose the most straightforward form, but it is important to note there is no right or wrong method for determining prevalence.</s><s xml:id="_6SE8uav">Part of the flexibility of thematic analysis is that it allows you to determine themes (and prevalence) in a number of ways.</s><s xml:id="_MMScJqJ">What is important is that you are consistent in how you do this within any particular analysis.</s></p><p xml:id="_ZKjw5e7"><s xml:id="_SsRtCv2">There are various "conventions" for representing prevalence in thematic (and other qualitative) analysis that does not provide a quantified measure (unlike much content analysis, <ref type="bibr" target="#b68">Wilkinson, 2000)</ref> for instance: "the majority of participants" <ref type="bibr">(Meehan et al., 2000: 372)</ref>, "many participants" <ref type="bibr">(Taylor &amp; Ussher, 2001: 298)</ref>, or "a number of participants" <ref type="bibr">(Braun, Gavey, &amp; McPhillips, 2003: 249)</ref>.</s></p><p xml:id="_Act6Wuy"><s xml:id="_kPVumaM">Such descriptors work rhetorically to suggest a theme really existed in the data, and to convince us they are reporting truthfully about the data.</s><s xml:id="_Y2YsZp5">But do they tell us much?</s><s xml:id="_sexFr3H">This is perhaps one area where more debate needs to occur about how and why we might represent the prevalence of themes in the data, and, indeed, whether, if, and why prevalence is particularly important.</s></p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head xml:id="_7G69Z9W">A rich description of the data set, or a detailed account of one particular aspect</head><p xml:id="_JkDXrxe"><s xml:id="_rbd4nnJ">It is important to determine the type of analysis you want to do, and the claims you want to make, in relation to your data set.</s><s xml:id="_SPUXBJt">For instance, you might wish to provide a rich thematic description of your entire data set, so that the reader gets a sense of them predominant or important themes.</s><s xml:id="_ZkSe9bu">In this case, the themes you identify, code, and analyse would need to be an accurate reflection of the content of the entire data set.</s><s xml:id="_s4FrEsb">In such an analysis, some depth and complexity is necessarily lost (particularly if you are writing a short dissertation or article with strict word limits), but a rich overall description is maintained.</s><s xml:id="_eYatkrX">This might be a particularly useful method when you are investigating an under-researched area, or with participants whose views on the topic are not known.</s></p><p xml:id="_MBYfNfu"><s xml:id="_J4j4DQd">An alternative use of thematic analysis is to provide a more detailed and nuanced account of one particular theme, or group of themes, within the data.</s><s xml:id="_ZuEpCPp">This might relate to a specific question or area of interest within the data (a semantic approachsee below), or to a particular "latent" theme (see below) across the whole or majority of the data set.</s><s xml:id="_WbdBBbs">An example of this would be Victoria"s talk show paper, discussed previously <ref type="bibr" target="#b18">(Clarke &amp; Kitzinger, 2004)</ref>, which examined normalisation in lesbians" and gay men"s accounts of parenting.</s></p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head xml:id="_CyDRw5x">Inductive vs theoretical thematic analysis</head><p xml:id="_RgvwuUF"><s xml:id="_A6tgUS5">Themes or patterns within data can be identified in one of two primary ways in thematic analysis: in an inductive or "bottom up" way (e.g., see <ref type="bibr" target="#b28">Frith &amp; Gleeson, 2004)</ref>, or in a theoretical or deductive or "top down" way (e.g., see <ref type="bibr" target="#b5">Boyatzis, 1998;</ref><ref type="bibr" target="#b30">Hayes, 1997)</ref>.</s><s xml:id="_CRnev4P">An inductive approach means the themes identified are strongly linked to the data themselves <ref type="bibr" target="#b44">(Patton, 1990</ref>) (as such, this form of thematic analysis bears some similarity to grounded theory).</s><s xml:id="_3KkuwFH">In this approach, if the data have been collected specifically for the research (e.g., via interview or focus group) the themes identified may bear little relationship to the specific question that were asked of the participants.</s><s xml:id="_9ZUdPhn">They would also not be driven by the researcher"s theoretical interest in the area or topic.</s><s xml:id="_T5FNqvc">Inductive analysis is therefore a process of coding the data without trying to fit it into a pre-existing coding frame, or the researcher"s analytic preconceptions.</s><s xml:id="_u3HenEC">In this sense, this form of thematic analysis is datadriven.</s><s xml:id="_BHPEPen">However, it is important to note, as we discussed earlier, that researchers cannot free themselves of their theoretical and epistemological commitments, and data are not coded in an epistemological vacuum.</s></p><p xml:id="_9Vay25R"><s xml:id="_4yj2HTD">In contrast, a "theoretical" thematic analysis would tend to be driven by the researcher"s theoretical or analytic interest in the area, and is thus more explicitly analyst-driven.</s><s xml:id="_gu5BMFn">This form of thematic analysis tends to provide less a rich description of the data overall, and more a detailed analysis of some aspect of the data.</s><s xml:id="_htTBar3">The choice between inductive and theoretical maps onto how and why you are coding the data as well.</s><s xml:id="_ZXCzEUS">You can either code for a quite specific research question (which maps onto the more theoretical approach) or the specific research question can evolve through the coding process (which maps onto the inductive approach).</s></p><p xml:id="_svhRYBY"><s xml:id="_pg7qatN">For example, if a researcher was interested in talk about heterosex, and had collected interview data, with an inductive approach they would read and re-read the data for any themes related to heterosex, and code diversely, without paying attention to the themes that previous research on the topic might have identified.</s><s xml:id="_AhbqB42">For example, the researcher would not look to <ref type="bibr">Hollway"s (1989)</ref> influential research identifying discourses of heterosex, and code just for male sexual drive, have/hold or permissive discourse themes.</s><s xml:id="_BA5T2tH">In contrast, with a theoretical approach, the researcher may well be interested in the way permissiveness plays out across the data, and focus on that particular feature in coding the data.</s><s xml:id="_BUD4xXN">What this would then result in is a number of themes around permissiveness, which may include, speak to, or expand on something approximating Hollway"s original theme.</s></p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head xml:id="_GxkeMKp">Semantic or latent themes</head><p xml:id="_5FYAc66"><s xml:id="_rZx24nS">Another decision revolves around the "level" at which themes are to be identified: at a semantic or explicit level, or at a latent or interpretative level <ref type="bibr" target="#b5">(Boyatzis, 1998)</ref>. <ref type="bibr">6</ref></s><s xml:id="_KBuSVjW">A thematic analysis typically focuses exclusively or primarily on one level.</s><s xml:id="_u78sJ7V">With a semantic approach, the themes are identified within the explicit or surface meanings of the data and the analyst is not looking for anything beyond what a participant has said or what has been written.</s><s xml:id="_X5buWry">Ideally, the analytic process involves a progression from description, where the data have simply been organised to show patterns in semantic content, and summarised, to interpretation, where there is an attempt to theorise the significance of the patterns and their broader meanings and implications <ref type="bibr" target="#b44">(Patton, 1990)</ref>, often in relation to previous literature (see <ref type="bibr" target="#b28">Frith &amp; Gleeson, 2004, for</ref> an excellent example of this).</s></p><p xml:id="_kuqQKyB"><s xml:id="_Ykf2V9n">In contrast, a thematic analysis at the latent level goes beyond the semantic content of the data, and starts to identify or examine the underlying ideas, assumptions, and conceptualisationsand ideologies -that are theorised as shaping or informing the semantic content of the data.</s><s xml:id="_yyprc3G">If we imagine our data three-dimensionally as an uneven blob of jelly, the semantic approach would seek to describe the surface of the jelly, its form and meaning, while the latent approach would seek identify the features that gave it that particular form and meaning.</s><s xml:id="_6k2Q4Gw">Thus for latent thematic analysis, the development of the themes themselves involves interpretative work, and the analysis that is produced is not just description, but is already theorised.</s></p><p xml:id="_grwpZaH"><s xml:id="_NRzufkv">Analysis within this latter tradition tends to come from a constructionist paradigm (e.g., <ref type="bibr" target="#b14">Burr, 1995)</ref>, and in this form, thematic analysis overlaps with some forms of "discourse analysis" (which are sometimes specifically referred to as "thematic discourse analysis" (e.g., <ref type="bibr" target="#b58">Singer &amp; Hunter, 1999;</ref><ref type="bibr" target="#b63">Taylor &amp; Ussher, 2001)</ref>), where broader assumptions, structures and/or meanings are theorised as underpinning what is actually articulated in the data.</s><s xml:id="_xx5qdHK">Increasingly, a number of discourse analysts are also revisiting psycho-analytic modes of interpretation (e.g., <ref type="bibr" target="#b33">Hollway &amp; Jefferson, 2000)</ref>, and latent thematic analysis would also be compatible with that framework.</s></p><p xml:id="_DB9KYZF"><s xml:id="_PyhdzPG">-</s></p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head xml:id="_KMZVYsM">Epistemology: essentialist/realist vs constructionist thematic analysis</head><p xml:id="_9PsT3fR"><s xml:id="_c2jrR22">As we have argued, thematic analysis can be conducted within both realist/essentialist and constructionist paradigms, although the outcome and focus will be different from each.</s><s xml:id="_zQQsAsF">The question of epistemology is usually determined when a research project is being conceptualised, although epistemology may also raise its head again during analysis, when the research focus may shift to an interest in different aspects of the data.</s><s xml:id="_gCf8Ud5">The research epistemology guides what you can say about your data, and informs how you theorise meaning.</s><s xml:id="_rC4Sj78">For instance, with an essentialist/realist approach, you can theorise motivations, experience, and meaning in a straightforward way, because a simple, largely unidirectional relationship is assumed between meaning and experience and language (language reflects and enables us to articulate meaning and experience) <ref type="bibr" target="#b47">(Potter &amp; Wetherell, 1987;</ref><ref type="bibr" target="#b67">Widdicombe &amp; Wooffitt, 1995)</ref>.</s></p><p xml:id="_PDEE6Zw"><s xml:id="_EccpzAn">In contrast, from a constructionist perspective, meaning and experience are socially produced and reproduced, rather than inhering within individuals <ref type="bibr" target="#b14">(Burr, 1995)</ref>.</s><s xml:id="_t276p34">Therefore, thematic analysis conducted within a constructionist framework cannot and does not seek to focus on motivation or individual psychologies, but instead seeks to theorise the socio-cultural contexts, and structural conditions, that enable the individual accounts that are provided.</s><s xml:id="_6rUYe5r">Thematic analysis that focuses on "latent" themes tends to be more constructionist, and it also tends to start to overlap with thematic discourse analysis at this point.</s><s xml:id="_UjQzPqt">However, not all "latent" thematic analysis is constructionist.</s></p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head xml:id="_UnT6BVg">The many questions of qualitative research</head><p xml:id="_ETSA5Dz"><s xml:id="_EDumpub">It is worth briefly noting that qualitative research involves a series of questions, and there is a need to be clear about the relationship between these different questions.</s><s xml:id="_ksARSq4">First, there is the overall research question or questions that drive the project.</s><s xml:id="_ppw2e24">A research question might be very broad (and exploratory), such as "how is lesbian and gay parenting constructed?" or "what are the meanings of the vagina?"</s><s xml:id="_uVbkxmd">Narrower research questions might be "how and why is lesbian and gay parenting normalised?" <ref type="bibr" target="#b18">(Clarke &amp; Kitzinger, 2004)</ref>, or "what are the discourses around vaginal size?" (see <ref type="bibr" target="#b9">Braun &amp; Kitzinger, 2001)</ref>.</s><s xml:id="_Xub9hRf">These narrow questions may be part of a broader overarching research question, and if so, the analyses they inform would also provide answers to the overall research question.</s></p><p xml:id="_SjC2CUg"><s xml:id="_cFquPCr">Although all projects are guided by research questions, these may also be refined as a project progresses.</s></p><p xml:id="_gbk7fA3"><s xml:id="_KjWTQj2">Second, if data from interviews or focus groups have been collected, there are the questions that participants have responded to.</s><s xml:id="_bcTXxdH">Finally, there are the questions that guide the coding and analysis of the data.</s><s xml:id="_rf9dkr4">There is no necessary relationship between these three, and indeed, it is often desirable that there is a disjuncture between them.</s><s xml:id="_DgxyfGx">Some of the worst examples of "thematic" analysis we have read have simply used the questions put to participants as the "themes" identified in the "analysis" -although in such instances, there really is not any analysis done at all!</s><s xml:id="_X4tpm47">To sum up, thematic analysis involves the searching across a data setbe that a number of interviews or focus groups, or a range of textsto find repeated patterns of meaning.</s><s xml:id="_medJ3AC">The exact form and product of thematic analysis varies, as indicated above, and so it is important that the questions outlined above are considered before and during thematic analyses.</s><s xml:id="_FuBQJDu">Those approaches which consider specific aspects, latent themes and are constructionist tend to often cluster together, while those that consider meanings across the whole data set, semantic themes, and are realist often cluster together.</s><s xml:id="_WJXtyKS">However, there are no hard-and-fast rules in relation to this, and different combinations are possible.</s><s xml:id="_xA4WHxF">What is important is that the finished product contains an accountnot necessarily that detailedof what was done, and why.</s><s xml:id="_MJ6NG9C">So what does one actually do?</s></p><p xml:id="_sUpM2A6"><s xml:id="_3AFEqRC">We now provide what is hopefully a straightforward step-by-step guide to conducting thematic analysis.</s></p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head xml:id="_dPWpadD">Doing thematic analysis: a step-by-step guide</head><p xml:id="_hUdcWdJ"><s xml:id="_DPDhPrD">Some of the phases of thematic analysis are similar to the phases of other qualitative research, so these stages are not necessarily all unique to thematic analysis.</s><s xml:id="_EnJmZ6v">The process starts when the analyst begins to notice, and look for, patterns of meaning and issues of potential interest in the datathis may be during data collection.</s><s xml:id="_NdMcZez">The endpoint is the reporting of the content and meaning of patterns (themes) in the data, where "themes are abstract (and often fuzzy) constructs the investigators identify [sic] before, during, and after analysis" <ref type="bibr">(Ryan &amp; Bernard, 2000: 780)</ref>.</s><s xml:id="_7r5AgWY">Analysis involves a constant moving back and forward between the entire data set, the coded extracts of data that you are analysing, and the analysis of the data that you are producing.</s><s xml:id="_MVbBRQr">Writing is an integral part of analysis, not something that takes place at the end, as it does with statistical analyses.</s><s xml:id="_Hwwb93m">Therefore, writing should begin in phase one, with the jotting down of ideas and potential coding schemes, and continue right through the entire coding/analysis process.</s></p><p xml:id="_jpRP8t3"><s xml:id="_DvtGeRQ">There are different positions regarding when you should engage with the literature relevant to your analysiswith some arguing that early reading can narrow your analytic field of vision, leading you to focus on some aspects of the data at the expense of other potential crucial aspects.</s><s xml:id="_uMSB2j9">Others argue that engagement with the literature can enhance your analysis by sensitising you to more subtle features of the data <ref type="bibr" target="#b65">(Tuckett, 2005)</ref>.</s><s xml:id="_YcCTRkU">Therefore, there is no one right way to proceed with reading, for thematic analysis, although a more inductive approach would be enhanced by not engaging with literature in the early stages of analysis, whereas a theoretical approach requires engagement with the literature prior to analysis.</s></p><p xml:id="_72AMTVx"><s xml:id="_NmHBx3C">We provide an outline to guide you through the six phases of analysis, and offer examples to demonstrate the process. <ref type="bibr">7</ref></s><s xml:id="_VM5rRq7">The different phases are usefully summarised in Table <ref type="table" target="#tab_0">1</ref>.</s><s xml:id="_sTXwJ63">It is important to recognise that qualitative analysis guidelines are exactly thatthey are not rules, and, following the basic precepts, will need to be applied flexibility to fit the research questions and data <ref type="bibr" target="#b44">(Patton, 1990)</ref>.</s><s xml:id="_74pszHn">Moreover, analysis is not a linear process where you simply move from one phase to the next.</s></p><p xml:id="_JYqeVbH"><s xml:id="_Gu8fVDA">Instead, it is more recursive process, where you move back and forth as needed, throughout the phases.</s><s xml:id="_uUdEXtu">It is also a process that develops over time <ref type="bibr" target="#b25">(Ely et al., 1997)</ref>, and should not be rushed.</s></p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head xml:id="_YZ4ZJZX">[INSERT TABLE 1 ABOUT HERE]</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head xml:id="_JcgKaC6">Phase 1: familiarising yourself with your data</head><p xml:id="_GVvS39x"><s xml:id="_sFKZqJc">When you engage in analysis, you may have collected the data yourself, or it may have been given to you.</s><s xml:id="_SAQx8Xb">If you collected it through interactive means, you will come to the analysis with some prior knowledge of the data, and possibly some initial analytic interests or thoughts.</s><s xml:id="_3cCY2se">Regardless, it is vital that you immerse yourself in the data to the extent that you are familiar with the depth and breadth of the content.</s><s xml:id="_442MWrt">Immersion usually involves "repeated reading" of the data, and reading the data in an active way -searching for meanings, patterns and so on.</s><s xml:id="_jdFgKhp">It is ideal to read through the entire data set at least once before you begin your coding, as your ideas, identification of possible patterns will be shaped as you read through.</s></p><p xml:id="_KGKw6FT"><s xml:id="_F2kBUJ3">Whether or not you are aiming for an overall or detailed analysis, are searching for latent or semantic themes, or are data-or theoretically-driven will inform how the reading proceeds.</s></p><p xml:id="_XCw9q2Z"><s xml:id="_xBRgjF8">Regardless, it is important to be familiar with all aspects of your data.</s><s xml:id="_FYWg9Fj">At this phase, one of the reasons why qualitative research tends to use far smaller samples than, for example, questionnaire data will become apparentthe reading and re-reading of data is time consuming.</s><s xml:id="_7y96Fhw">It is, therefore, tempting to skip over this phase, or be selective.</s><s xml:id="_dGc7s59">We would strongly advise against this, as this phase provides the bedrock for the rest of the analysis.</s></p><p xml:id="_VACSXEZ"><s xml:id="_GrTvU4x">During this phase, it is a good idea to start taking notes or marking ideas for coding that you will then go back to in subsequent phases.</s><s xml:id="_kqeu2ud">Once you have done this, you are ready to begin the more formal coding process.</s><s xml:id="_b4rXAqz">In essence, coding continues to be developed and defined throughout the entire analysis.</s></p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head xml:id="_mC2YVdD">Transcription of verbal data</head><p xml:id="_VF4JMfv"><s xml:id="_KpbtvdH">If you are working with verbal data such as interviews, television programmes or political speeches, the data will need to be transcribed into written form in order to conduct a thematic analysis.</s><s xml:id="_nAZSSrK">The process of transcription, while it may seen time-consuming, frustrating, and at times boring, can be an excellent way to start familiarising yourself with the data <ref type="bibr" target="#b50">(Riessman, 1993)</ref>.</s><s xml:id="_MFnjNRH">Further, some researchers even argue it should be seen as "a key phase of data analysis within interpretative qualitative methodology" <ref type="bibr">(Bird, 2005: 227)</ref>, and recognised as an interpretative act, where meanings are created, rather than simply a mechanical one of putting spoken sounds on paper <ref type="bibr" target="#b37">(Lapadat &amp; Lindsay, 1999)</ref>.</s></p><p xml:id="_4qJRn5F"><s xml:id="_bp26prQ">Various conventions exist for transforming spoken texts into written texts (see <ref type="bibr">Edwards &amp; Lampert, 1993;</ref><ref type="bibr" target="#b37">Lapadat &amp; Lindsay, 1999)</ref>.</s><s xml:id="_uYaaP3X">Some systems of transcription have been developed for specific forms of analysissuch as the "Jefferson" system for CA (see <ref type="bibr" target="#b2">Atkinson &amp; Heritage, 1984;</ref><ref type="bibr" target="#b34">Hutchby &amp; Wooffitt, 1998)</ref>.</s><s xml:id="_EJ2xZH9">However, thematic analysis, even constructionist thematic analysis, does not require the same level of detail in the transcript as conversation, discourse or even narrative analysis.</s><s xml:id="_3vKp2AR">As there is no one way to conduct thematic analysis, there is no one set of guidelines to follow when producing a transcript.</s><s xml:id="_hmhBTQh">However, at a minimum it requires a rigorous and thorough "orthographic" transcripta "verbatim" account of all verbal (and sometimes nonverbal [e.g., coughs]) utterances. <ref type="bibr">8</ref></s><s xml:id="_k3vYaXh">What is important is that the transcript retains the information you need, from the verbal account, and in a way which is "true" to its original nature (e.g., punctuation added can alter the meaning of data -for example 'I hate it, you know.</s><s xml:id="_RsNujDN">I do' versus 'I hate it.</s><s xml:id="_Q4xhxsg">You know I do', <ref type="bibr">Poland, 2002: 632)</ref>, and that the transcription convention is practically suited to the purpose of analysis <ref type="bibr" target="#b20">(Edwards, 1993)</ref>.</s></p><p xml:id="_9xDMrpF"><s xml:id="_WMm6xqY">As we have noted, the time spent in transcription is not wasted, as it informs the early stages of analysis, and you will develop a far more thorough understanding of your data through having transcribed it.</s><s xml:id="_qS78TxR">Furthermore, the close attention needed to transcribe data may facilitate the closereading and interpretative skills needed to analyse the data <ref type="bibr" target="#b37">(Lapadat &amp; Lindsay, 1999)</ref>.</s><s xml:id="_bPwfgFc">If your data have already been, or will be, transcribed for you, it is important that you spend more time familiarising yourself with the data, and also check the transcripts back against the original audio recordings for "accuracy" (as should always be done).</s></p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head xml:id="_vby7gYb">Phase 2: generating initial codes</head><p xml:id="_D4tqtbP"><s xml:id="_T2ZX6pe">Phase 2 begins when you have read and familiarised yourself with the data, and have generated an initial list of ideas about what is in the data and what is interesting about them.</s><s xml:id="_XvwtWqB">This phase then involves the production of initial codes from the data.</s><s xml:id="_uvhJ28J">Codes identify a feature of the data (semantic content or latent) that appears interesting to the analyst, and refer to "the most basic segment, or element, of the raw data or information that can be assessed in a meaningful way regarding the phenomenon" <ref type="bibr">(Boyatzis, 1998: 63)</ref>.</s><s xml:id="_2m7TJpP">See Figure <ref type="figure">1</ref> for an example of codes applied to a short segment of data.</s><s xml:id="_UUj35XZ">The process of coding is part of analysis <ref type="bibr" target="#b41">(Miles &amp; Huberman, 1994)</ref>, as you are organising your data into meaningful groups <ref type="bibr" target="#b65">(Tuckett, 2005)</ref>.</s><s xml:id="_w8MpWxA">However, your coded data differs from the units of analysis (your themes) which are (often) broader.</s><s xml:id="_gzdfaVM">Your themes, which you start to develop in the next phase, are where the interpretative analysis of the data occurs, and in relation to which arguments about the phenomenon being examined are made <ref type="bibr" target="#b5">(Boyatzis, 1998)</ref>.</s></p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head xml:id="_BRtXsCV">[INSERT FIGURE 1 ABOUT HERE]</head><p xml:id="_JzzZuN5"><s xml:id="_Vqjkkv9">Coding will to some extent depend on whether the themes are more "data-driven" or "theory-driven" -in the former, the themes will depend on the data, but in the latter, you might approach the data with specific questions in mind that you wish to code around.</s><s xml:id="_ZZweKyY">It will also depend on whether you are aiming to code the content of the entire data set, or whether you are coding to identify particular (and possibly limited) features of the data set.</s><s xml:id="_E3t5FqA">Coding can be done either manually or through a software programme (see, e.g., <ref type="bibr" target="#b35">Kelle, 2004;</ref><ref type="bibr" target="#b56">Seale, 2000</ref>, for discussion of software programmes).</s></p><p xml:id="_RqmZS9G"><s xml:id="_NEHXPt3">Work systematically through the entire data set, giving full and equal attention to each data item, and identify interesting aspects in the data items that may form the basis of repeated patterns (themes) across the data set.</s><s xml:id="_A43XXHf">There are a number of ways of actually coding extracts.</s><s xml:id="_zGw4UP2">If coding manually, you can code your data by writing notes on the texts you"re analysing, by using highlighters or coloured pens to indicate potential patterns, or by using "post-it" notes to identify segments of data.</s><s xml:id="_kw8ugWg">You may initially identify the codes, and then match them up with data extracts that demonstrate that code, but it is important in this phase to ensure that all actual data extracts are coded, and then collated together within each code.</s><s xml:id="_8pnWkvD">This may involve copying extracts of data from individual transcripts or photocopying extracts of printed data, and collating each code together in separate computer files or using file cards.</s><s xml:id="_vtxSFSz">If using computer software, you code by tagging and naming selections of text within each data item.</s><s xml:id="_zY4z5eJ">Key advice for this phase is: a) code for as many potential themes/patterns as possible (time permitting) -you never know what might be interesting later; b) code extracts of data inclusivelyi.e., keep a little of the surrounding data if relevant, a common criticism of coding is that the context is lost <ref type="bibr" target="#b12">(Bryman, 2001)</ref>; and c) remember that you can code individual extracts of data in as many different "themes" as they fit into -so an extract may be uncoded, coded once, or coded many times, as relevant.</s><s xml:id="_DKmHHwb">Note that no data set is without contradiction, and a satisfactory thematic "map" that you will eventually produce -an overall conceptualisation of the data patterns, and relationships between them 9 -does not have to smooth out or ignore the tensions and inconsistencies within and across data items.</s><s xml:id="_HPyvu5y">It is important to retain accounts which depart from the dominant story in the analysis, so do not ignore these in your coding.</s></p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head xml:id="_grnKQcx">Phase 3: searching for themes</head><p xml:id="_uS6vGC2"><s xml:id="_4cSfVFM">Phase 3 begins when all data have been initially coded &amp; collated, and you have a long list of the different codes you have identified across your data set.</s><s xml:id="_WdRWpvY">This phase, which re-focuses the analysis at the broader level of themes, rather than codes, involves sorting the different codes into potential themes, and collating all the relevant coded data extracts within the identified themes.</s></p><p xml:id="_UY2tZSD"><s xml:id="_57jkvtG">Essentially, you are starting to analyse your codes, and consider how different codes may combine to form an overarching theme.</s><s xml:id="_mX8EuuU">It may be helpful at this phase to use visual representations to help you sort the different codes into themes.</s><s xml:id="_22rS6NF">You might use tables, mind-maps, or you might write the name of each code (and a brief description) on a separate piece of paper and play around with organising them into theme-piles.</s><s xml:id="_fqVstvC">A thematic map of this early stage can be seen in Figure <ref type="figure" target="#fig_0">2</ref> (the examples in Figures 2 to 4 come from the analysis presented in <ref type="bibr" target="#b10">Braun and Wilkinson (2003)</ref> of women"s talk about the vagina).</s><s xml:id="_Zykg2DG">This is when you start thinking about the relationship between codes, between themes, and between different levels of themes (e.g., main overarching themes and sub-themes within them).</s><s xml:id="_CU8u5sq">Some initial codes may go on to form main themes, whereas others may form sub-themes, and others still may be discarded.</s><s xml:id="_sKYwB2J">At this stage you may also have a set of codes that do not seem to belong anywhere, and it is perfectly acceptable to create a "theme" called miscellaneous to house the codespossibly temporarily -that do not seem to fit into your main themes.</s></p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head xml:id="_jvRKb8N">[INSERT FIGURE 2 ABOUT HERE]</head><p xml:id="_QZ5axsW"><s xml:id="_jqeeKnp">You end this phase with a collection of candidate themes, and sub-themes, and all extracts of data that have been coded in relation to them.</s><s xml:id="_aHXgsmr">At this point, you will start to have a sense of the significance of individual themes.</s><s xml:id="_pHvFr8q">However, do not abandon anything at this stage, as without looking at all the extracts in detail (the next phase) it is uncertain whether the themes hold as they are, or whether some need to be combined, refined and separated, or discarded.</s></p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head xml:id="_ucjkG7F">Phase 4: reviewing themes</head><p xml:id="_unXZrHt"><s xml:id="_NqMFS5s">Phase 4 begins when you have devised a set of candidate themes, and it involves the refinement of those themes.</s><s xml:id="_ANR6WuW">During this phase, it will become evident that some candidate themes are not really themes (e.g., if there are not enough data to support them, or the data are too diverse), while others might collapse into each other (e.g., two apparently separate themes might form one theme).</s><s xml:id="_HQjwtgz">Other themes might need to be broken down into separate themes.</s><s xml:id="_JDHENng"><ref type="bibr">Patton"s (1990)</ref> dual criteria for judging categories -internal homogeneity and external heterogeneity -are worth considering here.</s><s xml:id="_MT9uQCP">Data within themes should cohere together meaningfully, while there should be clear and identifiable distinctions between themes.</s><s xml:id="_HWmGwFs">This phase involves two levels of reviewing and refining your themes.</s><s xml:id="_c9frPsx">Level one involves reviewing at the level of the coded data extracts.</s><s xml:id="_DpRsEdw">This means you need to read all the collated extracts for each theme, and consider whether they appear to form a coherent pattern.</s><s xml:id="_pupbYz7">If your candidate themes appear to form a coherent pattern, you then move on to the second level of this phase.</s><s xml:id="_PX8kbeA">If your candidate themes do not fit, you will need to consider whether the theme itself is problematic, or whether some of the data extracts within it simply do not fit therein which case, you would rework your theme, creating a new theme, finding a home for those extracts that do not currently work in an already-existing theme, or discarding them from the analysis.</s><s xml:id="_devTpJ7">Once you are satisfied that your candidate themes adequately capture the contours of the coded dataonce you have a candidate "thematic map" -you are ready to move on to level two of this phase.</s><s xml:id="_jCUEmza">The outcome of this refinement process can be seen in the thematic map presented in Figure <ref type="figure" target="#fig_1">3</ref>.</s></p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head xml:id="_BwE8RfH">[INSERT FIGURE 3 ABOUT HERE]</head><p xml:id="_6QkCBzd"><s xml:id="_THN9WBH">Level two involves a similar process, but in relation to the entire data set.</s><s xml:id="_zx8acZp">At this level, you consider the validity of individual themes in relation to the data set, but also whether your candidate thematic map "accurately" reflects the meanings evident in the data set as a whole.</s><s xml:id="_y2BES5j">To some extent, what counts as "accurate representation" depends on your theoretical and analytic approach.</s><s xml:id="_CBDt3jv">However, in this phase you re-read your entire data set for two purposes.</s><s xml:id="_QUt9Vhb">The first is, as discussed, to ascertain whether the themes "work" in relation to the data set.</s><s xml:id="_jJqgEdY">The second is to code any additional data within themes that has been missed in earlier coding stages.</s><s xml:id="_nQeSbRy">The need for recoding from the data set is to be expected as coding is an ongoing organic process.</s></p><p xml:id="_bKYq4PZ"><s xml:id="_rGrJnq7">If the thematic map works, then you move on to the next phase.</s><s xml:id="_jh2Zx8h">However, if the map does not fit the data set, you need to return to further reviewing and refining your coding until you have devised a thematic map that you are satisfied with.</s><s xml:id="_YrPJXjy">In so doing, it is possible that you will identify potential new themes, and you might need to start coding for these as well, if you are interested in them.</s><s xml:id="_ArJVt8h">However, a word of warning: as coding data and generating themes could go on ad infinitum, it is important not to get over-enthusiastic with endless re-coding.</s><s xml:id="_jyJmQtR">It is impossible to provide clear guidelines on when to stop, but when your refinements are not adding anything substantial, stop!</s><s xml:id="_SNHN45b">If the process of recoding is only fine-tuning and making more nuanced a coding frame that already worksi.e., it fits the data wellrecognise this and stop.</s><s xml:id="_VUtwhWe">Consider it like editing written work -you could endlessly edit your sentences and paragraphs, but after a few editing turns, any further work is usually unnecessary refinementlike rearranging the hundreds and thousands on an already nicely decorated cake.</s></p><p xml:id="_vxKP5hS"><s xml:id="_epugMCS">At the end of this phase, you should have a fairly good idea of what your different themes are, how they fit together, and the overall story they tell about the data.</s></p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head xml:id="_NXcRkbP">Phase 5: defining and naming themes</head><p xml:id="_HwJeFeX"><s xml:id="_QBTrRxN">Phase 5 begins when you have a satisfactory thematic map of your datasee Figure <ref type="figure" target="#fig_2">4</ref> for the final refinements of Virginia"s thematic map.</s><s xml:id="_gxCXjaY">At this point, you then define and further refine the themes that you will present for your analysis, and analyse the data within them.</s><s xml:id="_mVmYhMx">By "define and refine" we mean identifying the "essence" of what each theme is about (as well as the themes overall), and determining what aspect of the data each theme captures.</s><s xml:id="_zAwSnFG">It is important not to try and get a theme to do too much, or to be too diverse and complex.</s><s xml:id="_ptNQfcM">You do this by going back to collated data extracts for each theme, and organising them into a coherent and internally consistent account, with accompanying narrative.</s><s xml:id="_4yNuMAN">It is vital that you do not just paraphrase the content of the data extracts presented, but identify what is interesting about them and why!</s></p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head xml:id="_GaGTneE">[INSERT FIGURE 4 ABOUT HERE]</head><p xml:id="_cAtPquK"><s xml:id="_3JXnSUS">For each individual theme, you need to conduct and write a detailed analysis.</s><s xml:id="_f5fm98X">As well as identifying the "story" that each theme tells, it is important to consider how it fits into the broader overall "story" that you are telling about your data, in relation to your research question or questions, to ensure there is not too much overlap between themes.</s><s xml:id="_aAY9e7q">So you need to consider the themes themselves, and each theme in relation to the others.</s><s xml:id="_rf59TPT">As part of the refinement, you will identify whether or not a theme contains any sub-themes.</s><s xml:id="_4rEf3jz">Sub-themes are essentially themes-within-atheme.</s><s xml:id="_fBZNUxS">They can be useful for giving structure to a particularly large and complex theme, and also for demonstrating the hierarchy of meaning within the data.</s><s xml:id="_eexKTc2">For instance, in one of Virginia"s analyses of women"s talk about the vagina, she identified two overarching themes in women"s talk: the vagina as liability, and the vagina as asset <ref type="bibr" target="#b10">(Braun &amp; Wilkinson, 2003)</ref>.</s><s xml:id="_FUUzpab">Within each theme, three sub-themes were identified: for liability the sub-themes were "nastiness and dirtiness", "anxieties" and "vulnerability"; for asset the sub-themes were "satisfaction", "power" and "pleasure".</s><s xml:id="_pKbCbt9">However, these eventual final themes and sub-themes resulted from a process of refinement of initial themes and sub-themes, as shown in Figures <ref type="figure" target="#fig_2">2 to 4</ref>.</s></p><p xml:id="_Yn5NE7P"><s xml:id="_Wt3XWFR">It is important that by the end of this phase you can clearly define what your themes are, and what they are not.</s><s xml:id="_UGrd3nA">One test for this is to see whether you can describe the scope and content of each theme in a couple of sentences.</s><s xml:id="_FfVZvSq">If you cannot do this, further refinement of that theme may be needed.</s><s xml:id="_3fNKM88">Although you will have already given your themes working titles, this is also the point to start thinking about the names that you will give them in the final analysis.</s><s xml:id="_dFhk9jR">Names need to be concise, punchy, and immediately give the reader a sense of what the theme is about.</s></p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head xml:id="_xCvn5Wp">Phase 6: producing the report</head><p xml:id="_6yfrknK"><s xml:id="_B4gU99f">Phase 6 begins when you have a set of fully worked-out themes, and involves the final analysis and write-up of the report.</s><s xml:id="_3bqGs6Y">The task of the write-up of a thematic analysis, whether it is for publication or for a research assignment or dissertation, is to tell the complicated story of your data in a way which convinces the reader of the merit and validity of your analysis.</s><s xml:id="_xBfhM4Y">It is important that the analysis (the write-up of it, including data extracts) provides a concise, coherent, logical, nonrepetitive, and interesting account of the story the data tellwithin and across themes.</s><s xml:id="_7hDCzPn">Your writeup must provide sufficient evidence of the themes within the datai.e., enough data extracts to demonstrate the prevalence of the theme.</s><s xml:id="_ybKTKhv">Choose particularly vivid examples, or extracts which capture the essence of the point you are demonstrating, without unnecessary complexity.</s><s xml:id="_PKYfwfV">The extract should be easily identifiable as an example of the issue.</s><s xml:id="_PxSrErZ">However, your write-up needs to do more than just provide data.</s><s xml:id="_ungadDB">Extracts need to be embedded within an analytic narrative that compelling illustrates the story that you are telling about your data, and your analytic narrative needs to go beyond description of the data, and make an argument in relation to your research question.</s></p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head xml:id="_D5gywCp">Pinning down what interpretative analysis actually entails</head><p xml:id="_nAsCQAQ"><s xml:id="_JnS9Kv3">It is difficult to specify exactly what interpretative analysis actually entails, particularly as the specifics of it will vary from study to study.</s><s xml:id="_yP6XAG4">As a first step we recommend looking at published examples of thematic analysis, particularly of the specific version you are planning to use (this is made somewhat more difficult in that thematic analysis is often not a named method, but you can find examples, e.g., <ref type="bibr" target="#b24">Ellis &amp; Kitzinger, 2002;</ref><ref type="bibr" target="#b36">Kitzinger &amp; Willmott, 2002;</ref><ref type="bibr" target="#b64">Toerien &amp; Wilkinson, 2004)</ref>.</s></p><p xml:id="_WRnDNFt"><s xml:id="_VPnhQeD">In order to provide a sense of the sorts of questions you should be asking of your data, and the sorts of analytic claims you should be seeking to make, we will discuss a particularly good example of an inductive thematic analysis, which emphasises understanding men"s experiences in relation to the broader social context (see <ref type="bibr" target="#b28">Frith &amp; Gleeson, 2004)</ref>.</s><s xml:id="_2BWCeEZ"><ref type="bibr" target="#b28">Frith and Gleeson (2004)</ref> aim to explore how men"s feelings about their bodies influence their clothing practices, and they use data gathered in qualitative questionnaires from 75 men to answer this question.</s><s xml:id="_E6vKW6r">They report four themes: practicality of clothing choices; lack of concern about appearance; use of clothing to conceal or reveal the body; use of clothing to fit cultural ideals.</s><s xml:id="_KaTvAep">Each theme is clearly linked back to the overall research question, but each is distinct.</s><s xml:id="_U3jDern">They provide a clear sense of the scope and diversity of each theme, using a combination of analyst narrative and illustrative data extracts.</s><s xml:id="_bdzBpsN">Where relevant, they broaden their analysis out, moving from a descriptive to an interpretative level (often relating their claims to existing literature).</s><s xml:id="_7j7z8Tq">For example, in "men value practicality" they make sense of men"s accounts in relation to gender norms and stereotypes, linking the accounts individual men provided to the expectations that menas members of societyface.</s><s xml:id="_3mSGqZZ">What they do, as analysts, is relate the patterns of meaning in men"s responses to an academic analysis of how gender operates.</s><s xml:id="_W3r24zt">In so doing, they demonstrate the dual position that analysts need to take: as both cultural members and cultural commentators.</s><s xml:id="_HJcgC6c">Their "discussion" section makes broader analytic statements about the overall story that the themes tell us about men"s relationship with clothing.</s><s xml:id="_p2SBp9S">This story reveals that men "deliberately and strategically use clothing to manipulate their appearance to meet cultural ideals of masculinity" <ref type="bibr">(Frith &amp; Gleeson, 2004: 45)</ref>, in a way more traditionally more associated with women.</s><s xml:id="_sMGD4ak">This analysis makes an important contribution in that it challenges perceived wisdom about clothing/appearance and masculinity.</s></p><p xml:id="_YnJsc35"><s xml:id="_PmhBD8b">As this example demonstrates, your analytic claims need to be grounded in, but go beyond, the "surface" of the data, even for a "semantic" level analysis.</s><s xml:id="_KXbmgRa">The sort of questions you need to be asking, towards the end phases of your analysis, include: "what does this theme mean?" "What are the assumptions underpinning it?"</s><s xml:id="_PvyUhFF">What are the implications of this theme?"</s><s xml:id="_SHqnQmD">"What conditions are likely to have given rise to it?"</s><s xml:id="_qaWCjyG">"Why do people talk about this thing in this particular way (as opposed to other ways)?" and "What is the overall story the different themes reveal about the topic?"</s><s xml:id="_G2CXEgR">These sorts of questions should guide the analysis once you have a clear sense of your thematic map.</s></p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head xml:id="_sRrWcDq">Potential pitfalls to avoid when doing thematic analysis</head><p xml:id="_yh5NnRg"><s xml:id="_7cnXFXk">Thematic analysis is a relatively straight-forward form of qualitative analysis, which does not require the same detailed theoretical and technical knowledge that approaches like DA or CA do.</s><s xml:id="_9xq2UEr">It is relatively easy to conduct a good thematic analysis on qualitative data, even when you are still learning qualitative techniques.</s><s xml:id="_AngEUUc">However, there are a number of things which can result in a poor analysis.</s><s xml:id="_xt7ftBX">In this section, we identify these potential pitfalls, in the hope that they can be avoided.</s></p><p xml:id="_QKvGjMb"><s xml:id="_hKYdtB4">The first of these is a failure to actually analyse the data at all! Thematic analysis is not just a collection of extracts strung together with little or no analytic narrative.</s><s xml:id="_cvb8RkQ">Nor is it a selection of extracts with analytic comment that simply or primarily paraphrases their content.</s><s xml:id="_XnAvrFP">The extracts in thematic analysis are illustrative of the analytic points the researcher makes about the data, and should be used to illustrate/support an analysis that goes beyond their specific content, to make sense of the data, and tell the reader what it does or might meanas discussed above.</s><s xml:id="_hYF4Fvj">A second, associated, pitfall is the using of the data collection questions (such as from an interview schedule) as the "themes" that are reported.</s><s xml:id="_PXV9FAq">In such a case, no analytic work has been done to identify themes across the entire data set, or make sense of the patterning of responses.</s></p><p xml:id="_Z6gNGUR"><s xml:id="_DrnCRBr">The third is a weak or unconvincing analysis, where the themes do not appear to work, where there is too much overlap between themes, or where the themes are not internally coherent and consistent.</s><s xml:id="_J3ebX3M">All aspects of the theme should cohere around a central idea or concept.</s><s xml:id="_mKEJtjp">This pitfall has occurred if, depending on what the analysis is trying to do, it fails adequately to capture the majority of the data, or fails to provide a rich description/interpretation of one or more aspects of the data.</s><s xml:id="_y2SBjyR">A weak or unconvincing analysis can also stem from a failure to provide adequate examples from the datafor example, only one or two extracts for a theme.</s><s xml:id="_H7N3bHw">This point is essentially about the rhetorics of presentation, and the need for the analysis to be convincing to someone who has not read your entire data set: "The "analysis" of the material … is a deliberate and self-consciously artful creation by the researcher, and must be constructed to persuade the reader of the plausibility of an argument" <ref type="bibr">(Foster &amp; Parker, 1995: 204)</ref>.</s><s xml:id="_ynJqJba">In so doing, you avoid (the appearance of) what <ref type="bibr" target="#b11">Bryman (1988)</ref> has referred to as "anecdotalism" in qualitative researchwhere one or a few instances of a phenomenon are reified into a pattern or theme, when it or they are actually idiosyncratic.</s><s xml:id="_yhwatVE">This is not to say that a few instances cannot be of interest, or revealing, but that it is important not to misrepresent them as an overarching theme.</s></p><p xml:id="_5494BxU"><s xml:id="_Ctxt2eM">The fourth pitfall is a mismatch between the data and the analytic claims that are made about it.</s><s xml:id="_ZGprtyk">In such an (unfounded) analysis, the claims cannot be supported by the data, or, in the worst case, the data extracts presented suggest another analysis or even contradict the claims.</s><s xml:id="_zTSmXA8">The researcher needs to make sure that their interpretations and analytic points are consistent with the data extracts.</s><s xml:id="_NSXM4vM">A weak analysis does not appear to consider other obvious alternative readings of the data, or fails to consider variation (and even contradiction) in the account that is produced.</s><s xml:id="_qEq4pAE">A pattern in data is rarely, if ever, going to be 100% complete and non-contradicted, so an analysis which suggests that it is, without a thorough explanation, is open to suspicion.</s><s xml:id="_7PeGeXq">It is important to pick compelling examples to demonstrate the themes, so give this considerable thought.</s></p><p xml:id="_JDQr67n"><s xml:id="_bFgEUep">The fifth involves a mismatch between theory and analytic claims, or between the research questions and the form of thematic analysis used.</s><s xml:id="_B87KhXE">A good thematic analysis needs to make sure that the interpretations of the data are consistent with the theoretical framework.</s><s xml:id="_rcGUeDq">So, for instance, if you are working within an experiential framework, you would typically not make claims about the social construction of the research topic, and if you were doing constructionist thematic analysis you would not treat people"s talk of experience as a transparent window on their world.</s><s xml:id="_DBkZds6">Finally, even a good and interesting analysis which fails to spell out its theoretical assumptions, or clarify how it was undertaken, and for what purpose, is lacking crucial information <ref type="bibr" target="#b31">(Holloway &amp; Todres, 2003)</ref>, and thus fails in one aspect.</s></p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head xml:id="_sudS9Wf">What makes good thematic analysis?</head><p xml:id="_8X4Hgqa"><s xml:id="_UnBhEVc">One of the criticisms of qualitative research from those outside the field is the perception that "anything goes".</s><s xml:id="_H5G6AKK">For instance, this sentiment is echoed in the first sentence of <ref type="bibr">Laubschagne"s (2003)</ref> abstract: "For many scientists used to doing quantitative studies the whole concept of qualitative research is unclear, almost foreign, or 'airy fairy'not 'real' research".</s><s xml:id="_7KbxmrT">However, although "qualitative" research cannot be subjected to the same criteria as "quantitative" approaches, it does provide methods of analysis that should be applied rigorously to the data.</s><s xml:id="_6SR7BjH">Furthermore, criteria for conducting good qualitative researchboth data collection and analysis -do exist (e.g., <ref type="bibr" target="#b23">Elliott, Fischer, &amp; Rennie, 1999;</ref><ref type="bibr" target="#b43">Parker, 2004;</ref><ref type="bibr" target="#b55">Seale, 1999;</ref><ref type="bibr" target="#b57">Silverman, 2000;</ref><ref type="bibr" target="#b71">Yardley, 2000)</ref>.</s><s xml:id="_UuX4urs">The British Psychological Society offers relatively succinct online guidelines for assessing quality in qualitative research (see http://www.bps.org.uk/publications/journals/joop/qualitative-guidelines.cfm).</s></p><p xml:id="_P2admvn"><s xml:id="_5ugHtUB">"Criteria" for assessing qualitative research is a not uncontroversial topic, with concerns raised about rigid criteria limiting freedom and stifling methodological development <ref type="bibr" target="#b23">(Elliott et al., 1999;</ref><ref type="bibr" target="#b43">Parker, 2004;</ref><ref type="bibr" target="#b48">Reicher, 2000)</ref>.</s><s xml:id="_kxp45CP"><ref type="bibr" target="#b48">Reicher (2000)</ref> takes the critique further, by asking whether the incredibly diverse range of qualitative approaches can and should be subject to the same criteria.</s></p><p xml:id="_5ny7cNj"><s xml:id="_AuJj6qa">Bracketing these critiques off, the issues raised in many general qualitative research assessment criteria can be more or less applied to thematic forms of analysis.</s><s xml:id="_CYTgsaZ">As thematic analysis is a flexible method, you also need to be clear and explicit about what you are doing, and what you say you are doing needs to match up with what you actually do.</s><s xml:id="_U36jRYX">In this sense, the theory and method need to be applied rigorously, and "rigour lies in devising a systematic method whose assumptions are congruent with the way one conceptualises the subject matter" <ref type="bibr">(Reicher &amp; Taylor, 2005: 549)</ref>.</s><s xml:id="_fByptVs">A concise checklist of criteria to consider when determining whether you have generated a good thematic analysis is provided in Table <ref type="table">2</ref>.</s></p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head xml:id="_Xd45pgs">[Insert Table 2 about here]</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head xml:id="_g2Z2XBz">So what does thematic analysis offer psychologists?</head><p xml:id="_2dCUvMH"><s xml:id="_RZAhKpp">We now end this paper with some brief comments on the advantages and disadvantages of thematic analysis.</s><s xml:id="_cvba3gN">As we have shown throughout this paper, thematic analysis is not a complex method.</s><s xml:id="_GVveVmV">Indeed, as you can see from Table <ref type="table">3</ref>, its advantages are many.</s><s xml:id="_YGyspqu">However, it is not without some disadvantages, which we will now briefly consider.</s><s xml:id="_knVxmHf">Many of the disadvantages depend more on poorly conducted analyses or inappropriate research question, than on the method itself.</s><s xml:id="_SGAPvjB">Further, the flexibility of the methodwhich allows for a wide range of analytic options -means that the potential range of things that can be said about your data is broad.</s><s xml:id="_rdJ8Cpy">While this is an advantage, it can also be a disadvantage in that it makes developing specific guidelines for higher-phase analysis difficult, and can be potentially paralysing to the researcher trying to decide what aspects of their data to focus on.</s><s xml:id="_rMnGnVF">Another issue to consider is that a thematic analysis has limited interpretative power beyond mere description if it is not used within an existing theoretical framework that anchors the analytic claims that are made.</s></p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head xml:id="_fgM2v6c">[INSERT TABLE 3 about here]</head><p xml:id="_x68K7B9"><s xml:id="_MbEZ4QM">Other disadvantages appear when you consider thematic analysis in relation to some of the other qualitative analytic methods.</s><s xml:id="_gPWJcQn">For instance, unlike narrative or other biographical approaches, you are unable to retain a sense of continuity and contradiction through any one individual account, and these contradictions and consistencies across individual accounts may be revealing.</s><s xml:id="_9p2ZGMQ">In contrast to 28 methods like DA and CA, a simple thematic analysis does not allow the researcher to make claims about language use, or the fine-grained functionality of talk.</s></p><p xml:id="_HHqVfsh"><s xml:id="_eBfu2GK">Finally, it is worth noting that thematic analysis currently has no particular kudos as an analytic methodthis, we argue, stems from the very fact that it is poorly demarcated and claimed, yet widely used.</s><s xml:id="_WvDFJtt">This means that thematic analysis is often, or appears often to be, what is simply done by someone without the knowledge or skills to perform a supposedly more sophisticatedcertainly more kudos-bearing -"branded" form of analysis like grounded theory, IPA or DA.</s><s xml:id="_yRmnMw5">We hope this paper will change this view, as, as we have argued, a rigorous thematic approach can produce an insightful analysis that answers particular research questions.</s><s xml:id="_pyMAYSH">What is important is choosing a method that is appropriate to your research question, rather than falling victim to "methodolatry", where you are committed to method rather than topic/content or research questions <ref type="bibr" target="#b31">(Holloway &amp; Todres, 2003)</ref>.</s><s xml:id="_YFYQE6P">Indeed, your method of analysis should be driven by both your research question and your broader theoretical assumptions.</s><s xml:id="_jcHpna4">As we have demonstrated, thematic analysis is a flexible approach that can be used across a range of epistemologies and research questions.</s><s xml:id="_ESD22j6">latent and semantic, and he identifies thematic analysis as incorporating both to latent and manifest aspects.</s><s xml:id="_xWPVXWC">However, this results from the fact that he associates the process of interpretation with latent analysiswhereas we would argue that it should also be an important element of a semantic approach. <ref type="bibr">7</ref></s><s xml:id="_BNJD8nb">We are assuming that you will be working with a "good quality" data corpus and data set.</s><s xml:id="_dtNbqef">We would argue that "good data" are defined by a particular set of criteria regarding what, why, and how they were collected, and offer rich, detailed and complex accounts of the topic.</s><s xml:id="_75zZwvg">Good data do not just provide a surface overview of the topic of interest, or simply reiterate a common-sense account.</s><s xml:id="_sTCbEF4">The challenge for the novice researcher is to interact with research participants in such a way that they generate rich and complex insights.</s><s xml:id="_QgkgjPQ">Producing a good analysis of poor quality data is a far more demanding task for the analyst, although it can potentially be done by a skilled and experienced analyst.</s></p><p xml:id="_E73qc7w"><s xml:id="_fgraP5J">8 See <ref type="bibr" target="#b45">Poland (2002)</ref> for a discussion of the problems with the idea of a "verbatim" transcript, and what is left out, and retained, through this process.</s></p><p xml:id="_NvxEKyM"><s xml:id="_3kBnXPk">9 What we mean by thematic map is similar, but less detailed, than the "codebook" <ref type="bibr" target="#b53">Ryan and Bernard (2000)</ref> refer to, which involves the a detailed account of the hierarchical relationship between codes, as well as a description of each, their criteria, exemplars and counter examples, and other such detail.</s><s xml:id="_Sj2MKDm">Like Boyatzis" (1998) account of a thematic code, this model is then applied to (and revised in relation to) the data.</s><s xml:id="_K5d83uw">See figures 2 to 4 for visual representations of a thematic maps and its refinement.</s><s xml:id="_TNNhURB">Another example of a thematic mapthis time in table formcan be found in <ref type="bibr" target="#b28">Frith &amp; Gleeson (2004)</ref>.</s><s xml:id="_JbGByb7">generating a thematic "map" of the analysis.</s></p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5." xml:id="_kDHhF5C">Defining and naming themes:</head><p xml:id="_gyx92KP"><s xml:id="_FmQh6m3">Ongoing analysis to refine the specifics of each theme, and the overall story the analysis tells;</s></p><p xml:id="_umKJujb"><s xml:id="_SfEMehZ">generating clear definitions and names for each theme.</s></p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="6." xml:id="_dNSpRjn">Producing the report:</head><p xml:id="_4uA3ruC"><s xml:id="_GahnDvQ">The final opportunity for analysis.</s><s xml:id="_7uhYevr">Selection of vivid, compelling extract examples, final analysis of selected extracts, relating back of the analysis to the research question and literature, producing a scholarly report of the analysis.</s></p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head xml:id="_8mc52XC">Table 3: Advantages of Thematic Analysis</head><p xml:id="_DpQQNvj"><s xml:id="_9gPGSY4">Flexibility.</s></p><p xml:id="_Ur8mEry"><s xml:id="_zpTGjbE">Relatively easy and quick method to learn, and do.</s></p><p xml:id="_5KYWNMv"><s xml:id="_xFZ8qWw">Accessible to researchers with little or no experience of qualitative research.</s></p><p xml:id="_NjGM6KE"><s xml:id="_tyT8FJD">Results are generally accessible to educated general public.</s></p><p xml:id="_nMXmU9c"><s xml:id="_3Zu4rjA">Useful method for working within participatory research paradigm, with participants as collaborators.</s></p><p xml:id="_JSvzU4v"><s xml:id="_ejwaCtN">Can usefully summarise key features of a large body of data, and/or offer a "thick description" of the data set.</s></p><p xml:id="_ex8b7df"><s xml:id="_9pTGufv">Can highlight similarities and differences across the data set.</s></p><p xml:id="_GWHVDdk"><s xml:id="_K5hb2Mg">generate unanticipated insights.</s></p><p xml:id="_YnqHdnY"><s xml:id="_xF54EtG">Allows for social as well as psychological interpretations of data.</s></p><p xml:id="_ppQy9s8"><s xml:id="_GrYMZvf">Can be useful for producing qualitative analyses suited to informing policy development.</s></p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_0"><head>Figure 2 :</head><label>2</label><figDesc><div><p xml:id="_R4g58BG"><s xml:id="_EkzkRkS">Figure 2: Initial thematic map, showing five main themes (final analysis presented in Braun &amp; Wilkinson, 2003).</s></p></div></figDesc><graphic coords="40,70.90,94.30,453.15,283.20" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_1"><head>Figure 3 :</head><label>3</label><figDesc><div><p xml:id="_Cz2rFf6"><s xml:id="_cEMDKed">Figure 3: Developed thematic map, showing three main themes (final analysis presented in Braun &amp; Wilkinson, 2003).</s></p></div></figDesc><graphic coords="41,70.90,94.30,453.15,283.20" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_2"><head>Figure 4 :</head><label>4</label><figDesc><div><p xml:id="_sZa8egM"><s xml:id="_F4nTPUS">Figure 4: Final thematic map, showing final two main themes (see Braun &amp; Wilkinson, 2003).</s></p></div></figDesc><graphic coords="42,70.90,94.30,453.15,283.20" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_0"><head>Table 1 : Phases of Thematic Analysis Phase Description of the process 1</head><label>1</label><figDesc><div><p xml:id="_XSPh5xx"><s xml:id="_Fkx3vhB">. Familiarising yourself with your data: Transcribing data (if necessary), reading and rereading the data, noting down initial ideas.</s></p></div></figDesc><table><row><cell>2. Generating initial codes:</cell><cell>Coding interesting features of the data in a</cell></row><row><cell></cell><cell>systematic fashion across the entire data set,</cell></row><row><cell></cell><cell>collating data relevant to each code.</cell></row><row><cell>3. Searching for themes:</cell><cell>Collating codes into potential themes, gathering all</cell></row><row><cell></cell><cell>data relevant to each potential theme.</cell></row><row><cell>4. Reviewing themes:</cell><cell>Checking in the themes work in relation to the coded</cell></row><row><cell></cell><cell>extracts (Level 1) and the entire data set (Level 2),</cell></row></table></figure>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="6" xml:id="_XTYD23u"><ref type="bibr" target="#b5">Boyatzis" (1998)</ref> definition of latent and manifest is somewhat narrower than our identification of</note>
+		</body>
+		<back>
+			<div type="annex">
+<div xmlns="http://www.tei-c.org/ns/1.0"><head xml:id="_QuajUqp">Notes</head><p xml:id="_sufTPJB"><s xml:id="_tndRgua">1 <ref type="bibr" target="#b5">Boyatzis (1998)</ref> provides a much more detailed account of thematic analysis.</s><s xml:id="_2wxYgQE">However, we do not feel that it is a particularly accessible account for those unfamiliar with qualitative approaches.</s></p><p xml:id="_WBc3bJe"><s xml:id="_j6xtyqh">Moreover, his approach differs from ours in that, although he acknowledges the subjective dimension of qualitative analysis, his approach is ultimately, if often implicitly, located within a positivist empiricist paradigm. <ref type="bibr">2</ref></s><s xml:id="_6vV3HnD">Dey"s (1993) account of "qualitative data analysis" which aims to identify shared techniques across the diverse range of qualitative methods, and demonstrate how to do "qualitative analysis" reinforces this point in that his focus is largely thematicbut not claimed as such.</s></p><p xml:id="_eCfn5W3"><s xml:id="_dmGeba8">3 Some authors, such as <ref type="bibr">Potter (1997: 147-148)</ref> argue that one should not simply provide "recipes" for qualitative methods, such as DA, because "a large part of doing discourse analysis is a craft skill, more like bike riding or sexing a chicken than following the recipe for a mild chicken rogan josh.</s><s xml:id="_28wUUnT">… This makes it hard to describe and learn."</s><s xml:id="_nQdZsqa">While we do not disagree that the skills needed for qualitative analyses of all types need to be learned, others, such as <ref type="bibr" target="#b39">McLeod (2001)</ref>, argue that by not discussing the "how to" of analysis, we keep certain methods mysterious (and thus elitist).</s></p><p xml:id="_zWQZAqx"><s xml:id="_ty3VKv8">Instead, if we want to make methods democratic and accessibleand indeed, to make qualitative research of all forms more understandable to those not trained in the methods, and arguably thus more popularwe need to provide concrete advice on how actually to do it.</s><s xml:id="_XUC2JS6">We are not questioning the importance of "non-recipe" forms of training, but while "recipes" necessarily diminish the complexity of certain methods, they are important for making methods accessible. <ref type="bibr">4</ref> Foster and <ref type="bibr" target="#b27">Parker (1995)</ref> suggest one way to acknowledge the creative and active role of the analyst is to use the first person when writing. <ref type="bibr">5</ref> Content analysis is another method that can be used to identify patterns across qualitative data, and is sometimes treated as similar to thematic approaches (e.g., <ref type="bibr" target="#b68">Wilkinson, 2000)</ref>.</s><s xml:id="_BewbeGd">However, content analysis tends to focus at a more micro level, often provides (frequency) counts <ref type="bibr" target="#b68">(Wilkinson, 2000)</ref>, and allows for quantitative analyses of initially qualitative data <ref type="bibr" target="#b53">(Ryan &amp; Bernard, 2000)</ref>.</s></p><p xml:id="_DPdw5Un"><s xml:id="_eS6rA3J">Thematic analysis differs from this in that themes tend not to be quantified (although sometimes they may be; and <ref type="bibr" target="#b5">Boyatzis (1998)</ref> suggests thematic analysis can be used to transform qualitative data into a quantitative form, and subject them statistical analyses), and the unit of analysis tends to be more than a word or phrase, which it typically is in content analysis.</s></p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head xml:id="_r2hDp7E">Table 2: A 15-Point Checklist of Criteria for Good Thematic Analysis</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head xml:id="_hbVNFSs">Process</head><p xml:id="_SnsZKZv"><s xml:id="_H6WzGfD">No. Criteria</s></p><p xml:id="_5u7rdBD"><s xml:id="_DfK6PyB">Transcription 1</s></p><p xml:id="_MQdYYmp"><s xml:id="_nsJXxCU">The data have been transcribed to an appropriate level of detail, and the transcripts have been checked against the tapes for "accuracy".</s></p><p xml:id="_NAyxqzW"><s xml:id="_mwf3PB8">Coding 2 Each data item has been given equal attention in the coding process.</s></p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head xml:id="_n4E3jxu">3</head><p xml:id="_T9yZRrH"><s xml:id="_FbeqbXD">Themes have not been generated from a few vivid examples (an anecdotal approach), but instead the coding process has been thorough, inclusive and comprehensive.</s></p><p xml:id="_nAW4b8V"><s xml:id="_FkkAUJt">4</s></p><p xml:id="_mvgxDXu"><s xml:id="_n8Ywhhx">All relevant extracts for all each theme have been collated.</s></p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head xml:id="_2msbkct">5</head><p xml:id="_WfueAQF"><s xml:id="_e3E7X7k">Themes have been checked against each other and back to the original data set.</s></p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head xml:id="_yKnqEVN">6</head><p xml:id="_uXDTkag"><s xml:id="_Pky4kJK">Themes are internally coherent, consistent, and distinctive.</s></p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head xml:id="_CJkS8V8">Analysis 7</head><p xml:id="_8CEvvAh"><s xml:id="_Drmgzac">Data have been analysedinterpreted, made sense of -rather than just paraphrased or described.</s></p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head xml:id="_RhrqytA">8</head><p xml:id="_HpE6hUp"><s xml:id="_nhPJkPc">Analysis and data match each otherthe extracts illustrate the analytic claims.</s><s xml:id="_4vWxU5x">9 Analysis tells a convincing and well-organised story about the data and topic.</s></p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head xml:id="_k3cUSaW">10</head><p xml:id="_BVKJZk2"><s xml:id="_MbZbKTC">A good balance between analytic narrative and illustrative extracts is provided.</s></p><p xml:id="_XnC9AE2"><s xml:id="_JGqFt9F">Overall 11 Enough time has been allocated to complete all phases of the analysis adequately, without rushing a phase or giving it a once-over-lightly.</s></p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head xml:id="_gXxsZaC">Written report 12</head><p xml:id="_WKTgMEa"><s xml:id="_tgQwWXT">The assumptions about, and specific approach to, thematic analysis are clearly explicated.</s></p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head xml:id="_ce4ZTCG">13</head><p xml:id="_dp7MUMt"><s xml:id="_dnrJqzS">There is a good fit between what you claim you do, and what you show you have donei.e., described method and reported analysis are consistent.</s></p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head xml:id="_9bPbSNh">14</head><p xml:id="_U23ajJX"><s xml:id="_NJ9FmHD">The language and concepts used in the report are consistent with the epistemological position of the analysis.</s></p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head xml:id="_FWUf8NR">15</head><p xml:id="_MQBFjQg"><s xml:id="_v74ww6j">The researcher is positioned as active in the research process; themes do not just "emerge".</s></p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head xml:id="_hYEnS9q">Data extract</head></div>			</div>
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<monogr>
+		<title level="m" type="main" xml:id="_VGfjcT5">Discourse analysis means doing analysis: A critique of six analytic shortcomings. DAOL Discourse Analysis Online</title>
+		<author>
+			<persName><forename type="first">C</forename><surname>Antaki</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Billig</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Edwards</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Potter</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2002" />
+			<biblScope unit="page">1</biblScope>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Antaki, C., Billig, M., Edwards, D., &amp; Potter, J. (2002). Discourse analysis means doing analysis: A critique of six analytic shortcomings. DAOL Discourse Analysis Online [Electronic Version], 1(1).</note>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<analytic>
+		<title level="a" type="main" xml:id="_zETY7rh">A pragmatic view of thematic analysis</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Aronson</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j" xml:id="_9KbqzpC">The Qualitative Report</title>
+		<imprint>
+			<biblScope unit="volume">2</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<date type="published" when="1994" />
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Aronson, J. (1994). A pragmatic view of thematic analysis. The Qualitative Report, 2(1), 2(1).</note>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<monogr>
+		<title level="m" type="main" xml:id="_HNWQvFy">Structures of social action: Studies in conversation analysis</title>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">M</forename><surname>Atkinson</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Heritage</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="1984" />
+			<publisher>Cambridge University Press</publisher>
+			<pubPlace>Cambridge</pubPlace>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Atkinson, J. M., &amp; Heritage, J. (1984). Structures of social action: Studies in conversation analysis. Cambridge: Cambridge University Press.</note>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<analytic>
+		<title level="a" type="main" xml:id="_aqj2y9e">Thematic networks: an analytic tool for qualitative research</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Attride-Stirling</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j" xml:id="_AatzzKS">Qualitative Research</title>
+		<imprint>
+			<biblScope unit="volume">1</biblScope>
+			<biblScope unit="issue">3</biblScope>
+			<biblScope unit="page" from="385" to="405" />
+			<date type="published" when="2001" />
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Attride-Stirling, J. (2001). Thematic networks: an analytic tool for qualitative research. Qualitative Research, 1(3), 385-405.</note>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<analytic>
+		<title level="a" type="main" xml:id="_6SZEDkX">How I stopped dreading and learned to love transcription</title>
+		<author>
+			<persName><forename type="first">C</forename><forename type="middle">M</forename><surname>Bird</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j" xml:id="_N5WPd9W">Qualitative Inquiry</title>
+		<imprint>
+			<biblScope unit="volume">11</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="226" to="248" />
+			<date type="published" when="2005" />
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Bird, C. M. (2005). How I stopped dreading and learned to love transcription. Qualitative Inquiry, 11(2), 226-248.</note>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<monogr>
+		<title level="m" type="main" xml:id="_q7hCTqX">Transforming qualitative information: Thematic analysis and code development</title>
+		<author>
+			<persName><forename type="first">R</forename><forename type="middle">E</forename><surname>Boyatzis</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="1998" />
+			<publisher>Sage</publisher>
+			<pubPlace>Thousand Oaks, CA</pubPlace>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Boyatzis, R. E. (1998). Transforming qualitative information: Thematic analysis and code development. Thousand Oaks, CA: Sage.</note>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<analytic>
+		<title level="a" type="main" xml:id="_kTSNbvx">In search of (better) female sexual pleasure: Female genital &apos;cosmetic&apos; surgery</title>
+		<author>
+			<persName><forename type="first">V</forename><surname>Braun</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j" xml:id="_MMTb46E">Sexualities</title>
+		<imprint>
+			<biblScope unit="volume">8</biblScope>
+			<biblScope unit="issue">4</biblScope>
+			<biblScope unit="page" from="407" to="424" />
+			<date type="published" when="2005" />
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Braun, V. (2005a). In search of (better) female sexual pleasure: Female genital &apos;cosmetic&apos; surgery. Sexualities, 8(4), 407-424.</note>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<monogr>
+		<title level="m" type="main" xml:id="_MPGTj6J">Selling the perfect vulva</title>
+		<author>
+			<persName><forename type="first">V</forename><surname>Braun</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2005" />
+		</imprint>
+	</monogr>
+	<note>Manuscript under submission</note>
+	<note type="raw_reference">Braun, V. (2005b). Selling the perfect vulva. Manuscript under submission.</note>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<analytic>
+		<title level="a" type="main" xml:id="_xgeHx6C">The &quot;fair deal&quot;? Unpacking accounts of reciprocity in heterosex</title>
+		<author>
+			<persName><forename type="first">V</forename><surname>Braun</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Gavey</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Mcphillips</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j" xml:id="_Jwm7urJ">Sexualities</title>
+		<imprint>
+			<biblScope unit="volume">6</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="237" to="261" />
+			<date type="published" when="2003" />
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Braun, V., Gavey, N., &amp; McPhillips, K. (2003). The &quot;fair deal&quot;? Unpacking accounts of reciprocity in heterosex. Sexualities, 6(2), 237-261.</note>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<analytic>
+		<title level="a" type="main" xml:id="_AFZzP8w">The perfectible vagina: Size matters</title>
+		<author>
+			<persName><forename type="first">V</forename><surname>Braun</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Kitzinger</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j" xml:id="_xhtr2X6">Culture Health &amp; Sexuality</title>
+		<imprint>
+			<biblScope unit="volume">3</biblScope>
+			<biblScope unit="page" from="263" to="277" />
+			<date type="published" when="2001" />
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Braun, V., &amp; Kitzinger, C. (2001). The perfectible vagina: Size matters. Culture Health &amp; Sexuality, 3, 263-277.</note>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<analytic>
+		<title level="a" type="main" xml:id="_c9vvd4q">Liability or asset? Women talk about the vagina</title>
+		<author>
+			<persName><forename type="first">V</forename><surname>Braun</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Wilkinson</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j" xml:id="_J2y9vJH">Psychology of women Section Review</title>
+		<imprint>
+			<biblScope unit="volume">5</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="28" to="42" />
+			<date type="published" when="2003" />
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Braun, V., &amp; Wilkinson, S. (2003). Liability or asset? Women talk about the vagina. Psychology of women Section Review, 5(2), 28-42.</note>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<monogr>
+		<title level="m" type="main" xml:id="_E2x3w5f">Quantity and Quality in Social Research</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Bryman</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="1988" />
+			<pubPlace>London: Routledge</pubPlace>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Bryman, A. (1988). Quantity and Quality in Social Research. London: Routledge.</note>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<analytic>
+		<title/>
+		<author>
+			<persName><forename type="first">A</forename><surname>Bryman</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j" xml:id="_tM7w7tZ">Social Research Methods</title>
+		<imprint>
+			<date type="published" when="2001" />
+			<publisher>Oxford University Press</publisher>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Bryman, A. (2001). Social Research Methods. Oxford: Oxford University Press.</note>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<monogr>
+		<title level="m" type="main" xml:id="_Xyr5678">Discourse Analytic Research: Repertoires and Readings of Texts in Action</title>
+		<editor>Burman, E., &amp; Parker, I.</editor>
+		<imprint>
+			<date type="published" when="1993" />
+			<publisher>Routledge</publisher>
+			<pubPlace>London</pubPlace>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Burman, E., &amp; Parker, I. (Eds.). (1993). Discourse Analytic Research: Repertoires and Readings of Texts in Action. London: Routledge.</note>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<monogr>
+		<title level="m" type="main" xml:id="_NF7XyCV">An introduction to social constructionism</title>
+		<author>
+			<persName><forename type="first">V</forename><surname>Burr</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="1995" />
+			<pubPlace>London: Routledge</pubPlace>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Burr, V. (1995). An introduction to social constructionism. London: Routledge.</note>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<analytic>
+		<title level="a" type="main" xml:id="_47BzGnh">Qualitative interviewing and grounded theory analysis</title>
+		<author>
+			<persName><forename type="first">K</forename><surname>Charmaz</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m" xml:id="_DEV2cG9">Handbook of Interview Research: Context &amp; Method</title>
+				<editor>
+			<persName><forename type="first">J</forename><forename type="middle">F</forename><surname>Gubrium</surname></persName>
+			<persName><forename type="first">&amp; J</forename><forename type="middle">A</forename><surname>Holstein</surname></persName>
+		</editor>
+		<meeting><address><addrLine>Thousand Oaks, CA</addrLine></address></meeting>
+		<imprint>
+			<publisher>Sage</publisher>
+			<date type="published" when="2002" />
+			<biblScope unit="page" from="675" to="694" />
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Charmaz, K. (2002). Qualitative interviewing and grounded theory analysis. In J. F. Gubrium &amp; J. A. Holstein (Eds.), Handbook of Interview Research: Context &amp; Method (pp. 675-694). Thousand Oaks, CA: Sage.</note>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<analytic>
+		<title level="a" type="main" xml:id="_SGgbRP5">We&apos;re all very liberal in our views&apos;: Students&apos; talk about lesbian and gay parenting</title>
+		<author>
+			<persName><forename type="first">V</forename><surname>Clarke</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j" xml:id="_TNtNj5W">Lesbian &amp; Gay Psychology Review</title>
+		<imprint>
+			<biblScope unit="volume">6</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page" from="2" to="15" />
+			<date type="published" when="2005" />
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Clarke, V. (2005). &apos;We&apos;re all very liberal in our views&apos;: Students&apos; talk about lesbian and gay parenting. Lesbian &amp; Gay Psychology Review, 6(1), 2-15.</note>
+</biblStruct>
+
+<biblStruct xml:id="b17">
+	<monogr>
+		<title level="m" type="main" xml:id="_faMywAM">An exploratory study of naming practices in same-sex relationships</title>
+		<author>
+			<persName><forename type="first">V</forename><surname>Clarke</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Burns</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Burgoyne</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2005" />
+		</imprint>
+	</monogr>
+	<note>Who would take whose name?. Manuscript under submission</note>
+	<note type="raw_reference">Clarke, V., Burns, M., &amp; Burgoyne, C. (2005). &quot;Who would take whose name?&quot; An exploratory study of naming practices in same-sex relationships. Manuscript under submission.</note>
+</biblStruct>
+
+<biblStruct xml:id="b18">
+	<analytic>
+		<title level="a" type="main" xml:id="_JfYFC6D">Lesbian and gay parents on talk shows: Resistance or collusion in heterosexism</title>
+		<author>
+			<persName><forename type="first">V</forename><surname>Clarke</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Kitzinger</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j" xml:id="_NvFFcDb">Qualitative Research in Psychology</title>
+		<imprint>
+			<biblScope unit="volume">1</biblScope>
+			<biblScope unit="page" from="195" to="217" />
+			<date type="published" when="2004" />
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Clarke, V., &amp; Kitzinger, C. (2004). Lesbian and gay parents on talk shows: Resistance or collusion in heterosexism. Qualitative Research in Psychology, 1, 195-217.</note>
+</biblStruct>
+
+<biblStruct xml:id="b19">
+	<monogr>
+		<title level="m" type="main" xml:id="_dqTtFuZ">Qualitative data analysis: A user-friendly guide for social scientists</title>
+		<author>
+			<persName><forename type="first">I</forename><surname>Dey</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="1993" />
+			<publisher>Routledge</publisher>
+			<pubPlace>London</pubPlace>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Dey, I. (1993). Qualitative data analysis: A user-friendly guide for social scientists. London: Routledge.</note>
+</biblStruct>
+
+<biblStruct xml:id="b20">
+	<analytic>
+		<title level="a" type="main" xml:id="_eF96XTH">Principles and contrasting systems of discourse transcription</title>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">A</forename><surname>Edwards</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m" xml:id="_8KqbQ32">Talking data: transcription and coding in discourse research</title>
+				<editor>
+			<persName><forename type="first">J</forename><forename type="middle">A D</forename><surname>Edwards &amp; M</surname></persName>
+			<persName><surname>Lampert</surname></persName>
+		</editor>
+		<imprint>
+			<date type="published" when="1993" />
+			<biblScope unit="page">3</biblScope>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Edwards, J. A. (1993). Principles and contrasting systems of discourse transcription. In J. A. Edwards &amp; M. D. Lampert (Eds.), Talking data: transcription and coding in discourse research (pp. 3-</note>
+</biblStruct>
+
+<biblStruct xml:id="b21">
+	<monogr>
+		<title/>
+		<author>
+			<persName><forename type="first">N</forename><forename type="middle">J</forename><surname>Hillsdale</surname></persName>
+		</author>
+		<imprint>
+			<publisher>Lawrence Erlbaum Associates</publisher>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Hillsdale, NJ: Lawrence Erlbaum Associates.</note>
+</biblStruct>
+
+<biblStruct xml:id="b22">
+	<monogr>
+		<title level="m" type="main" xml:id="_scEDGQa">Talking data: transcription and coding in discourse research</title>
+		<editor>Edwards, J. A., &amp; Lampert, M. D.</editor>
+		<imprint>
+			<date type="published" when="1993" />
+			<publisher>Lawrence Erlbaum Associates</publisher>
+			<pubPlace>Hillsdale, NJ</pubPlace>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Edwards, J. A., &amp; Lampert, M. D. (Eds.). (1993). Talking data: transcription and coding in discourse research. Hillsdale, NJ: Lawrence Erlbaum Associates.</note>
+</biblStruct>
+
+<biblStruct xml:id="b23">
+	<analytic>
+		<title level="a" type="main" xml:id="_7ABFKjU">Evolving guidelines for publication of qualitative research studies in psychology and related fields</title>
+		<author>
+			<persName><forename type="first">R</forename><surname>Elliott</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><forename type="middle">T</forename><surname>Fischer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><forename type="middle">L</forename><surname>Rennie</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j" xml:id="_eKP5mtw">British Journal of Clinical Psychology</title>
+		<imprint>
+			<biblScope unit="volume">38</biblScope>
+			<biblScope unit="issue">3</biblScope>
+			<biblScope unit="page" from="215" to="229" />
+			<date type="published" when="1999" />
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Elliott, R., Fischer, C. T., &amp; Rennie, D. L. (1999). Evolving guidelines for publication of qualitative research studies in psychology and related fields. British Journal of Clinical Psychology, 38(3), 215-229.</note>
+</biblStruct>
+
+<biblStruct xml:id="b24">
+	<analytic>
+		<title level="a" type="main" xml:id="_9ewKyCH">Denying equality: An analysis of arguments against lowering the age of consent for sex between men</title>
+		<author>
+			<persName><forename type="first">S</forename><forename type="middle">J</forename><surname>Ellis</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Kitzinger</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j" xml:id="_HM6RaNq">Journal of Community and Applied Social Psychology</title>
+		<imprint>
+			<biblScope unit="volume">12</biblScope>
+			<biblScope unit="page" from="167" to="180" />
+			<date type="published" when="2002" />
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Ellis, S. J., &amp; Kitzinger, C. (2002). Denying equality: An analysis of arguments against lowering the age of consent for sex between men. Journal of Community and Applied Social Psychology, 12, 167-180.</note>
+</biblStruct>
+
+<biblStruct xml:id="b25">
+	<monogr>
+		<author>
+			<persName><forename type="first">M</forename><surname>Ely</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Vinz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Downing</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Anzul</surname></persName>
+		</author>
+		<title level="m" xml:id="_pEg336M">On writing qualitative research: Living by words. London: Routledge/Falmer</title>
+				<imprint>
+			<date type="published" when="1997" />
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Ely, M., Vinz, R., Downing, M., &amp; Anzul, M. (1997). On writing qualitative research: Living by words. London: Routledge/Falmer.</note>
+</biblStruct>
+
+<biblStruct xml:id="b26">
+	<monogr>
+		<title level="m" type="main" xml:id="_BA2wrpw">Disruptive Voices: The Possibilities for Feminist Research</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Fine</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2002" />
+			<publisher>Ann Arbour: University of Michigan Press</publisher>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Fine, M. (2002). Disruptive Voices: The Possibilities for Feminist Research. Ann Arbour: University of Michigan Press.</note>
+</biblStruct>
+
+<biblStruct xml:id="b27">
+	<monogr>
+		<title level="m" type="main" xml:id="_WWUZ5eX">Carrying out investigations in psychology: Methods and statistics</title>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">J</forename><surname>Foster</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">I</forename><surname>Parker</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="1995" />
+			<publisher>BPS Books</publisher>
+			<pubPlace>Leicester, UK</pubPlace>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Foster, J. J., &amp; Parker, I. (1995). Carrying out investigations in psychology: Methods and statistics. Leicester, UK: BPS Books.</note>
+</biblStruct>
+
+<biblStruct xml:id="b28">
+	<analytic>
+		<title level="a" type="main" xml:id="_PNFfFDS">Clothing and embodiment: men managing body image and appearance</title>
+		<author>
+			<persName><forename type="first">H</forename><surname>Frith</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Gleeson</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j" xml:id="_Ts8pZUs">Psychology of Men &amp; Masculinity</title>
+		<imprint>
+			<biblScope unit="volume">5</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page" from="40" to="48" />
+			<date type="published" when="2004" />
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Frith, H., &amp; Gleeson, K. (2004). Clothing and embodiment: men managing body image and appearance. Psychology of Men &amp; Masculinity, 5(1), 40-48.</note>
+</biblStruct>
+
+<biblStruct xml:id="b29">
+	<monogr>
+		<title level="m" type="main" xml:id="_nMsVf3Q">Basics of Grounded Theory Analysis</title>
+		<author>
+			<persName><forename type="first">B</forename><surname>Glaser</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="1992" />
+			<publisher>Mill Valley: Sociology Press</publisher>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Glaser, B. (1992). Basics of Grounded Theory Analysis. Mill Valley: Sociology Press.</note>
+</biblStruct>
+
+<biblStruct xml:id="b30">
+	<analytic>
+		<title level="a" type="main" xml:id="_wJwpTtQ">Theory-led thematic analysis: social identification in small companies</title>
+		<author>
+			<persName><forename type="first">N</forename><surname>Hayes</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m" xml:id="_kaC74M9">Doing Qualitative Analysis in Psychology. Hove</title>
+				<editor>
+			<persName><forename type="first">N</forename><surname>Hayes</surname></persName>
+		</editor>
+		<meeting><address><addrLine>UK</addrLine></address></meeting>
+		<imprint>
+			<publisher>Psychology Press</publisher>
+			<date type="published" when="1997" />
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Hayes, N. (1997). Theory-led thematic analysis: social identification in small companies. In N. Hayes (Ed.), Doing Qualitative Analysis in Psychology. Hove, UK: Psychology Press.</note>
+</biblStruct>
+
+<biblStruct xml:id="b31">
+	<analytic>
+		<title level="a" type="main" xml:id="_KyjUzCR">The status of method: flexibility, consistency and coherence</title>
+		<author>
+			<persName><forename type="first">I</forename><surname>Holloway</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Todres</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j" xml:id="_rwgPq5U">Qualitative Research</title>
+		<imprint>
+			<biblScope unit="volume">3</biblScope>
+			<biblScope unit="issue">3</biblScope>
+			<biblScope unit="page" from="345" to="357" />
+			<date type="published" when="2003" />
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Holloway, I., &amp; Todres, L. (2003). The status of method: flexibility, consistency and coherence. Qualitative Research, 3(3), 345-357.</note>
+</biblStruct>
+
+<biblStruct xml:id="b32">
+	<monogr>
+		<title level="m" type="main" xml:id="_76Bpffa">Subjectivity and Method in Psychology: Gender, Meaning and Science</title>
+		<author>
+			<persName><forename type="first">W</forename><surname>Hollway</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="1989" />
+			<publisher>London: Sage</publisher>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Hollway, W. (1989). Subjectivity and Method in Psychology: Gender, Meaning and Science. London: Sage.</note>
+</biblStruct>
+
+<biblStruct xml:id="b33">
+	<monogr>
+		<title level="m" type="main" xml:id="_ydahjjV">Doing Qualitative Research Differently: Free Association, Narrative and the Interview Method</title>
+		<author>
+			<persName><forename type="first">W</forename><surname>Hollway</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Jefferson</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2000" />
+			<publisher>Sage</publisher>
+			<pubPlace>London</pubPlace>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Hollway, W., &amp; Jefferson, T. (2000). Doing Qualitative Research Differently: Free Association, Narrative and the Interview Method. London: Sage.</note>
+</biblStruct>
+
+<biblStruct xml:id="b34">
+	<monogr>
+		<author>
+			<persName><forename type="first">I</forename><surname>Hutchby</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Wooffitt</surname></persName>
+		</author>
+		<title level="m" xml:id="_KeHxnCn">Conversation analysis: Principles, practices and applications</title>
+				<meeting><address><addrLine>Oxford</addrLine></address></meeting>
+		<imprint>
+			<publisher>Polity Press</publisher>
+			<date type="published" when="1998" />
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Hutchby, I., &amp; Wooffitt, R. (1998). Conversation analysis: Principles, practices and applications. Oxford: Polity Press.</note>
+</biblStruct>
+
+<biblStruct xml:id="b35">
+	<analytic>
+		<title level="a" type="main" xml:id="_VPEcwBq">Computer-assisted analysis of qualitative data</title>
+		<author>
+			<persName><forename type="first">U</forename><surname>Kelle</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m" xml:id="_F8mCeQV">A companion to qualitative research</title>
+				<editor>
+			<persName><forename type="first">U</forename><surname>Flick</surname></persName>
+			<persName><forename type="first">E</forename><surname>Kardorff</surname></persName>
+			<persName><forename type="first">&amp;</forename><forename type="middle">I</forename><surname>Steinke</surname></persName>
+		</editor>
+		<meeting><address><addrLine>London</addrLine></address></meeting>
+		<imprint>
+			<publisher>Sage</publisher>
+			<date type="published" when="2004" />
+			<biblScope unit="page" from="276" to="283" />
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Kelle, U. (2004). Computer-assisted analysis of qualitative data. In U. Flick, E. von Kardorff &amp; I. Steinke (Eds.), A companion to qualitative research (pp. 276-283). London: Sage.</note>
+</biblStruct>
+
+<biblStruct xml:id="b36">
+	<analytic>
+		<title level="a" type="main" xml:id="_TDUnnmr">The thief of womanhood&apos;: Women&apos;s experience of Polycystic Ovarian Syndrome</title>
+		<author>
+			<persName><forename type="first">C</forename><surname>Kitzinger</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Willmott</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j" xml:id="_7VdvBxn">Social Science &amp; Medicine</title>
+		<imprint>
+			<biblScope unit="volume">54</biblScope>
+			<biblScope unit="issue">3</biblScope>
+			<biblScope unit="page" from="349" to="361" />
+			<date type="published" when="2002" />
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Kitzinger, C., &amp; Willmott, J. (2002). &apos;The thief of womanhood&apos;: Women&apos;s experience of Polycystic Ovarian Syndrome. Social Science &amp; Medicine, 54(3), 349-361.</note>
+</biblStruct>
+
+<biblStruct xml:id="b37">
+	<analytic>
+		<title level="a" type="main" xml:id="_taHsAzD">Transcription in Research and Practice: From Standardization of Technique to Interpretive Positionings</title>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">C</forename><surname>Lapadat</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">C</forename><surname>Lindsay</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j" xml:id="_Jvry4bp">Qualitative Inquiry</title>
+		<imprint>
+			<biblScope unit="volume">5</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page" from="64" to="86" />
+			<date type="published" when="1999" />
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Lapadat, J. C., &amp; Lindsay, A. C. (1999). Transcription in Research and Practice: From Standardization of Technique to Interpretive Positionings. Qualitative Inquiry, 5(1), 64-86.</note>
+</biblStruct>
+
+<biblStruct xml:id="b38">
+	<monogr>
+		<title level="m" type="main" xml:id="_3rdAZ9D">Qualitative research -Airy fairy or fundamental? The Qualitative Report</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Laubschagne</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2003" />
+			<biblScope unit="volume">8</biblScope>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Laubschagne, A. (2003). Qualitative research -Airy fairy or fundamental? The Qualitative Report [Electronic Version], 8(1).</note>
+</biblStruct>
+
+<biblStruct xml:id="b39">
+	<monogr>
+		<title level="m" type="main" xml:id="_8Ep4sJE">Qualitative research in counselling and psychotherapy</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Mcleod</surname></persName>
+		</author>
+		<idno>Sage. 33</idno>
+		<imprint>
+			<date type="published" when="2001" />
+			<pubPlace>London</pubPlace>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">McLeod, J. (2001). Qualitative research in counselling and psychotherapy. London: Sage. 33</note>
+</biblStruct>
+
+<biblStruct xml:id="b40">
+	<analytic>
+		<title level="a" type="main" xml:id="_VWytZgj">Patients&apos; perceptions of seclusion: A qualitative investigation</title>
+		<author>
+			<persName><forename type="first">T</forename><surname>Meehan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Vermeer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Windsor</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j" xml:id="_UHK8YBH">Journal of Advanced Nursing</title>
+		<imprint>
+			<biblScope unit="volume">31</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="370" to="377" />
+			<date type="published" when="2000" />
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Meehan, T., Vermeer, C., &amp; Windsor, C. (2000). Patients&apos; perceptions of seclusion: A qualitative investigation. Journal of Advanced Nursing, 31(2), 370-377.</note>
+</biblStruct>
+
+<biblStruct xml:id="b41">
+	<monogr>
+		<title level="m" type="main" xml:id="_g8hX8VU">Qualitative data analysis: An expanded sourcebook</title>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">B</forename><surname>Miles</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">M</forename><surname>Huberman</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="1994" />
+			<publisher>Sage</publisher>
+			<pubPlace>Thousand Oaks, CA</pubPlace>
+		</imprint>
+	</monogr>
+	<note>2nd ed.</note>
+	<note type="raw_reference">Miles, M. B., &amp; Huberman, A. M. (1994). Qualitative data analysis: An expanded sourcebook (2nd ed.). Thousand Oaks, CA: Sage.</note>
+</biblStruct>
+
+<biblStruct xml:id="b42">
+	<analytic>
+		<title level="a" type="main" xml:id="_gFfVQPH">Narrative psychology</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Murray</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m" xml:id="_uRYAcEK">Qualitative psychology: A practical guide to research methods</title>
+				<editor>
+			<persName><forename type="first">J</forename><forename type="middle">A</forename><surname>Smith</surname></persName>
+		</editor>
+		<meeting><address><addrLine>London</addrLine></address></meeting>
+		<imprint>
+			<publisher>Sage</publisher>
+			<date type="published" when="2003" />
+			<biblScope unit="page" from="111" to="131" />
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Murray, M. (2003). Narrative psychology. In J. A. Smith (Ed.), Qualitative psychology: A practical guide to research methods (pp. 111-131). London: Sage.</note>
+</biblStruct>
+
+<biblStruct xml:id="b43">
+	<analytic>
+		<title level="a" type="main" xml:id="_J4AZ4xM">Criteria for qualitative research in psychology</title>
+		<author>
+			<persName><forename type="first">I</forename><surname>Parker</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j" xml:id="_ch29sbA">Qualitative Research in Psychology</title>
+		<imprint>
+			<biblScope unit="volume">1</biblScope>
+			<biblScope unit="page" from="95" to="106" />
+			<date type="published" when="2004" />
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Parker, I. (2004). Criteria for qualitative research in psychology. Qualitative Research in Psychology, 1, 95-106.</note>
+</biblStruct>
+
+<biblStruct xml:id="b44">
+	<monogr>
+		<title level="m" type="main" xml:id="_VfsmRqw">Qualitative evaluation and research methods</title>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">Q</forename><surname>Patton</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="1990" />
+			<publisher>Sage</publisher>
+			<pubPlace>Newbury Park, CA</pubPlace>
+		</imprint>
+	</monogr>
+	<note>2nd ed.</note>
+	<note type="raw_reference">Patton, M. Q. (1990). Qualitative evaluation and research methods (2nd ed.). Newbury Park, CA: Sage.</note>
+</biblStruct>
+
+<biblStruct xml:id="b45">
+	<analytic>
+		<title level="a" type="main" xml:id="_mXdtsSy">Transcription quality</title>
+		<author>
+			<persName><forename type="first">B</forename><forename type="middle">D</forename><surname>Poland</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m" xml:id="_fphV4gU">Handbook of Interview Research: Context &amp; Method</title>
+				<editor>
+			<persName><forename type="first">J</forename><forename type="middle">F</forename><surname>Gubrium</surname></persName>
+			<persName><forename type="first">&amp; J</forename><forename type="middle">A</forename><surname>Holstein</surname></persName>
+		</editor>
+		<meeting><address><addrLine>Thousand Oaks, CA</addrLine></address></meeting>
+		<imprint>
+			<publisher>Sage</publisher>
+			<date type="published" when="2002" />
+			<biblScope unit="page" from="629" to="649" />
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Poland, B. D. (2002). Transcription quality. In J. F. Gubrium &amp; J. A. Holstein (Eds.), Handbook of Interview Research: Context &amp; Method (pp. 629-649). Thousand Oaks, CA: Sage.</note>
+</biblStruct>
+
+<biblStruct xml:id="b46">
+	<analytic>
+		<title level="a" type="main" xml:id="_PwnyNkX">Discourse analysis as a way of analysing naturally occurring talk</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Potter</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m" xml:id="_BpVh7S9">Qualitative research: Theory, method and practice</title>
+				<editor>
+			<persName><forename type="first">D</forename><surname>Silverman</surname></persName>
+		</editor>
+		<meeting><address><addrLine>London</addrLine></address></meeting>
+		<imprint>
+			<publisher>Sage</publisher>
+			<date type="published" when="1997" />
+			<biblScope unit="page" from="144" to="160" />
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Potter, J. (1997). Discourse analysis as a way of analysing naturally occurring talk. In D. Silverman (Ed.), Qualitative research: Theory, method and practice (pp. 144-160). London: Sage.</note>
+</biblStruct>
+
+<biblStruct xml:id="b47">
+	<monogr>
+		<title level="m" type="main" xml:id="_Etcxt8f">Discourse and social psychology: Beyond attitudes and behaviour</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Potter</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Wetherell</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="1987" />
+			<publisher>London: Sage</publisher>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Potter, J., &amp; Wetherell, M. (1987). Discourse and social psychology: Beyond attitudes and behaviour. London: Sage.</note>
+</biblStruct>
+
+<biblStruct xml:id="b48">
+	<analytic>
+		<title level="a" type="main" xml:id="_hKrZeKh">Against methodolatry: Some comments on Elliott</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Reicher</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Rennie</forename><surname>Fischer</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j" xml:id="_qHPgSSw">British Journal of Clinical Psychology</title>
+		<imprint>
+			<biblScope unit="volume">39</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page" from="1" to="6" />
+			<date type="published" when="2000" />
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Reicher, S. (2000). Against methodolatry: Some comments on Elliott, Fischer, and Rennie. British Journal of Clinical Psychology, 39(1), 1-6.</note>
+</biblStruct>
+
+<biblStruct xml:id="b49">
+	<monogr>
+		<title level="m" type="main" xml:id="_xkXe2tA">Similarities and differences between traditions. The Psychologist</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Reicher</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Taylor</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2005" />
+			<biblScope unit="volume">18</biblScope>
+			<biblScope unit="page" from="547" to="549" />
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Reicher, S., &amp; Taylor, S. (2005). Similarities and differences between traditions. The Psychologist, 18(9), 547-549.</note>
+</biblStruct>
+
+<biblStruct xml:id="b50">
+	<monogr>
+		<title level="m" type="main" xml:id="_T3qRuuM">Narrative Analysis</title>
+		<author>
+			<persName><forename type="first">C</forename><forename type="middle">K</forename><surname>Riessman</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="1993" />
+			<publisher>Sage</publisher>
+			<pubPlace>Newbury Park, CA</pubPlace>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Riessman, C. K. (1993). Narrative Analysis. Newbury Park, CA: Sage.</note>
+</biblStruct>
+
+<biblStruct xml:id="b51">
+	<analytic>
+		<title level="a" type="main" xml:id="_SUJE6VD">Data analysis and &apos;theorizing as ideology</title>
+		<author>
+			<persName><forename type="first">K</forename><surname>Roulston</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j" xml:id="_GRf476J">Qualitative Research</title>
+		<imprint>
+			<biblScope unit="volume">1</biblScope>
+			<biblScope unit="issue">3</biblScope>
+			<biblScope unit="page" from="279" to="302" />
+			<date type="published" when="2001" />
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Roulston, K. (2001). Data analysis and &apos;theorizing as ideology&apos;. Qualitative Research, 1(3), 279-302.</note>
+</biblStruct>
+
+<biblStruct xml:id="b52">
+	<monogr>
+		<title level="m" type="main" xml:id="_uy6BuBk">Qualitative interviewing: The art of hearing data</title>
+		<author>
+			<persName><forename type="first">H</forename><forename type="middle">J</forename><surname>Rubin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">I</forename><forename type="middle">S</forename><surname>Rubin</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="1995" />
+			<publisher>Sage</publisher>
+			<pubPlace>Thousand Oaks, CA</pubPlace>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Rubin, H. J., &amp; Rubin, I. S. (1995). Qualitative interviewing: The art of hearing data. Thousand Oaks, CA: Sage.</note>
+</biblStruct>
+
+<biblStruct xml:id="b53">
+	<monogr>
+		<title level="m" type="main" xml:id="_DSggnH2">Data management and analysis methods</title>
+		<author>
+			<persName><forename type="first">G</forename><forename type="middle">W</forename><surname>Ryan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><forename type="middle">R</forename><surname>Bernard</surname></persName>
+		</author>
+		<editor>N. K. Denzin &amp; Y</editor>
+		<imprint>
+			<date type="published" when="2000" />
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Ryan, G. W., &amp; Bernard, H. R. (2000). Data management and analysis methods. In N. K. Denzin &amp; Y.</note>
+</biblStruct>
+
+<biblStruct xml:id="b54">
+	<monogr>
+		<title level="m" xml:id="_PXZVySq">Handbook of Qualitative Research</title>
+				<editor>
+			<persName><forename type="first">S</forename><surname>Lincoln</surname></persName>
+		</editor>
+		<meeting><address><addrLine>Thousand Oaks, CA</addrLine></address></meeting>
+		<imprint>
+			<publisher>Sage</publisher>
+			<biblScope unit="page" from="769" to="802" />
+		</imprint>
+	</monogr>
+	<note>2nd ed.</note>
+	<note type="raw_reference">S. Lincoln (Eds.), Handbook of Qualitative Research (2nd ed., pp. 769-802). Thousand Oaks, CA: Sage.</note>
+</biblStruct>
+
+<biblStruct xml:id="b55">
+	<monogr>
+		<title level="m" type="main" xml:id="_Awe4sfS">The quality of qualitative research</title>
+		<author>
+			<persName><forename type="first">C</forename><surname>Seale</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="1999" />
+			<publisher>London: Sage</publisher>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Seale, C. (1999). The quality of qualitative research. London: Sage.</note>
+</biblStruct>
+
+<biblStruct xml:id="b56">
+	<analytic>
+		<title level="a" type="main" xml:id="_FY826wd">Using computers to analyse qualitative data</title>
+		<author>
+			<persName><forename type="first">C</forename><surname>Seale</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m" xml:id="_hPGFbEG">Doing qualitative research: A practical handbook</title>
+				<editor>
+			<persName><forename type="first">D</forename><surname>Silverman</surname></persName>
+		</editor>
+		<meeting><address><addrLine>London</addrLine></address></meeting>
+		<imprint>
+			<publisher>Sage</publisher>
+			<date type="published" when="2000" />
+			<biblScope unit="page" from="155" to="174" />
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Seale, C. (2000). Using computers to analyse qualitative data. In D. Silverman (Ed.), Doing qualitative research: A practical handbook (pp. 155-174). London: Sage.</note>
+</biblStruct>
+
+<biblStruct xml:id="b57">
+	<monogr>
+		<title level="m" type="main" xml:id="_RWGuUTw">Doing qualitative research: A practice handbook</title>
+		<author>
+			<persName><forename type="first">D</forename><surname>Silverman</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2000" />
+			<publisher>London: Sage</publisher>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Silverman, D. (2000). Doing qualitative research: A practice handbook. London: Sage.</note>
+</biblStruct>
+
+<biblStruct xml:id="b58">
+	<analytic>
+		<title level="a" type="main" xml:id="_vnJGqSJ">The experience of premature menopause: a thematic discourse analysis</title>
+		<author>
+			<persName><forename type="first">D</forename><surname>Singer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Hunter</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j" xml:id="_TUMcfhc">Journal of Reproductive and Infant Psychology</title>
+		<imprint>
+			<biblScope unit="volume">17</biblScope>
+			<biblScope unit="page" from="63" to="81" />
+			<date type="published" when="1999" />
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Singer, D., &amp; Hunter, M. (1999). The experience of premature menopause: a thematic discourse analysis. Journal of Reproductive and Infant Psychology, 17, 63-81.</note>
+</biblStruct>
+
+<biblStruct xml:id="b59">
+	<analytic>
+		<title level="a" type="main" xml:id="_79TW3eg">Doing Interpretative phenomenological analysis</title>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">A</forename><surname>Smith</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Jarman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Osborn</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m" xml:id="_9b6NV32">Qualitative Health Psychology: Theories and Methods</title>
+				<editor>
+			<persName><forename type="first">M</forename><forename type="middle">M A K</forename><surname>Chamberlain</surname></persName>
+		</editor>
+		<meeting><address><addrLine>London</addrLine></address></meeting>
+		<imprint>
+			<publisher>Sage</publisher>
+			<date type="published" when="1999" />
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Smith, J. A., Jarman, M., &amp; Osborn, M. (1999). Doing Interpretative phenomenological analysis. In M. M. a. K. Chamberlain (Ed.), Qualitative Health Psychology: Theories and Methods. London: Sage.</note>
+</biblStruct>
+
+<biblStruct xml:id="b60">
+	<analytic>
+		<title level="a" type="main" xml:id="_jygsPCX">Interpretative phenomenological analysis</title>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">A</forename><surname>Smith</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Osborn</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m" xml:id="_nXVaGFY">Qualitative Psychology: A Practical Guide to Methods</title>
+				<editor>
+			<persName><forename type="first">J</forename><forename type="middle">A</forename><surname>Smith</surname></persName>
+		</editor>
+		<meeting><address><addrLine>London</addrLine></address></meeting>
+		<imprint>
+			<publisher>Sage</publisher>
+			<date type="published" when="2003" />
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Smith, J. A., &amp; Osborn, M. (2003). Interpretative phenomenological analysis. In J. A. Smith (Ed.), Qualitative Psychology: A Practical Guide to Methods. London: Sage.</note>
+</biblStruct>
+
+<biblStruct xml:id="b61">
+	<analytic>
+		<title level="a" type="main" xml:id="_3Nbdrdt">Discoursing jealousy</title>
+		<author>
+			<persName><forename type="first">P</forename><surname>Stenner</surname></persName>
+		</author>
+		<idno>London: Routledge. 34</idno>
+	</analytic>
+	<monogr>
+		<title level="m" xml:id="_knBNBJF">Discourse Analytic Research: Repertoires and Readings of Texts in Action</title>
+				<editor>
+			<persName><forename type="first">E</forename><surname>Burman</surname></persName>
+			<persName><forename type="first">&amp;</forename><forename type="middle">I</forename><surname>Parker</surname></persName>
+		</editor>
+		<imprint>
+			<date type="published" when="1993" />
+			<biblScope unit="page" from="94" to="132" />
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Stenner, P. (1993). Discoursing jealousy. In E. Burman &amp; I. Parker (Eds.), Discourse Analytic Research: Repertoires and Readings of Texts in Action (pp. 94-132). London: Routledge. 34</note>
+</biblStruct>
+
+<biblStruct xml:id="b62">
+	<monogr>
+		<title level="m" type="main" xml:id="_kXRChsw">Basics of qualitative research: Techniques and procedures for developing grounded theory</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Strauss</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Corbin</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="1998" />
+			<publisher>Sage</publisher>
+			<pubPlace>Thousand Oaks, CA</pubPlace>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Strauss, A., &amp; Corbin, J. (1998). Basics of qualitative research: Techniques and procedures for developing grounded theory. Thousand Oaks, CA: Sage.</note>
+</biblStruct>
+
+<biblStruct xml:id="b63">
+	<analytic>
+		<title level="a" type="main" xml:id="_y6WDwYg">Making sense of S&amp;M: A discourse analytic account</title>
+		<author>
+			<persName><forename type="first">G</forename><forename type="middle">W</forename><surname>Taylor</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">M</forename><surname>Ussher</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j" xml:id="_MkyzMJB">Sexualities</title>
+		<imprint>
+			<biblScope unit="volume">4</biblScope>
+			<biblScope unit="issue">3</biblScope>
+			<biblScope unit="page" from="293" to="314" />
+			<date type="published" when="2001" />
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Taylor, G. W., &amp; Ussher, J. M. (2001). Making sense of S&amp;M: A discourse analytic account. Sexualities, 4(3), 293-314.</note>
+</biblStruct>
+
+<biblStruct xml:id="b64">
+	<analytic>
+		<title level="a" type="main" xml:id="_F5nzmSj">Exploring the depilation norm: a qualitative questionnaire study of women&apos;s body hair removal</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Toerien</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Wilkinson</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j" xml:id="_VYc2kkk">Qualitative Research in Psychology</title>
+		<imprint>
+			<biblScope unit="volume">1</biblScope>
+			<biblScope unit="page" from="69" to="92" />
+			<date type="published" when="2004" />
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Toerien, M., &amp; Wilkinson, S. (2004). Exploring the depilation norm: a qualitative questionnaire study of women&apos;s body hair removal. Qualitative Research in Psychology, 1, 69-92.</note>
+</biblStruct>
+
+<biblStruct xml:id="b65">
+	<analytic>
+		<title level="a" type="main" xml:id="_j86F9n3">Applying thematic analysis theory to practice: A researcher&apos;s experience</title>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">G</forename><surname>Tuckett</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j" xml:id="_uzR4gzw">Contemporary Nurse</title>
+		<imprint>
+			<biblScope unit="volume">19</biblScope>
+			<biblScope unit="issue">1-2</biblScope>
+			<biblScope unit="page" from="75" to="87" />
+			<date type="published" when="2005" />
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Tuckett, A. G. (2005). Applying thematic analysis theory to practice: A researcher&apos;s experience. Contemporary Nurse, 19(1-2), 75-87.</note>
+</biblStruct>
+
+<biblStruct xml:id="b66">
+	<analytic>
+		<title level="a" type="main" xml:id="_wkABD7f">Negotiating desire and sexual subjectivity: Narratives of young lesbian avengers</title>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">M</forename><surname>Ussher</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Mooney-Somers</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j" xml:id="_MRXxQbX">Sexualities</title>
+		<imprint>
+			<biblScope unit="volume">3</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="183" to="2000" />
+			<date type="published" when="2000" />
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Ussher, J. M., &amp; Mooney-Somers, J. (2000). Negotiating desire and sexual subjectivity: Narratives of young lesbian avengers. Sexualities, 3(2), 183-2000.</note>
+</biblStruct>
+
+<biblStruct xml:id="b67">
+	<monogr>
+		<title level="m" type="main" xml:id="_nHtXs2T">The Language of Youth Subcultures: Social Identity in Action</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Widdicombe</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Wooffitt</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="1995" />
+			<publisher>Harvester Wheatsheaf</publisher>
+			<pubPlace>London</pubPlace>
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Widdicombe, S., &amp; Wooffitt, R. (1995). The Language of Youth Subcultures: Social Identity in Action. London: Harvester Wheatsheaf.</note>
+</biblStruct>
+
+<biblStruct xml:id="b68">
+	<analytic>
+		<title level="a" type="main" xml:id="_zAh9t9h">Women with breast cancer talking causes: comparing content, biographical and discursive analyses</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Wilkinson</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j" xml:id="_fZ5RPMw">Feminism &amp; Psychology</title>
+		<imprint>
+			<biblScope unit="volume">10</biblScope>
+			<biblScope unit="issue">4</biblScope>
+			<biblScope unit="page" from="431" to="460" />
+			<date type="published" when="2000" />
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Wilkinson, S. (2000). Women with breast cancer talking causes: comparing content, biographical and discursive analyses. Feminism &amp; Psychology, 10(4), 431-460.</note>
+</biblStruct>
+
+<biblStruct xml:id="b69">
+	<monogr>
+		<title level="m" type="main" xml:id="_r3S4hsn">Social constructionist psychology: A critical analysis of theory and practice</title>
+		<author>
+			<persName><forename type="first">C</forename><surname>Willig</surname></persName>
+		</author>
+		<editor>D. J. Nightingale &amp; J. Cromby</editor>
+		<imprint>
+			<date type="published" when="1999" />
+			<publisher>Open University Press</publisher>
+			<biblScope unit="page" from="37" to="51" />
+			<pubPlace>Buckingham, UK</pubPlace>
+		</imprint>
+	</monogr>
+	<note>Beyond appearances: A critical realist approach to social constructionism</note>
+	<note type="raw_reference">Willig, C. (1999). Beyond appearances: A critical realist approach to social constructionism. In D. J. Nightingale &amp; J. Cromby (Eds.), Social constructionist psychology: A critical analysis of theory and practice (pp. 37-51). Buckingham, UK: Open University Press.</note>
+</biblStruct>
+
+<biblStruct xml:id="b70">
+	<analytic>
+		<title level="a" type="main" xml:id="_F38xs8m">Discourse analysis</title>
+		<author>
+			<persName><forename type="first">C</forename><surname>Willig</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m" xml:id="_Zquauw4">Qualitative psychology: A practical guide to research methods</title>
+				<editor>
+			<persName><forename type="first">J</forename><forename type="middle">A</forename><surname>Smith</surname></persName>
+		</editor>
+		<meeting><address><addrLine>London</addrLine></address></meeting>
+		<imprint>
+			<publisher>Sage</publisher>
+			<date type="published" when="2003" />
+			<biblScope unit="page" from="159" to="183" />
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Willig, C. (2003). Discourse analysis. In J. A. Smith (Ed.), Qualitative psychology: A practical guide to research methods (pp. 159-183). London: Sage.</note>
+</biblStruct>
+
+<biblStruct xml:id="b71">
+	<analytic>
+		<title level="a" type="main" xml:id="_9REhNpJ">Dilemmas in qualitative health research</title>
+		<author>
+			<persName><forename type="first">L</forename><surname>Yardley</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j" xml:id="_gXC6NgE">Psychology and Health</title>
+		<imprint>
+			<biblScope unit="volume">15</biblScope>
+			<biblScope unit="page" from="215" to="228" />
+			<date type="published" when="2000" />
+		</imprint>
+	</monogr>
+	<note type="raw_reference">Yardley, L. (2000). Dilemmas in qualitative health research. Psychology and Health, 15, 215-228.</note>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>
