@@ -245,15 +245,9 @@ def make_vector_store(docs):
 
 def get_template():
 
-    template = """
-        You are an assistant for question-answering tasks. 
-        Use the following articles text data of retrieved context to answer the question. 
-        If you don't know the answer, just say that you don't know. 
-        Use three sentences maximum and keep the answer concise.
-        Question: {question} 
-        Context: {context} 
-        Answer:
-    """
+    template = """You are an useful assistant for question-answering tasks."""
+    template += """Use the following articles text data to answer the user questions."""
+    template += """Context:\n{context}\n\nUser question:\n{question}\n\n"""
 
     return template
 
@@ -288,7 +282,7 @@ def create_vector_store(documents, model_name="llama3.2:1b"):
 
 def rag(st, query, template, vector_store, model):
 
-    related_documents = vector_store.similarity_search(query)
+    related_documents = vector_store.similarity_search(query, k=20)
 
     context = "\n\n".join([doc.page_content for doc in related_documents])
     prompt = ChatPromptTemplate.from_template(template)
@@ -333,7 +327,7 @@ def summachat_ollama(st, model_type='llamma', model_name='llama3.2:1b'):
                      st.session_state['summachat'][f'local_{model_type}']['vector_store'],
                      st.session_state['summachat'][f'local_{model_type}']['model'])
 
-        answer = answer.split('</think>')[-1] if model_type=='deepseek' else answer
+        answer = answer.split('</think>')[-1] if model_type in ['deepseek', 'qwen']  else answer
         st.chat_message("assistant").write(answer)
 
 
@@ -360,9 +354,8 @@ def summachat_api(st, model_type="openai"):
         if not st.session_state['summachat'].get('api_prompt', False):
 
             api_prompt = """You are an assistant for question-answering tasks. 
-                            Use the following articles text data of retrieved context to answer the question. 
+                            Use the following articles text data to answer the user question. 
                             If you don't know the answer, just say that you don't know. 
-                            Use three sentences maximum and keep the answer concise.
                             Context: {context}"""
 
             st.session_state['summachat']['api_prompt'] = api_prompt
@@ -415,6 +408,9 @@ def summachat_variables(st):
     if 'summachat' not in st.session_state:
         st.session_state['summachat'] = {}
 
+    if 'local_qwen' not in st.session_state['summachat']:
+        st.session_state['summachat']['local_qwen'] = {}
+
     if 'local_deepseek' not in st.session_state['summachat']:
         st.session_state['summachat']['local_deepseek'] = {}
 
@@ -429,6 +425,12 @@ def summachat_variables(st):
 
     if 'article_text_list' not in st.session_state['summachat']:
         st.session_state['summachat']['article_text_list'] = []
+
+    if 'vector_store' not in st.session_state['summachat']['local_qwen']:
+        st.session_state['summachat']['local_qwen']['vector_store'] = []
+
+    if 'model' not in st.session_state['summachat']['local_qwen']:
+        st.session_state['summachat']['local_qwen']['model'] = []
 
     if 'vector_store' not in st.session_state['summachat']['local_deepseek']:
         st.session_state['summachat']['local_deepseek']['vector_store'] = []

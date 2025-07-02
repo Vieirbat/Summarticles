@@ -528,16 +528,25 @@ if __name__ == '__main__':
                             with st.container():
 
                                 st.session_state['summachat']['rb_modelchat'] = st.radio("Summachat Model:",
-                                                                            ('Disable SummaChat','Local Llamma (slow)', 'Local DeepSeek (slow)', 'Open AI API', 'DeepSeek API'),
+                                                                            ('Disable SummaChat', 'Local Qwen (local faster)', 'Local Llamma (slow)', 'Local DeepSeek (slow)', 'Open AI API', 'DeepSeek API'),
                                                                             horizontal=True,
                                                                             help="Choose one of these models to talk with your documents!")
+                                
+                                # ---------------------------------------------------------------------
+                                # Local Qwen selection
+                                # ollama pull qwen3:0.6b
+
+                                if st.session_state['summachat']['rb_modelchat']=="Local Qwen (local faster)":
+                                    reset_summa_chat(st)
+                                    summachat_ollama(st, model_type='qwen', model_name='qwen3:0.6b')
+                                
                                 # ---------------------------------------------------------------------
                                 # Local Llamma selection
                                 # ollama pull llama3.2:1b
 
-                                if st.session_state['summachat']['rb_modelchat']=="Local Llamma (slow)":
+                                elif st.session_state['summachat']['rb_modelchat']=="Local Llamma (slow)":
                                     reset_summa_chat(st)
-                                    summachat_ollama(st, model_type='llamma', model_name='llama3.2:1b')
+                                    summachat_ollama(st, model_type='llama', model_name='llama3.2:1b')
 
                                 # ---------------------------------------------------------------------
                                 # Local DeepSeek selection

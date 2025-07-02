@@ -612,7 +612,13 @@ def article_citation_information(st, dict_dfs):
         return pd.Series(dictR)
 
     df_authors_citations = df_doc_authors_citations.loc[:,['full_name_citation']].reset_index()
-    df_authors = df_doc_authors.loc[:,['full_name_author','country_author']].reset_index()
+
+    if 'country_author' not in df_doc_authors.columns:
+        df_doc_authors['country_author'] = 'Null Value'
+        df_authors = df_doc_authors.loc[:,['full_name_author','country_author']].reset_index()
+        st.warning("No country information available for authors!")
+    else:
+        df_authors = df_doc_authors.loc[:,['full_name_author','country_author']].reset_index()
 
     df_authors_citations = df_authors_citations.drop_duplicates(subset=['article_id','full_name_citation'])
     df_authors = df_authors.drop_duplicates(subset=['article_id','full_name_author'])
@@ -666,9 +672,11 @@ def plot_maps(st, dict_dfs, path):
     if 'country_author' not in df_doc_authors.columns:
         df_doc_authors['country_author'] = 'Null Value'
         st.warning("No country information available for authors!")
-        
+
     df_country_agg = df_doc_authors.groupby(by=['country_author'], as_index=False, dropna=True)['full_name_author'].count()
     df_country_agg['country_author'] = df_country_agg['country_author'].apply(lambda e: str(e).lower().strip())
+
+    print(f"""Country of the authors: \n{df_country_agg['country_author'].unique().tolist()}""")
 
     path_geo = os.path.join(path,'data','0_external')
     country_latlong = pd.read_csv(os.path.join(path_geo,'countries_lat_long.csv'), sep=',', decimal='.')

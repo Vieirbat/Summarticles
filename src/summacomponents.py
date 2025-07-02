@@ -269,39 +269,45 @@ def show_text_numbers(st, dict_dfs, tprep):
         with col1:
             print("UNIGRAM")
             print(words_freq.head(10))
-            # AgGrid(words_freq.head(100),
-            #        # data_return_mode='AS_INPUT', 
-            #        # update_mode='MODEL_CHANGED', 
-            #        fit_columns_on_grid_load=False,
-            #        # theme='fresh',
-            #        enable_enterprise_modules=False,
-            #        height=250, 
-            #        width='100%',
-            #        reload_data=True)
+            words_freq.columns = ['Unigram', 'Frequency']
+            # st.table(words_freq.head(10))
+            AgGrid(words_freq.head(100),
+                   # data_return_mode='AS_INPUT', 
+                   # update_mode='MODEL_CHANGED', 
+                   fit_columns_on_grid_load=False,
+                   # theme='fresh',
+                   enable_enterprise_modules=False,
+                   height=250, 
+                   width='100%',
+                   reload_data=True)
         with col2:
             print("BI-UNIGRAM")
             print(df_bigram.head(10))
-            # AgGrid(df_bigram.head(50),
-            #        # data_return_mode='AS_INPUT', 
-            #        # update_mode='MODEL_CHANGED', 
-            #        fit_columns_on_grid_load=False,
-            #        # theme='fresh',
-            #        enable_enterprise_modules=False,
-            #        height=250, 
-            #        width='100%',
-            #        reload_data=False)
+            df_bigram.columns = ['Bigram', 'Frequency']
+            # st.table(df_bigram.head(10))
+            AgGrid(df_bigram.head(50),
+                   data_return_mode='AS_INPUT', 
+                   # update_mode='MODEL_CHANGED', 
+                   fit_columns_on_grid_load=False,
+                   # theme='fresh',
+                   enable_enterprise_modules=False,
+                   height=250, 
+                   width='100%',
+                   reload_data=True)
         with col3:
             print("TRI-UNIGRAM")
             print(df_trigram.head(10))
-            # AgGrid(df_trigram.head(50),
-            #        # data_return_mode='AS_INPUT', 
-            #        # update_mode='MODEL_CHANGED', 
-            #        fit_columns_on_grid_load=False,
-            #        # theme='fresh',
-            #        enable_enterprise_modules=False,
-            #        height=250, 
-            #        width='100%',
-            #        reload_data=False)
+            df_trigram.columns = ['Trigram', 'Frequency']
+            # st.table(df_trigram.head(10))
+            AgGrid(df_trigram.head(50),
+                   # data_return_mode='AS_INPUT', 
+                   # update_mode='MODEL_CHANGED', 
+                   fit_columns_on_grid_load=False,
+                   # theme='fresh',
+                   enable_enterprise_modules=False,
+                   height=250, 
+                   width='100%',
+                   reload_data=True)
             
         with st.expander(" ❕ Information!"):
             body = """Unigram: only one frequent word that happen with high frequency over the all articles text<br>
