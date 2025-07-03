@@ -5,6 +5,10 @@
 
 - Instale Ollama;
 - Execute o Ollama;
+- Abra um terminal;
+- ollama pull deepseek-r1:1.5b;
+- ollama pull llama3.2:1b;
+- ollama pull 
 
 - Instale o Python versão 3.12;
 
@@ -12,7 +16,9 @@
 - Extraia o repositório de código;
 - Abra um terminal;
 - Navegue até a pasta de repositório;
-- Crie um ambiente virtual para execução de Suumarticles:
+- Crie um ambiente virtual no python para execução de Suumarticles:
 	- python -m venv summa
 	- .\summa\Scripts\activate
 	- pip install --no-cache-dir -r PGC/requirements.txt
+- Entre na pasta da ferramenta: cd summarticles;
+- streamlit run .\summarticles.py
