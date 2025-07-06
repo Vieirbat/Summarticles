@@ -248,7 +248,19 @@ if __name__ == '__main__':
     # Reset execution
     if st.session_state['path_check']:
         make_reset_button(st)
-        
+
+    # ----------------------------------------------------------------------------
+    import nltk
+    try:
+        nltk.data.find('tokenizers/punkt')
+    except LookupError:
+        st.info("Seems like is the first time you run this app. Downloading nltk data...")
+        with st.spinner('⚙️ Downloading nltk data...'):
+            nltk.download('punkt_tab')
+            nltk.download('wordnet')
+            nltk.download('stopwords')
+            nltk.download('punkt')
+        st.success("✅ nltk data downloaded!")
     
     # ----------------------------------------------------------------------------
     # button getpath containers

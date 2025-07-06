@@ -8,9 +8,10 @@
 - Abra um terminal;
 - ollama pull deepseek-r1:1.5b;
 - ollama pull llama3.2:1b;
-- ollama pull 
+- ollama pull qwen3:0.6b
 
-- Instale o Python versão 3.12;
+- Instale o Python versão 3.11;
+- https://www.python.org/downloads/release/python-3110/
 
 - Baixe o repositório de código;
 - Extraia o repositório de código;
@@ -19,6 +20,8 @@
 - Crie um ambiente virtual no python para execução de Suumarticles:
 	- python -m venv summa
 	- .\summa\Scripts\activate
-	- pip install --no-cache-dir -r PGC/requirements.txt
+	- pip install --only-binary=all --no-cache-dir -r PGC/requirements.txt
+	- Caso reclame da falta da biblioteca Pandas: pip install --only-binary=all pandas==1.4.2
+	- Caso reclame da falta da biblioteca Numpy: pip install --only-binary=all numpy==1.26.4
 - Entre na pasta da ferramenta: cd summarticles;
 - streamlit run .\summarticles.py

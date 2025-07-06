@@ -10,8 +10,7 @@ ipython==9.0.2
 jsonpickle==4.0.2
 folium==0.19.5
 nltk==3.7
-pandas==1.4.2
-numpy==1.26.4
+# pandas~=1.4.2 # 1.4.4
 matplotlib==3.10.1
 matplotlib-inline==0.1.7
 plotly==6.0.0
@@ -33,5 +32,6 @@ langchain-ollama==0.3.0
 langchain-text-splitters==0.3.6
 langsmith==0.3.13
 openai==1.66.3
+# numpy~=1.26.4
 
 
