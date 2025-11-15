@@ -6,6 +6,10 @@ __pycache__/
 *.so
 
 ollama/
+summa/
+Articles/
+articles/
+summarticles_cache/
 
 # Distribution / packaging
 .Python
