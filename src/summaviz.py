@@ -310,13 +310,13 @@ def article_authors_information(st, dict_dfs):
                                        'Number of Articles':top_authors.values.tolist()})
         
         top_authors = df_top_authors.nlargest(20,'Number of Articles')
-        top_authors = top_authors.sort_values('Number of Articles',ascending=True)
+        top_authors = top_authors.sort_values('Number of Articles', ascending=True)
         fig_authors = px.bar(top_authors,
                             title='Top 20 Number of Articles by Authors',
                             y='Full Name',
                             x='Number of Articles',
                             color='Number of Articles',
-                            width=400, 
+                            width=600, 
                             height=600,
                             text='Number of Articles')
         fig_authors.update(layout_coloraxis_showscale=False)
@@ -350,7 +350,7 @@ def article_authors_information(st, dict_dfs):
         
         fig_authors_loc = px.sunburst(df_sun_agg,
                                     title='Number of Authors by Location',
-                                    width=550, 
+                                    width=600, 
                                     height=600,
                                     path=['Author Country',
                                           'Author Settlement',
@@ -359,7 +359,7 @@ def article_authors_information(st, dict_dfs):
                                     values='Number of Authors')
                                     # values='Percentage')
 
-        col0 , _,col1 = st.columns([0.25,2,3])
+        col0 , _,col1 = st.columns([3,0.1,3])
         with col0:
             st.plotly_chart(fig_authors)
         with col1:
