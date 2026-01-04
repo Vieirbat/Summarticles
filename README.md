@@ -1,4 +1,4 @@
-Projeto de PGC na UFABC
+Summarticles: uma ferramenta para sumarização de artigos científicos com inteligência artificial
 ==============================
 
-Trata-se de uma ferramenta para facilitar a busca de conhecimento por pesquisadores em ciência dos materiais, disposta em uma aplicação de mineração de texto com modelos estado da arte em Text Mining - Deep Learning.
+Summarticles é uma ferramenta que extrai informações textuais de um conjunto de artigos científicos e sumariza a informação desses artigos utilizando visualizações analíticas, algoritmos de mineração de texto e algoritmos de inteligência artificial numa aplicação gratuita com interface Web. O intuito da ferramenta é facilitar o trabalho de cientistas na descoberta de conhecimento sobre um conjunto de artigos científicos. Dado o volume crescente de artigos científicos produzidos em diversos campos de pesquisa, torna-se difícil para os cientistas acompanharem toda a produção científica e priorizar quais artigos devem ser estudados, de acordo com suas necessidades de pesquisa. Neste sentido, Summarticles pode facilitar o trabalho de cientistas e pesquisadores.
